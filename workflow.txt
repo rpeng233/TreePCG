@@ -1,0 +1,28 @@
+	We have test cases stored in the 'graphs' folder.
+
+	Each test case will be stored in a folder designated by the first two 
+letters of the person's name + the index of the current graph. For example,
+if Serban has 3 test cases, they will be in graphs/se/1, graphs/se/2, 
+graphs/se/3. This is probably not the best we can do, but it at least seems
+like a decent starting point. 
+
+	Each test case folder will hold 4 files - adjacency matrix of the graph, 
+adjacency matrix of the tree, left hand side, and right hand side. The left
+hand side file might be empty. So, for example, graphs/se/3 might store:
+adj.txt, tree.txt, lhs.txt, rhs.txt.
+	Later, we might want to add other stuff, such as generators and what not.
+However, the above seems like a reasonable starting point. 
+	
+	We can store the results of our experiments in a google spreadsheet, for 
+each graph storing the following information (inspired by Haoran's workflow):
+	- name of test graph
+	- # vertices
+	- # edges
+	- average stretch
+	- precision we are going for in the solve
+	- #iterations for 64 bit precision
+	- 64 bit runtime
+	- #iterations for 1024 bit precision
+	- 1024 bit runtime
+	- condition number - nice to have if we can compute it in a decent time
+	- compiler + system architecture
