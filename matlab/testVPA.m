@@ -10,3 +10,7 @@ vpa(sym(b) - sym(a))
 A = sparse(rand(5, 5))
 Aexact = sym(A)
 vpa(Aexact^(-1))
+
+a1 = vpa(10^100)
+b1 = a + vpa(1)
+b1 - a1
