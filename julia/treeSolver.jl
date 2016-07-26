@@ -3,13 +3,13 @@ function treeSolver{Tv,Ti}(tree::SparseMatrixCSC{Tv,Ti})
     
     n = tree.n;
 
-    function f(b::Array{Tv,1})
-        ord = (dfsOrder(tree))
-        permTree = tree[ord,ord]
-        aux = copy(b[ord]);
-        geld = diag(lap(tree[ord,ord]))
-        father = ones(Int64,n);
+    ord = (dfsOrder(tree))
+    permTree = tree[ord,ord]
+    aux = copy(b[ord]);
+    geld = diag(lap(tree[ord,ord]))
+    father = ones(Int64,n);
 
+    function f(b::Array{Tv,1})
         for u in 2:n
             for i in 1:deg(permTree,u)
                 v = nbri(permTree,u,i)
