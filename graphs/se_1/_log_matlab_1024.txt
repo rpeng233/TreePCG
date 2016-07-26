@@ -1,0 +1,13 @@
+=========CG using MATLAB variable precision=====
+====NUMBER OF DIGITS = 1024
+====DATA = ../graphs/se/1/
+====error given as ||Ax - b||_2^2 and ||x - xbar||_A^2
+i=  1, err2=4.49413e+16, errA = 2.55712e+08
+i=  2, err2=1.8563e+16, errA = 1.15593e+08
+i=  3, err2=5.56608e+15, errA = 5.85703e+07
+i=  4, err2=2.62338e+15, errA = 3.85554e+07
+i=  5, err2=1.16106e+15, errA = 2.96578e+07
+i=  6, err2=1.23982e+15, errA = 2.33921e+07
+i=  7, err2=7.06021e+14, errA = 1.80715e+07
+i=  8, err2=6.37554e+14, errA = 1.53813e+07
+i=  9, err2=4.80261e+14, errA = 1.20379e+07

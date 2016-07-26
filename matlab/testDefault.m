@@ -1,9 +1,17 @@
 clear
 
-fprintf('CG using MATLAB default precision\n');
+f_log = fopen('log.txt', 'w');
 
+folder = '../graphs/se_2/';
 
-folder = '../graphs/se/1/';
+fprintf(f_log, '=========CG using MATLAB default precision=====\n');
+fprintf(f_log, '====DATA = %s\n', folder);
+fprintf(f_log, '====error given as ||Ax - b||_2^2 and ||x - xbar||_A^2\n', folder);
+
+fprintf('=========CG using MATLAB default precision=====\n');
+fprintf('====DATA = %s\n', folder);
+fprintf('====error given as ||Ax - b||_2^2 and ||x - xbar||_A^2\n', folder);
+
 f_matrix = strcat(folder, 'graph.mtx');
 f_tree = strcat(folder, 'tree.mtx');
 f_b = strcat(folder, 'b.vec');
@@ -30,7 +38,7 @@ p = z;
 
 %p' * LG * p
 
-for iter = 1:100
+for iter = 1:10000
     alpha = (r' * z) / (p' * LG * p);
     x = x + alpha * p;
    
@@ -39,7 +47,10 @@ for iter = 1:100
     zPrev = z;
     
     r = r - alpha * LG * p; %b - LG * x;
-fprintf('iteration %3d, residue = %0.6g\n', iter, norm(r));
+
+    
+    fprintf(f_log, 'i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r)^2, (x - xbar)'*LG*(x - xbar));
+    fprintf('i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r)^2, (x - xbar)'*LG*(x - xbar));
     
     z = [LT(1:n-1,1:n-1) \ r(1:n-1); 0];
     z = z - sum(z) * onesN;
@@ -50,6 +61,5 @@ fprintf('iteration %3d, residue = %0.6g\n', iter, norm(r));
 %[alpha, beta]
 end
 
-
-
+fclose(f_log);
 
