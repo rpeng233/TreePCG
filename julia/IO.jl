@@ -47,20 +47,37 @@ function readFromFile(filename::ASCIIString)
     f = open(filename)
 
     lines = readlines(f)
-    if lines[1][1] == '%'
+   
+    ismat = split(lines[1], ' ')
+    if ismat[3] == "coordinate"
+        ismat = true
+    else
+        ismat = false
+    end
+
+    start = 1
+    for i in 1:length(lines)
+        if lines[i][1] == '%'
+            start = i + 1
+        else
+            break
+        end
+    end
+
+    if ismat
         # We are reading a Sparse Matrix
-        m = parse(Int64, split(lines[2], ' ')[1])
-        n = parse(Int64, split(lines[2], ' ')[2])
-        nonzrs = parse(Int64, split(lines[2], ' ')[3])
+        m = parse(Int64, split(lines[start], ' ')[1])
+        n = parse(Int64, split(lines[start], ' ')[2])
+        nonzrs = parse(Int64, split(lines[start], ' ')[3])
 
         u = Array{Int64,1}(0)
         v = Array{Int64,1}(0)
         w = Array{Float64,1}(0)
 
         for i in 1:nonzrs
-            p = parse(Int64, split(lines[i+2], ' ')[1])
-            q = parse(Int64, split(lines[i+2], ' ')[2])
-            r = parse(Float64, split(lines[i+2], ' ')[3])
+            p = parse(Int64, split(lines[i+start], ' ')[1])
+            q = parse(Int64, split(lines[i+start], ' ')[2])
+            r = parse(Float64, split(lines[i+start], ' ')[3])
 
             push!(u, p)
             push!(v, q)
@@ -74,10 +91,10 @@ function readFromFile(filename::ASCIIString)
         return sparse(u,v,w,m,n)
     else
         # We are reading a vector
-        n = parse(Int64,lines[1])
+        n = parse(Int64, split(lines[start], ' ')[1])
         u = Array{Float64,1}(0)
         for i in 1:n
-            push!(u, parse(Float64, lines[i+1]))
+            push!(u, parse(Float64, lines[i+start]))
         end
 
         return u

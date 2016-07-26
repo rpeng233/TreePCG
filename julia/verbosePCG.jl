@@ -36,7 +36,7 @@ function pcgVBLAS{Tval}(mat, b::Array{Tval,1}, pre;
     while itcnt < maxits
         itcnt = itcnt+1
 
-        if verbose && itcnt % 10 == 1
+        if verbose && itcnt % 10 == 0
             println("Working on iteration ", itcnt)
         end
         
@@ -48,7 +48,8 @@ function pcgVBLAS{Tval}(mat, b::Array{Tval,1}, pre;
 
         BLAS.axpy!(-al,q,r)  # r -= al*q
 
-        if verbose
+        if (verbose && (itcnt < 100 || itcnt % 100 == 0)) ||
+           (norm(r) < tol)
             err = Float64(norm(r) / norm(b))
             push!(dbg, "$(err) error after $(itcnt) iterations")
         end
@@ -122,7 +123,8 @@ function pcgVBLASMatNorm{Tval}(mat, b::Array{Tval,1}, pre, lhs::Array{Tval,1}; t
         BLAS.axpy!(al,p,x)  # x = x + al * p
         BLAS.axpy!(-al,q,r)  # r -= al*q
 
-        if verbose
+        if (verbose && (itcnt < 100 || itcnt % 100 == 0)) ||
+           (sqrt((lhs - x)' * mat * (lhs - x))[1] < tol)
             err = Float64(sqrt((lhs - x)' * mat * (lhs - x))[1])
             push!(dbg, "$(err) error(matrix norm) after $(itcnt) iterations")
         end
