@@ -1,0 +1,3 @@
+#!/bin/bash
+rm treepcgsolver
+g++ treepcgsolver.cpp -o treepcgsolver -O3 --std=c++11 -lnsl -lz -lm -lmpfr -lquadmath
