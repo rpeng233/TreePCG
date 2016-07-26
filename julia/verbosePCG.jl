@@ -44,9 +44,11 @@ function pcgVBLAS{Tval}(mat, b::Array{Tval,1}, pre;
 
         al = rho/dot(p, q)
 
-        BLAS.axpy!(al,p,x)  # x = x + al * p
+        x = x + al * p
+        # BLAS.axpy!(al,p,x)  # x = x + al * p
 
-        BLAS.axpy!(-al,q,r)  # r -= al*q
+        r = r - al * q
+        # BLAS.axpy!(-al,q,r)  # r -= al*q
 
         if (verbose && (itcnt < 100 || itcnt % 100 == 0)) ||
            (norm(r) < tol)
@@ -120,8 +122,10 @@ function pcgVBLASMatNorm{Tval}(mat, b::Array{Tval,1}, pre, lhs::Array{Tval,1}; t
 
         al = rho/dot(p, q)
 
-        BLAS.axpy!(al,p,x)  # x = x + al * p
-        BLAS.axpy!(-al,q,r)  # r -= al*q
+        x = x + al * p
+        r -= al * q
+        # BLAS.axpy!(al,p,x)  # x = x + al * p
+        # BLAS.axpy!(-al,q,r)  # r -= al*q
 
         if (verbose && (itcnt < 100 || itcnt % 100 == 0)) ||
            (sqrt((lhs - x)' * mat * (lhs - x))[1] < tol)

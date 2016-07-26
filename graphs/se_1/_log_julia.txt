@@ -1,105 +1,921 @@
 ======= 64 bit precision
-0.3275599229923135 error after 1 iterations
-0.2105192653772559 error after 2 iterations
-0.1152770283452106 error after 3 iterations
-0.07914043175936897 error after 4 iterations
-0.052649604758615465 error after 5 iterations
-0.05440608513552838 error after 6 iterations
-0.041056015024577654 error after 7 iterations
-0.03901453871126404 error after 8 iterations
-0.03386152427845543 error after 9 iterations
-0.03004047762020138 error after 10 iterations
-0.0262093489855548 error after 11 iterations
-0.02045404682043578 error after 12 iterations
-0.016765286537348798 error after 13 iterations
-0.01724252180831128 error after 14 iterations
-0.018542236680407123 error after 15 iterations
-0.015181251151993822 error after 16 iterations
-0.013427114726532045 error after 17 iterations
-0.010694950224030499 error after 18 iterations
-0.010189423909844234 error after 19 iterations
-0.009928721742108914 error after 20 iterations
-0.008625360570549426 error after 21 iterations
-0.00735733166747229 error after 22 iterations
-0.007387050636261109 error after 23 iterations
-0.00659473259013382 error after 24 iterations
-0.006039306823675483 error after 25 iterations
-0.005536889763364836 error after 26 iterations
-0.005470093650600767 error after 27 iterations
-0.004901145494076651 error after 28 iterations
-0.0046867323048783854 error after 29 iterations
-0.004233722653001861 error after 30 iterations
-0.0040596629565465975 error after 31 iterations
-0.0031217594771764967 error after 32 iterations
-0.002782610709659045 error after 33 iterations
-0.0031843435303416444 error after 34 iterations
-0.003377680297388046 error after 35 iterations
-0.002625052429448057 error after 36 iterations
-0.0026159907230811712 error after 37 iterations
-0.003127425536089892 error after 38 iterations
-0.002185267756648168 error after 39 iterations
-0.0024561791120751276 error after 40 iterations
-0.004204020549704066 error after 41 iterations
-0.002105001061535511 error after 42 iterations
-0.0020036714718712576 error after 43 iterations
-0.0043074164576990094 error after 44 iterations
-0.0021235303894755614 error after 45 iterations
-0.0017766570626763882 error after 46 iterations
-0.002668644585235778 error after 47 iterations
-0.0014040914536055263 error after 48 iterations
-0.0020761316732810543 error after 49 iterations
-0.0013667554074005364 error after 50 iterations
-0.0014638479396846937 error after 51 iterations
-0.0027173577355555693 error after 52 iterations
-0.0017617157716276124 error after 53 iterations
-0.0013839149480902881 error after 54 iterations
-0.0014270085714656155 error after 55 iterations
-0.0022654501416181838 error after 56 iterations
-0.0012303774925729845 error after 57 iterations
-0.0017217031227628823 error after 58 iterations
-0.000726270569184115 error after 59 iterations
-0.0015571438283433095 error after 60 iterations
-0.0009466766590448323 error after 61 iterations
-0.0019217650333560028 error after 62 iterations
-0.0011560949811772843 error after 63 iterations
-0.0013958544293610766 error after 64 iterations
-0.000666492338357412 error after 65 iterations
-0.0017915474778247755 error after 66 iterations
-0.0007213231286290294 error after 67 iterations
-0.0016149416645859927 error after 68 iterations
-0.0009246514912857668 error after 69 iterations
-0.0006164650464638405 error after 70 iterations
-0.0008735588377252619 error after 71 iterations
-0.0006132961519734094 error after 72 iterations
-0.0011059811809486903 error after 73 iterations
-0.0008667435756240813 error after 74 iterations
-0.0005185790032235665 error after 75 iterations
-0.00207702671260345 error after 76 iterations
-0.0007827543734743972 error after 77 iterations
-0.001279463184058441 error after 78 iterations
-0.0016956764639484553 error after 79 iterations
-0.0008048461725158641 error after 80 iterations
-0.0012946087225546399 error after 81 iterations
-0.0010448650574432174 error after 82 iterations
-0.0003343376334473135 error after 83 iterations
-0.0011875703641709458 error after 84 iterations
-0.0006342359962765199 error after 85 iterations
-0.0005168714112266761 error after 86 iterations
-0.0007546277153639293 error after 87 iterations
-0.000613212318094509 error after 88 iterations
-0.0010451672733800274 error after 89 iterations
-0.0004912774670698903 error after 90 iterations
-0.0010253577627200791 error after 91 iterations
-0.000517784612020561 error after 92 iterations
-0.0003098213186635334 error after 93 iterations
-0.0015273823666924712 error after 94 iterations
-0.0008345988604699914 error after 95 iterations
-0.00032934552197114533 error after 96 iterations
-0.0013595136155395333 error after 97 iterations
-0.0006941393991755398 error after 98 iterations
-0.0002799896326496261 error after 99 iterations
-0.0010898698603316144 error after 100 iterations
-0.00015989619115038944 error after 200 iterations
-8.434751064971283e-5 error after 300 iterations
-3.677106519240487e-5 error after 400 iterations
-3.526555345158655e-5 error after 500 iterations
+15991.002949144433 error(matrix norm) after 1 iterations
+10751.399034044623 error(matrix norm) after 2 iterations
+7653.121249857996 error(matrix norm) after 3 iterations
+6209.30224617936 error(matrix norm) after 4 iterations
+5445.899024558871 error(matrix norm) after 5 iterations
+4836.53891560531 error(matrix norm) after 6 iterations
+4251.063397446388 error(matrix norm) after 7 iterations
+3921.901790774578 error(matrix norm) after 8 iterations
+3469.5633275243163 error(matrix norm) after 9 iterations
+3031.43451630164 error(matrix norm) after 10 iterations
+2746.0596443414365 error(matrix norm) after 11 iterations
+2516.844454641931 error(matrix norm) after 12 iterations
+2376.9113896001336 error(matrix norm) after 13 iterations
+2218.4308839832615 error(matrix norm) after 14 iterations
+2074.5528811929885 error(matrix norm) after 15 iterations
+1923.5995479924698 error(matrix norm) after 16 iterations
+1796.718167703001 error(matrix norm) after 17 iterations
+1716.3468169882046 error(matrix norm) after 18 iterations
+1573.8510088944745 error(matrix norm) after 19 iterations
+1485.4788032562558 error(matrix norm) after 20 iterations
+1415.9639941321088 error(matrix norm) after 21 iterations
+1343.9949409330518 error(matrix norm) after 22 iterations
+1294.5757806958513 error(matrix norm) after 23 iterations
+1220.855064776912 error(matrix norm) after 24 iterations
+1188.1372655981552 error(matrix norm) after 25 iterations
+1147.9213942857546 error(matrix norm) after 26 iterations
+1101.4731095733111 error(matrix norm) after 27 iterations
+1067.1204596847351 error(matrix norm) after 28 iterations
+1023.6216884259845 error(matrix norm) after 29 iterations
+992.1170452600118 error(matrix norm) after 30 iterations
+949.2189766560351 error(matrix norm) after 31 iterations
+919.5933942113118 error(matrix norm) after 32 iterations
+899.2615272719751 error(matrix norm) after 33 iterations
+878.921444261976 error(matrix norm) after 34 iterations
+853.1376634638599 error(matrix norm) after 35 iterations
+830.8800824429519 error(matrix norm) after 36 iterations
+795.5634638699926 error(matrix norm) after 37 iterations
+770.6987522481704 error(matrix norm) after 38 iterations
+750.0188307260689 error(matrix norm) after 39 iterations
+720.572011627919 error(matrix norm) after 40 iterations
+699.9186365181528 error(matrix norm) after 41 iterations
+686.5271275610319 error(matrix norm) after 42 iterations
+671.6398595893028 error(matrix norm) after 43 iterations
+653.5797890467437 error(matrix norm) after 44 iterations
+636.768235241318 error(matrix norm) after 45 iterations
+619.935832283018 error(matrix norm) after 46 iterations
+611.3784341745338 error(matrix norm) after 47 iterations
+604.0836664493746 error(matrix norm) after 48 iterations
+595.4538482491995 error(matrix norm) after 49 iterations
+591.7871943570697 error(matrix norm) after 50 iterations
+573.482106404332 error(matrix norm) after 51 iterations
+557.7349520868199 error(matrix norm) after 52 iterations
+550.0245819979967 error(matrix norm) after 53 iterations
+530.5890368216504 error(matrix norm) after 54 iterations
+510.4158394741201 error(matrix norm) after 55 iterations
+503.80277950727634 error(matrix norm) after 56 iterations
+489.58155670389044 error(matrix norm) after 57 iterations
+484.4902549125088 error(matrix norm) after 58 iterations
+479.38622457406075 error(matrix norm) after 59 iterations
+476.41656257292397 error(matrix norm) after 60 iterations
+467.5494493468972 error(matrix norm) after 61 iterations
+457.3349566163554 error(matrix norm) after 62 iterations
+452.18049045437476 error(matrix norm) after 63 iterations
+437.74698480053445 error(matrix norm) after 64 iterations
+435.57790085880504 error(matrix norm) after 65 iterations
+430.20095646517694 error(matrix norm) after 66 iterations
+421.469824655262 error(matrix norm) after 67 iterations
+412.1402265203419 error(matrix norm) after 68 iterations
+406.95299169562867 error(matrix norm) after 69 iterations
+398.491639402483 error(matrix norm) after 70 iterations
+397.0783716100475 error(matrix norm) after 71 iterations
+387.4980413173344 error(matrix norm) after 72 iterations
+386.01420691543535 error(matrix norm) after 73 iterations
+382.1899477323205 error(matrix norm) after 74 iterations
+380.5268995377345 error(matrix norm) after 75 iterations
+375.98741496331104 error(matrix norm) after 76 iterations
+363.76808782585886 error(matrix norm) after 77 iterations
+359.66188553176784 error(matrix norm) after 78 iterations
+352.34795503178617 error(matrix norm) after 79 iterations
+348.0053281797147 error(matrix norm) after 80 iterations
+342.65341577601254 error(matrix norm) after 81 iterations
+337.62503975744573 error(matrix norm) after 82 iterations
+336.15452621857634 error(matrix norm) after 83 iterations
+331.3147899400465 error(matrix norm) after 84 iterations
+323.9028583800903 error(matrix norm) after 85 iterations
+322.46415510483683 error(matrix norm) after 86 iterations
+314.79908670909094 error(matrix norm) after 87 iterations
+312.4331587065605 error(matrix norm) after 88 iterations
+309.0047392904043 error(matrix norm) after 89 iterations
+306.97512322713266 error(matrix norm) after 90 iterations
+303.35607654421995 error(matrix norm) after 91 iterations
+289.29362538866116 error(matrix norm) after 92 iterations
+288.2971922191722 error(matrix norm) after 93 iterations
+279.19304648406745 error(matrix norm) after 94 iterations
+273.3425979688762 error(matrix norm) after 95 iterations
+271.61838319359447 error(matrix norm) after 96 iterations
+264.27008915462824 error(matrix norm) after 97 iterations
+259.2781521858939 error(matrix norm) after 98 iterations
+257.35427187084986 error(matrix norm) after 99 iterations
+255.1800276437378 error(matrix norm) after 100 iterations
+95.27111259274149 error(matrix norm) after 200 iterations
+57.01402867689102 error(matrix norm) after 300 iterations
+44.284051983758445 error(matrix norm) after 400 iterations
+35.53248811633576 error(matrix norm) after 500 iterations
+29.237386994462046 error(matrix norm) after 600 iterations
+25.94030409129921 error(matrix norm) after 700 iterations
+22.9156918224642 error(matrix norm) after 800 iterations
+20.94418542216646 error(matrix norm) after 900 iterations
+19.01556748115503 error(matrix norm) after 1000 iterations
+17.0889623147359 error(matrix norm) after 1100 iterations
+16.27191567887087 error(matrix norm) after 1200 iterations
+15.426338299936841 error(matrix norm) after 1300 iterations
+15.018184842589461 error(matrix norm) after 1400 iterations
+14.652248647762171 error(matrix norm) after 1500 iterations
+14.265510101081825 error(matrix norm) after 1600 iterations
+13.929630993681913 error(matrix norm) after 1700 iterations
+13.699185691777824 error(matrix norm) after 1800 iterations
+13.46721368272749 error(matrix norm) after 1900 iterations
+13.314446019984597 error(matrix norm) after 2000 iterations
+13.141326919720594 error(matrix norm) after 2100 iterations
+12.991264627804455 error(matrix norm) after 2200 iterations
+12.85331302347523 error(matrix norm) after 2300 iterations
+12.70709022178918 error(matrix norm) after 2400 iterations
+12.521370472824215 error(matrix norm) after 2500 iterations
+12.405907976383403 error(matrix norm) after 2600 iterations
+12.256682043923067 error(matrix norm) after 2700 iterations
+12.119600886815142 error(matrix norm) after 2800 iterations
+11.990946369227869 error(matrix norm) after 2900 iterations
+11.879336245093036 error(matrix norm) after 3000 iterations
+11.781683376023501 error(matrix norm) after 3100 iterations
+11.652664796563183 error(matrix norm) after 3200 iterations
+11.560243489320671 error(matrix norm) after 3300 iterations
+11.401956156333476 error(matrix norm) after 3400 iterations
+11.339454066308294 error(matrix norm) after 3500 iterations
+11.254704189677053 error(matrix norm) after 3600 iterations
+11.115662865573626 error(matrix norm) after 3700 iterations
+11.050967226348915 error(matrix norm) after 3800 iterations
+10.955760910291191 error(matrix norm) after 3900 iterations
+10.765604555515552 error(matrix norm) after 4000 iterations
+10.592906109513324 error(matrix norm) after 4100 iterations
+10.437416837288808 error(matrix norm) after 4200 iterations
+10.280090267146058 error(matrix norm) after 4300 iterations
+10.139332211863323 error(matrix norm) after 4400 iterations
+9.981378846560293 error(matrix norm) after 4500 iterations
+9.909590691677275 error(matrix norm) after 4600 iterations
+9.727243748905076 error(matrix norm) after 4700 iterations
+9.620070558887207 error(matrix norm) after 4800 iterations
+9.54671331175346 error(matrix norm) after 4900 iterations
+9.440002158895842 error(matrix norm) after 5000 iterations
+9.217776354952665 error(matrix norm) after 5100 iterations
+9.087119116692204 error(matrix norm) after 5200 iterations
+8.931619528396268 error(matrix norm) after 5300 iterations
+8.725887562738938 error(matrix norm) after 5400 iterations
+8.613745198666656 error(matrix norm) after 5500 iterations
+8.521194183003395 error(matrix norm) after 5600 iterations
+8.326582870764645 error(matrix norm) after 5700 iterations
+8.105990958023291 error(matrix norm) after 5800 iterations
+7.895233571072155 error(matrix norm) after 5900 iterations
+7.720309271692275 error(matrix norm) after 6000 iterations
+7.53241726555388 error(matrix norm) after 6100 iterations
+7.249631433604305 error(matrix norm) after 6200 iterations
+7.050982141586886 error(matrix norm) after 6300 iterations
+6.847931147835871 error(matrix norm) after 6400 iterations
+6.67851947974703 error(matrix norm) after 6500 iterations
+6.6262464612754135 error(matrix norm) after 6600 iterations
+6.468045398622033 error(matrix norm) after 6700 iterations
+6.347456068380223 error(matrix norm) after 6800 iterations
+6.1837166631794105 error(matrix norm) after 6900 iterations
+5.900306812923005 error(matrix norm) after 7000 iterations
+5.730293171811081 error(matrix norm) after 7100 iterations
+5.247018056244388 error(matrix norm) after 7200 iterations
+4.985251863318157 error(matrix norm) after 7300 iterations
+4.730991789000633 error(matrix norm) after 7400 iterations
+4.6678957141764075 error(matrix norm) after 7500 iterations
+4.4016163210161885 error(matrix norm) after 7600 iterations
+4.288204993912926 error(matrix norm) after 7700 iterations
+4.128382259395221 error(matrix norm) after 7800 iterations
+4.055913399500238 error(matrix norm) after 7900 iterations
+3.726042113272579 error(matrix norm) after 8000 iterations
+3.6583850945669956 error(matrix norm) after 8100 iterations
+3.4822906323090184 error(matrix norm) after 8200 iterations
+3.4294117728465667 error(matrix norm) after 8300 iterations
+3.2403511550395074 error(matrix norm) after 8400 iterations
+3.0724053528859554 error(matrix norm) after 8500 iterations
+3.0399528230913195 error(matrix norm) after 8600 iterations
+2.7462163277516356 error(matrix norm) after 8700 iterations
+2.583003970319459 error(matrix norm) after 8800 iterations
+2.4093107046813977 error(matrix norm) after 8900 iterations
+2.3627136701250246 error(matrix norm) after 9000 iterations
+2.2979783518419086 error(matrix norm) after 9100 iterations
+2.132707695549492 error(matrix norm) after 9200 iterations
+2.099037932875536 error(matrix norm) after 9300 iterations
+2.026777393020948 error(matrix norm) after 9400 iterations
+1.975715343816389 error(matrix norm) after 9500 iterations
+1.9248267305238316 error(matrix norm) after 9600 iterations
+1.8428439880777863 error(matrix norm) after 9700 iterations
+1.8204879457363174 error(matrix norm) after 9800 iterations
+1.5375471421279518 error(matrix norm) after 9900 iterations
+1.4753997061996487 error(matrix norm) after 10000 iterations
+1.4356180128024834 error(matrix norm) after 10100 iterations
+1.2368537970711533 error(matrix norm) after 10200 iterations
+1.1751333739332925 error(matrix norm) after 10300 iterations
+1.139884968740494 error(matrix norm) after 10400 iterations
+0.9807835195449481 error(matrix norm) after 10500 iterations
+0.957621276777196 error(matrix norm) after 10600 iterations
+0.9392066651489619 error(matrix norm) after 10700 iterations
+0.8814815880329242 error(matrix norm) after 10800 iterations
+0.8510826750489658 error(matrix norm) after 10900 iterations
+0.8248728755973752 error(matrix norm) after 11000 iterations
+0.7808558599800877 error(matrix norm) after 11100 iterations
+0.7652144068635782 error(matrix norm) after 11200 iterations
+0.7429703136698408 error(matrix norm) after 11300 iterations
+0.6824194537936478 error(matrix norm) after 11400 iterations
+0.665221917713138 error(matrix norm) after 11500 iterations
+0.6587421841143686 error(matrix norm) after 11600 iterations
+0.6461918549622262 error(matrix norm) after 11700 iterations
+0.6142519527446725 error(matrix norm) after 11800 iterations
+0.5850709683972811 error(matrix norm) after 11900 iterations
+0.5707088033230838 error(matrix norm) after 12000 iterations
+0.5596230972791727 error(matrix norm) after 12100 iterations
+0.528133859510475 error(matrix norm) after 12200 iterations
+0.49852761909631704 error(matrix norm) after 12300 iterations
+0.4898186588851238 error(matrix norm) after 12400 iterations
+0.45169811461605247 error(matrix norm) after 12500 iterations
+0.43095031746926 error(matrix norm) after 12600 iterations
+0.41838145956932143 error(matrix norm) after 12700 iterations
+0.4122822865479461 error(matrix norm) after 12800 iterations
+0.39344524270986053 error(matrix norm) after 12900 iterations
+0.37699894270301515 error(matrix norm) after 13000 iterations
+0.36491771360959346 error(matrix norm) after 13100 iterations
+0.35750468449562617 error(matrix norm) after 13200 iterations
+0.3505073434195226 error(matrix norm) after 13300 iterations
+0.32900738674593405 error(matrix norm) after 13400 iterations
+0.3194952457092162 error(matrix norm) after 13500 iterations
+0.3151596582973533 error(matrix norm) after 13600 iterations
+0.294570832070745 error(matrix norm) after 13700 iterations
+0.2797998775110889 error(matrix norm) after 13800 iterations
+0.2668443746360361 error(matrix norm) after 13900 iterations
+0.25867505495623316 error(matrix norm) after 14000 iterations
+0.24686896577263007 error(matrix norm) after 14100 iterations
+0.22133240746584149 error(matrix norm) after 14200 iterations
+0.2149169479618484 error(matrix norm) after 14300 iterations
+0.21089957752204225 error(matrix norm) after 14400 iterations
+0.2085529195935552 error(matrix norm) after 14500 iterations
+0.19229842146735923 error(matrix norm) after 14600 iterations
+0.1841442780513457 error(matrix norm) after 14700 iterations
+0.18040567246610745 error(matrix norm) after 14800 iterations
+0.16381776803718967 error(matrix norm) after 14900 iterations
+0.1576147763135893 error(matrix norm) after 15000 iterations
+0.14479108602404603 error(matrix norm) after 15100 iterations
+0.1406577606317706 error(matrix norm) after 15200 iterations
+0.13627860163416092 error(matrix norm) after 15300 iterations
+0.12585890081162715 error(matrix norm) after 15400 iterations
+0.12190875514662805 error(matrix norm) after 15500 iterations
+0.12046495819323227 error(matrix norm) after 15600 iterations
+0.11460607606702183 error(matrix norm) after 15700 iterations
+0.10591331064852212 error(matrix norm) after 15800 iterations
+0.10230119067841657 error(matrix norm) after 15900 iterations
+0.10051374468554261 error(matrix norm) after 16000 iterations
+0.09940853847913517 error(matrix norm) after 16100 iterations
+0.08988944319859275 error(matrix norm) after 16200 iterations
+0.08330662335884755 error(matrix norm) after 16300 iterations
+0.08205956051483831 error(matrix norm) after 16400 iterations
+0.08039817897252524 error(matrix norm) after 16500 iterations
+0.07686425780355303 error(matrix norm) after 16600 iterations
+0.06551059261696637 error(matrix norm) after 16700 iterations
+0.06056345412185638 error(matrix norm) after 16800 iterations
+0.0596419015643158 error(matrix norm) after 16900 iterations
+0.058042527984297154 error(matrix norm) after 17000 iterations
+0.0559365204841637 error(matrix norm) after 17100 iterations
+0.05008012575090813 error(matrix norm) after 17200 iterations
+0.047374749356241946 error(matrix norm) after 17300 iterations
+0.04710868524209096 error(matrix norm) after 17400 iterations
+0.04554790251970737 error(matrix norm) after 17500 iterations
+0.04250955664548896 error(matrix norm) after 17600 iterations
+0.04000430093550952 error(matrix norm) after 17700 iterations
+0.03781126349108123 error(matrix norm) after 17800 iterations
+0.03667901678895055 error(matrix norm) after 17900 iterations
+0.03510560128091622 error(matrix norm) after 18000 iterations
+0.034286310219414966 error(matrix norm) after 18100 iterations
+0.03153473213341218 error(matrix norm) after 18200 iterations
+0.030950622058387976 error(matrix norm) after 18300 iterations
+0.030296848739745485 error(matrix norm) after 18400 iterations
+0.029159794472514374 error(matrix norm) after 18500 iterations
+0.028102890358696595 error(matrix norm) after 18600 iterations
+0.025161892278221912 error(matrix norm) after 18700 iterations
+0.02408508123030927 error(matrix norm) after 18800 iterations
+0.023815437300870754 error(matrix norm) after 18900 iterations
+0.02278252273846719 error(matrix norm) after 19000 iterations
+0.022218182759664352 error(matrix norm) after 19100 iterations
+0.019532715034409582 error(matrix norm) after 19200 iterations
+0.017355129329035063 error(matrix norm) after 19300 iterations
+0.01658849152516509 error(matrix norm) after 19400 iterations
+0.015804338587055836 error(matrix norm) after 19500 iterations
+0.014871668901229143 error(matrix norm) after 19600 iterations
+0.014711836482022556 error(matrix norm) after 19700 iterations
+0.01359152079451975 error(matrix norm) after 19800 iterations
+0.013341754978926916 error(matrix norm) after 19900 iterations
+0.012647845966441978 error(matrix norm) after 20000 iterations
+0.012394210460533489 error(matrix norm) after 20100 iterations
+0.012212287031522513 error(matrix norm) after 20200 iterations
+0.011297351679812792 error(matrix norm) after 20300 iterations
+0.01112382441463011 error(matrix norm) after 20400 iterations
+0.010593530593505396 error(matrix norm) after 20500 iterations
+0.010257846494691266 error(matrix norm) after 20600 iterations
+0.00999946312190987 error(matrix norm) after 20656 iterations
+
+
+======= 128 bit precision
+15991.002949144433 error(matrix norm) after 1 iterations
+10751.399034044623 error(matrix norm) after 2 iterations
+7653.121249857995 error(matrix norm) after 3 iterations
+6209.30224617936 error(matrix norm) after 4 iterations
+5445.899024558869 error(matrix norm) after 5 iterations
+4836.53891560531 error(matrix norm) after 6 iterations
+4251.063397446387 error(matrix norm) after 7 iterations
+3921.9017907745774 error(matrix norm) after 8 iterations
+3469.5633275243167 error(matrix norm) after 9 iterations
+3031.4345163016405 error(matrix norm) after 10 iterations
+2746.059644341437 error(matrix norm) after 11 iterations
+2516.844454641931 error(matrix norm) after 12 iterations
+2376.9113896001336 error(matrix norm) after 13 iterations
+2218.430883983261 error(matrix norm) after 14 iterations
+2074.552881192988 error(matrix norm) after 15 iterations
+1923.5995479924695 error(matrix norm) after 16 iterations
+1796.718167703001 error(matrix norm) after 17 iterations
+1716.3468169882046 error(matrix norm) after 18 iterations
+1573.8510088944747 error(matrix norm) after 19 iterations
+1485.4788032562562 error(matrix norm) after 20 iterations
+1415.9639941321088 error(matrix norm) after 21 iterations
+1343.9949409330522 error(matrix norm) after 22 iterations
+1294.5757806958516 error(matrix norm) after 23 iterations
+1220.8550647769123 error(matrix norm) after 24 iterations
+1188.1372655981556 error(matrix norm) after 25 iterations
+1147.9213942857548 error(matrix norm) after 26 iterations
+1101.4731095733114 error(matrix norm) after 27 iterations
+1067.1204596847356 error(matrix norm) after 28 iterations
+1023.6216884259849 error(matrix norm) after 29 iterations
+992.117045260012 error(matrix norm) after 30 iterations
+949.2189766560349 error(matrix norm) after 31 iterations
+919.5933942113118 error(matrix norm) after 32 iterations
+899.2615272719753 error(matrix norm) after 33 iterations
+878.9214442619809 error(matrix norm) after 34 iterations
+853.1376634640282 error(matrix norm) after 35 iterations
+830.8800824459552 error(matrix norm) after 36 iterations
+795.5634643755351 error(matrix norm) after 37 iterations
+770.6987936832419 error(matrix norm) after 38 iterations
+750.0195505872982 error(matrix norm) after 39 iterations
+720.7228618708199 error(matrix norm) after 40 iterations
+705.4370701895003 error(matrix norm) after 41 iterations
+686.7253968742856 error(matrix norm) after 42 iterations
+672.1351880808428 error(matrix norm) after 43 iterations
+663.6098393999797 error(matrix norm) after 44 iterations
+636.9119019248234 error(matrix norm) after 45 iterations
+620.0055027698526 error(matrix norm) after 46 iterations
+612.2386602363306 error(matrix norm) after 47 iterations
+604.1028154417673 error(matrix norm) after 48 iterations
+595.7405131692019 error(matrix norm) after 49 iterations
+591.8170799215213 error(matrix norm) after 50 iterations
+573.5078247509603 error(matrix norm) after 51 iterations
+560.5072238046329 error(matrix norm) after 52 iterations
+550.2165242673981 error(matrix norm) after 53 iterations
+530.6063978503983 error(matrix norm) after 54 iterations
+513.31366034115 error(matrix norm) after 55 iterations
+507.4317561007158 error(matrix norm) after 56 iterations
+490.68161856377725 error(matrix norm) after 57 iterations
+486.9711378941618 error(matrix norm) after 58 iterations
+479.55386325662397 error(matrix norm) after 59 iterations
+477.8966143983581 error(matrix norm) after 60 iterations
+467.80614945874777 error(matrix norm) after 61 iterations
+464.59693834953913 error(matrix norm) after 62 iterations
+452.5259920234693 error(matrix norm) after 63 iterations
+445.00560585624805 error(matrix norm) after 64 iterations
+435.6410424015864 error(matrix norm) after 65 iterations
+425.33542123771866 error(matrix norm) after 66 iterations
+421.41298829499016 error(matrix norm) after 67 iterations
+408.9600162701979 error(matrix norm) after 68 iterations
+400.2502612538787 error(matrix norm) after 69 iterations
+398.29885035815886 error(matrix norm) after 70 iterations
+394.98886761521464 error(matrix norm) after 71 iterations
+388.00013955256964 error(matrix norm) after 72 iterations
+386.3269995620597 error(matrix norm) after 73 iterations
+381.458139841918 error(matrix norm) after 74 iterations
+380.4242947163345 error(matrix norm) after 75 iterations
+375.10309946612983 error(matrix norm) after 76 iterations
+363.6770090544514 error(matrix norm) after 77 iterations
+357.9251705953486 error(matrix norm) after 78 iterations
+349.1190855528018 error(matrix norm) after 79 iterations
+346.33425154755946 error(matrix norm) after 80 iterations
+339.67529437080816 error(matrix norm) after 81 iterations
+336.35835968449624 error(matrix norm) after 82 iterations
+335.9234658396111 error(matrix norm) after 83 iterations
+327.6169685404034 error(matrix norm) after 84 iterations
+323.3950219917775 error(matrix norm) after 85 iterations
+320.50758175619103 error(matrix norm) after 86 iterations
+314.8300064648764 error(matrix norm) after 87 iterations
+313.2308977708933 error(matrix norm) after 88 iterations
+310.7562111111472 error(matrix norm) after 89 iterations
+306.9977859745224 error(matrix norm) after 90 iterations
+304.4241140257038 error(matrix norm) after 91 iterations
+288.7786910360862 error(matrix norm) after 92 iterations
+287.532812057226 error(matrix norm) after 93 iterations
+282.62179518507264 error(matrix norm) after 94 iterations
+272.7130455419697 error(matrix norm) after 95 iterations
+271.6112796253442 error(matrix norm) after 96 iterations
+270.6048441828696 error(matrix norm) after 97 iterations
+260.72568088315376 error(matrix norm) after 98 iterations
+257.5394893281753 error(matrix norm) after 99 iterations
+257.1060284465428 error(matrix norm) after 100 iterations
+95.8046877699345 error(matrix norm) after 200 iterations
+56.98915153989607 error(matrix norm) after 300 iterations
+44.86751697416371 error(matrix norm) after 400 iterations
+35.567263896228326 error(matrix norm) after 500 iterations
+29.582237943264314 error(matrix norm) after 600 iterations
+26.062415234262055 error(matrix norm) after 700 iterations
+22.87561002995258 error(matrix norm) after 800 iterations
+20.97265877456068 error(matrix norm) after 900 iterations
+19.264792309450307 error(matrix norm) after 1000 iterations
+17.089594639280833 error(matrix norm) after 1100 iterations
+16.275356403660453 error(matrix norm) after 1200 iterations
+15.428491740307592 error(matrix norm) after 1300 iterations
+15.015423548323225 error(matrix norm) after 1400 iterations
+14.657303255438608 error(matrix norm) after 1500 iterations
+14.2587056861873 error(matrix norm) after 1600 iterations
+13.948377713298225 error(matrix norm) after 1700 iterations
+13.703041211091431 error(matrix norm) after 1800 iterations
+13.466260005128001 error(matrix norm) after 1900 iterations
+13.29267561739417 error(matrix norm) after 2000 iterations
+13.141436907188226 error(matrix norm) after 2100 iterations
+12.998393923350571 error(matrix norm) after 2200 iterations
+12.851627889285785 error(matrix norm) after 2300 iterations
+12.680775662522134 error(matrix norm) after 2400 iterations
+12.525174038339959 error(matrix norm) after 2500 iterations
+12.406774987498721 error(matrix norm) after 2600 iterations
+12.256981465208519 error(matrix norm) after 2700 iterations
+12.128027398586239 error(matrix norm) after 2800 iterations
+11.976249637567838 error(matrix norm) after 2900 iterations
+11.86417465590955 error(matrix norm) after 3000 iterations
+11.760567802423262 error(matrix norm) after 3100 iterations
+11.649384133165153 error(matrix norm) after 3200 iterations
+11.534932168000873 error(matrix norm) after 3300 iterations
+11.41211456315656 error(matrix norm) after 3400 iterations
+11.337759250908016 error(matrix norm) after 3500 iterations
+11.184369852984446 error(matrix norm) after 3600 iterations
+11.10958639119025 error(matrix norm) after 3700 iterations
+11.00349360470988 error(matrix norm) after 3800 iterations
+10.916148767597264 error(matrix norm) after 3900 iterations
+10.746592046305645 error(matrix norm) after 4000 iterations
+10.53833299133508 error(matrix norm) after 4100 iterations
+10.404445175763431 error(matrix norm) after 4200 iterations
+10.272501929573355 error(matrix norm) after 4300 iterations
+10.078441173355086 error(matrix norm) after 4400 iterations
+9.966957446819782 error(matrix norm) after 4500 iterations
+9.848548171556612 error(matrix norm) after 4600 iterations
+9.724144427929513 error(matrix norm) after 4700 iterations
+9.575716311232155 error(matrix norm) after 4800 iterations
+9.538110103492802 error(matrix norm) after 4900 iterations
+9.40721904957477 error(matrix norm) after 5000 iterations
+9.19771185628149 error(matrix norm) after 5100 iterations
+9.003892259208465 error(matrix norm) after 5200 iterations
+8.92074880612695 error(matrix norm) after 5300 iterations
+8.722292912508077 error(matrix norm) after 5400 iterations
+8.606185163500431 error(matrix norm) after 5500 iterations
+8.446652171407456 error(matrix norm) after 5600 iterations
+8.30828549681043 error(matrix norm) after 5700 iterations
+8.081311609422821 error(matrix norm) after 5800 iterations
+7.7909075158233785 error(matrix norm) after 5900 iterations
+7.688180334151822 error(matrix norm) after 6000 iterations
+7.502555374109201 error(matrix norm) after 6100 iterations
+7.243717148745631 error(matrix norm) after 6200 iterations
+7.030530522627505 error(matrix norm) after 6300 iterations
+6.8199101271392655 error(matrix norm) after 6400 iterations
+6.657289984683314 error(matrix norm) after 6500 iterations
+6.577586229427578 error(matrix norm) after 6600 iterations
+6.4372020991570125 error(matrix norm) after 6700 iterations
+6.294851485718392 error(matrix norm) after 6800 iterations
+6.1411910065828295 error(matrix norm) after 6900 iterations
+5.783374312239732 error(matrix norm) after 7000 iterations
+5.665494809539148 error(matrix norm) after 7100 iterations
+5.065621949416808 error(matrix norm) after 7200 iterations
+4.8797647655149365 error(matrix norm) after 7300 iterations
+4.70771650281633 error(matrix norm) after 7400 iterations
+4.509732980297426 error(matrix norm) after 7500 iterations
+4.377788626892295 error(matrix norm) after 7600 iterations
+4.219416316557018 error(matrix norm) after 7700 iterations
+4.088543248773484 error(matrix norm) after 7800 iterations
+3.7893892344906925 error(matrix norm) after 7900 iterations
+3.6856541181071285 error(matrix norm) after 8000 iterations
+3.5249271513966063 error(matrix norm) after 8100 iterations
+3.452695035475487 error(matrix norm) after 8200 iterations
+3.2717167756091983 error(matrix norm) after 8300 iterations
+3.099194756888991 error(matrix norm) after 8400 iterations
+3.0630583930213477 error(matrix norm) after 8500 iterations
+2.885089770511932 error(matrix norm) after 8600 iterations
+2.614956380165183 error(matrix norm) after 8700 iterations
+2.4872466781102434 error(matrix norm) after 8800 iterations
+2.3808301677962125 error(matrix norm) after 8900 iterations
+2.3412292034134268 error(matrix norm) after 9000 iterations
+2.1450658191204304 error(matrix norm) after 9100 iterations
+2.107216812761109 error(matrix norm) after 9200 iterations
+2.026120557783755 error(matrix norm) after 9300 iterations
+1.9859237381765107 error(matrix norm) after 9400 iterations
+1.923126119533001 error(matrix norm) after 9500 iterations
+1.843340721687056 error(matrix norm) after 9600 iterations
+1.8285045563136821 error(matrix norm) after 9700 iterations
+1.7833261573384098 error(matrix norm) after 9800 iterations
+1.5055060682851336 error(matrix norm) after 9900 iterations
+1.4663668263454614 error(matrix norm) after 10000 iterations
+1.305755396876698 error(matrix norm) after 10100 iterations
+1.188381364468732 error(matrix norm) after 10200 iterations
+1.1627690423410373 error(matrix norm) after 10300 iterations
+1.0791998523195194 error(matrix norm) after 10400 iterations
+0.9600456031561568 error(matrix norm) after 10500 iterations
+0.9425451541781811 error(matrix norm) after 10600 iterations
+0.862425581700581 error(matrix norm) after 10700 iterations
+0.8500137056372193 error(matrix norm) after 10800 iterations
+0.8245826243074365 error(matrix norm) after 10900 iterations
+0.7794291285874062 error(matrix norm) after 11000 iterations
+0.764817749819178 error(matrix norm) after 11100 iterations
+0.7482727778029316 error(matrix norm) after 11200 iterations
+0.6986055418660063 error(matrix norm) after 11300 iterations
+0.6712266114730643 error(matrix norm) after 11400 iterations
+0.6603821795533281 error(matrix norm) after 11500 iterations
+0.6379586722094368 error(matrix norm) after 11600 iterations
+0.606759539308133 error(matrix norm) after 11700 iterations
+0.5796502795838698 error(matrix norm) after 11800 iterations
+0.5712178806354846 error(matrix norm) after 11900 iterations
+0.5356093277537205 error(matrix norm) after 12000 iterations
+0.5170039855301743 error(matrix norm) after 12100 iterations
+0.49517428891473086 error(matrix norm) after 12200 iterations
+0.4899454918966857 error(matrix norm) after 12300 iterations
+0.4591919840861713 error(matrix norm) after 12400 iterations
+0.4226940683868528 error(matrix norm) after 12500 iterations
+0.41785557376247007 error(matrix norm) after 12600 iterations
+0.39883182731089123 error(matrix norm) after 12700 iterations
+0.37844405187136926 error(matrix norm) after 12800 iterations
+0.3673124814937054 error(matrix norm) after 12900 iterations
+0.363533822984416 error(matrix norm) after 13000 iterations
+0.35111644847918877 error(matrix norm) after 13100 iterations
+0.339657256687656 error(matrix norm) after 13200 iterations
+0.32319925487244505 error(matrix norm) after 13300 iterations
+0.3168504260858955 error(matrix norm) after 13400 iterations
+0.2991364915379164 error(matrix norm) after 13500 iterations
+0.27825030060717854 error(matrix norm) after 13600 iterations
+0.26979931320363754 error(matrix norm) after 13700 iterations
+0.25369070899385315 error(matrix norm) after 13800 iterations
+0.23104249703862967 error(matrix norm) after 13900 iterations
+0.2224827140886882 error(matrix norm) after 14000 iterations
+0.21491718032892437 error(matrix norm) after 14100 iterations
+0.2122379536960108 error(matrix norm) after 14200 iterations
+0.20360422579153578 error(matrix norm) after 14300 iterations
+0.1920417857390471 error(matrix norm) after 14400 iterations
+0.18317461370504046 error(matrix norm) after 14500 iterations
+0.18116698137463577 error(matrix norm) after 14600 iterations
+0.17396966220563134 error(matrix norm) after 14700 iterations
+0.16600333790007313 error(matrix norm) after 14800 iterations
+0.14420987294312604 error(matrix norm) after 14900 iterations
+0.1418551177914477 error(matrix norm) after 15000 iterations
+0.13380045973722343 error(matrix norm) after 15100 iterations
+0.12927482041087882 error(matrix norm) after 15200 iterations
+0.1224816653630161 error(matrix norm) after 15300 iterations
+0.12001185731566745 error(matrix norm) after 15400 iterations
+0.11105199622819495 error(matrix norm) after 15500 iterations
+0.10491527361339648 error(matrix norm) after 15600 iterations
+0.10367867684293683 error(matrix norm) after 15700 iterations
+0.10171289023565273 error(matrix norm) after 15800 iterations
+0.09817462429435138 error(matrix norm) after 15900 iterations
+0.08902856698824999 error(matrix norm) after 16000 iterations
+0.08289639443076724 error(matrix norm) after 16100 iterations
+0.08041592293327378 error(matrix norm) after 16200 iterations
+0.0789180667485389 error(matrix norm) after 16300 iterations
+0.06678891259807052 error(matrix norm) after 16400 iterations
+0.062260205699980815 error(matrix norm) after 16500 iterations
+0.060547462669382913 error(matrix norm) after 16600 iterations
+0.05893702223415389 error(matrix norm) after 16700 iterations
+0.057605258805136776 error(matrix norm) after 16800 iterations
+0.053905580945425136 error(matrix norm) after 16900 iterations
+0.04839440879828366 error(matrix norm) after 17000 iterations
+0.04732975628417881 error(matrix norm) after 17100 iterations
+0.046416545252388454 error(matrix norm) after 17200 iterations
+0.04294779187529068 error(matrix norm) after 17300 iterations
+0.03936152780509557 error(matrix norm) after 17400 iterations
+0.03764536320184076 error(matrix norm) after 17500 iterations
+0.0369992597634973 error(matrix norm) after 17600 iterations
+0.0351424491780717 error(matrix norm) after 17700 iterations
+0.03192899346262904 error(matrix norm) after 17800 iterations
+0.03128206038992179 error(matrix norm) after 17900 iterations
+0.0304346754239132 error(matrix norm) after 18000 iterations
+0.029777117524930344 error(matrix norm) after 18100 iterations
+0.02805064006496044 error(matrix norm) after 18200 iterations
+0.02613816605438698 error(matrix norm) after 18300 iterations
+0.02517863216202599 error(matrix norm) after 18400 iterations
+0.023903665370060605 error(matrix norm) after 18500 iterations
+0.023622351244264133 error(matrix norm) after 18600 iterations
+0.023062790020282897 error(matrix norm) after 18700 iterations
+0.020576836688206018 error(matrix norm) after 18800 iterations
+0.01858515550798552 error(matrix norm) after 18900 iterations
+0.01741825626092205 error(matrix norm) after 19000 iterations
+0.015493196973615174 error(matrix norm) after 19100 iterations
+0.015302365007834218 error(matrix norm) after 19200 iterations
+0.014352146354525957 error(matrix norm) after 19300 iterations
+0.014043816148278696 error(matrix norm) after 19400 iterations
+0.013286618325791795 error(matrix norm) after 19500 iterations
+0.01291012977006982 error(matrix norm) after 19600 iterations
+0.012784222997224676 error(matrix norm) after 19700 iterations
+0.01254836350613196 error(matrix norm) after 19800 iterations
+0.011633196382036215 error(matrix norm) after 19900 iterations
+0.011474834795740716 error(matrix norm) after 20000 iterations
+0.011098281581566984 error(matrix norm) after 20100 iterations
+0.010733900651837727 error(matrix norm) after 20200 iterations
+0.010370221439433266 error(matrix norm) after 20300 iterations
+0.00996441925890055 error(matrix norm) after 20364 iterations
+
+
+======= 1024 bit precision
+15991.002949144433 error(matrix norm) after 1 iterations
+10751.399034044623 error(matrix norm) after 2 iterations
+7653.121249857995 error(matrix norm) after 3 iterations
+6209.30224617936 error(matrix norm) after 4 iterations
+5445.899024558869 error(matrix norm) after 5 iterations
+4836.53891560531 error(matrix norm) after 6 iterations
+4251.063397446387 error(matrix norm) after 7 iterations
+3921.9017907745774 error(matrix norm) after 8 iterations
+3469.5633275243167 error(matrix norm) after 9 iterations
+3031.4345163016405 error(matrix norm) after 10 iterations
+2746.059644341437 error(matrix norm) after 11 iterations
+2516.844454641931 error(matrix norm) after 12 iterations
+2376.9113896001336 error(matrix norm) after 13 iterations
+2218.430883983261 error(matrix norm) after 14 iterations
+2074.552881192988 error(matrix norm) after 15 iterations
+1923.5995479924695 error(matrix norm) after 16 iterations
+1796.718167703001 error(matrix norm) after 17 iterations
+1716.3468169882046 error(matrix norm) after 18 iterations
+1573.8510088944747 error(matrix norm) after 19 iterations
+1485.4788032562562 error(matrix norm) after 20 iterations
+1415.9639941321088 error(matrix norm) after 21 iterations
+1343.9949409330522 error(matrix norm) after 22 iterations
+1294.5757806958516 error(matrix norm) after 23 iterations
+1220.8550647769123 error(matrix norm) after 24 iterations
+1188.1372655981556 error(matrix norm) after 25 iterations
+1147.9213942857548 error(matrix norm) after 26 iterations
+1101.4731095733114 error(matrix norm) after 27 iterations
+1067.1204596847356 error(matrix norm) after 28 iterations
+1023.6216884259849 error(matrix norm) after 29 iterations
+992.117045260012 error(matrix norm) after 30 iterations
+949.2189766560349 error(matrix norm) after 31 iterations
+919.5933942113118 error(matrix norm) after 32 iterations
+899.2615272719753 error(matrix norm) after 33 iterations
+878.9214442619809 error(matrix norm) after 34 iterations
+853.1376634640282 error(matrix norm) after 35 iterations
+830.8800824459552 error(matrix norm) after 36 iterations
+795.5634643755351 error(matrix norm) after 37 iterations
+770.6987936832419 error(matrix norm) after 38 iterations
+750.0195505872982 error(matrix norm) after 39 iterations
+720.7228618708199 error(matrix norm) after 40 iterations
+705.4370701895003 error(matrix norm) after 41 iterations
+686.7253968742856 error(matrix norm) after 42 iterations
+672.1351880808428 error(matrix norm) after 43 iterations
+663.6098393999797 error(matrix norm) after 44 iterations
+636.9119019248234 error(matrix norm) after 45 iterations
+620.0055027698526 error(matrix norm) after 46 iterations
+612.2386602363306 error(matrix norm) after 47 iterations
+604.1028154417673 error(matrix norm) after 48 iterations
+595.7405131692019 error(matrix norm) after 49 iterations
+591.8170799215213 error(matrix norm) after 50 iterations
+573.5078247509603 error(matrix norm) after 51 iterations
+560.5072238046329 error(matrix norm) after 52 iterations
+550.2165242673981 error(matrix norm) after 53 iterations
+530.6063978503983 error(matrix norm) after 54 iterations
+513.31366034115 error(matrix norm) after 55 iterations
+507.4317561007158 error(matrix norm) after 56 iterations
+490.68161856377725 error(matrix norm) after 57 iterations
+486.9711378941618 error(matrix norm) after 58 iterations
+479.55386325662397 error(matrix norm) after 59 iterations
+477.8966143983581 error(matrix norm) after 60 iterations
+467.80614945874777 error(matrix norm) after 61 iterations
+464.59693834953913 error(matrix norm) after 62 iterations
+452.5259920234693 error(matrix norm) after 63 iterations
+445.00560585624805 error(matrix norm) after 64 iterations
+435.6410424015864 error(matrix norm) after 65 iterations
+425.33542123771866 error(matrix norm) after 66 iterations
+421.41298829499016 error(matrix norm) after 67 iterations
+408.9600162701979 error(matrix norm) after 68 iterations
+400.2502612538787 error(matrix norm) after 69 iterations
+398.29885035815886 error(matrix norm) after 70 iterations
+394.98886761521464 error(matrix norm) after 71 iterations
+388.00013955256964 error(matrix norm) after 72 iterations
+386.3269995620597 error(matrix norm) after 73 iterations
+381.458139841918 error(matrix norm) after 74 iterations
+380.4242947163345 error(matrix norm) after 75 iterations
+375.10309946612983 error(matrix norm) after 76 iterations
+363.6770090544514 error(matrix norm) after 77 iterations
+357.9251705953486 error(matrix norm) after 78 iterations
+349.1190855528018 error(matrix norm) after 79 iterations
+346.33425154755946 error(matrix norm) after 80 iterations
+339.67529437080816 error(matrix norm) after 81 iterations
+336.35835968449624 error(matrix norm) after 82 iterations
+335.9234658396111 error(matrix norm) after 83 iterations
+327.6169685404034 error(matrix norm) after 84 iterations
+323.3950219917775 error(matrix norm) after 85 iterations
+320.50758175619103 error(matrix norm) after 86 iterations
+314.8300064648764 error(matrix norm) after 87 iterations
+313.2308977708933 error(matrix norm) after 88 iterations
+310.7562111111472 error(matrix norm) after 89 iterations
+306.9977859745224 error(matrix norm) after 90 iterations
+304.4241140257038 error(matrix norm) after 91 iterations
+288.7786910360862 error(matrix norm) after 92 iterations
+287.532812057226 error(matrix norm) after 93 iterations
+282.62179518507264 error(matrix norm) after 94 iterations
+272.7130455419697 error(matrix norm) after 95 iterations
+271.6112796253442 error(matrix norm) after 96 iterations
+270.6048441828696 error(matrix norm) after 97 iterations
+260.72568088315376 error(matrix norm) after 98 iterations
+257.5394893281753 error(matrix norm) after 99 iterations
+257.1060284465428 error(matrix norm) after 100 iterations
+95.8046877699345 error(matrix norm) after 200 iterations
+56.98915153989607 error(matrix norm) after 300 iterations
+44.86751697416371 error(matrix norm) after 400 iterations
+35.567263896228326 error(matrix norm) after 500 iterations
+29.582237943264314 error(matrix norm) after 600 iterations
+26.062415234262055 error(matrix norm) after 700 iterations
+22.87561002995258 error(matrix norm) after 800 iterations
+20.97265877456068 error(matrix norm) after 900 iterations
+19.264792309450307 error(matrix norm) after 1000 iterations
+17.089594639280833 error(matrix norm) after 1100 iterations
+16.275356403660453 error(matrix norm) after 1200 iterations
+15.428491740307592 error(matrix norm) after 1300 iterations
+15.015423548323225 error(matrix norm) after 1400 iterations
+14.657303255438608 error(matrix norm) after 1500 iterations
+14.2587056861873 error(matrix norm) after 1600 iterations
+13.948377713298225 error(matrix norm) after 1700 iterations
+13.703041211091431 error(matrix norm) after 1800 iterations
+13.466260005128001 error(matrix norm) after 1900 iterations
+13.29267561739417 error(matrix norm) after 2000 iterations
+13.141436907188226 error(matrix norm) after 2100 iterations
+12.998393923350571 error(matrix norm) after 2200 iterations
+12.851627889285785 error(matrix norm) after 2300 iterations
+12.680775662522134 error(matrix norm) after 2400 iterations
+12.525174038339959 error(matrix norm) after 2500 iterations
+12.406774987498721 error(matrix norm) after 2600 iterations
+12.256981465208519 error(matrix norm) after 2700 iterations
+12.128027398586239 error(matrix norm) after 2800 iterations
+11.976249637567838 error(matrix norm) after 2900 iterations
+11.86417465590955 error(matrix norm) after 3000 iterations
+11.760567802423262 error(matrix norm) after 3100 iterations
+11.649384133165153 error(matrix norm) after 3200 iterations
+11.534932168000873 error(matrix norm) after 3300 iterations
+11.41211456315656 error(matrix norm) after 3400 iterations
+11.337759250908016 error(matrix norm) after 3500 iterations
+11.184369852984446 error(matrix norm) after 3600 iterations
+11.10958639119025 error(matrix norm) after 3700 iterations
+11.00349360470988 error(matrix norm) after 3800 iterations
+10.916148767597264 error(matrix norm) after 3900 iterations
+10.746592046305645 error(matrix norm) after 4000 iterations
+10.53833299133508 error(matrix norm) after 4100 iterations
+10.404445175763431 error(matrix norm) after 4200 iterations
+10.272501929573355 error(matrix norm) after 4300 iterations
+10.078441173355086 error(matrix norm) after 4400 iterations
+9.966957446819782 error(matrix norm) after 4500 iterations
+9.848548171556612 error(matrix norm) after 4600 iterations
+9.724144427929513 error(matrix norm) after 4700 iterations
+9.575716311232155 error(matrix norm) after 4800 iterations
+9.538110103492802 error(matrix norm) after 4900 iterations
+9.40721904957477 error(matrix norm) after 5000 iterations
+9.19771185628149 error(matrix norm) after 5100 iterations
+9.003892259208465 error(matrix norm) after 5200 iterations
+8.92074880612695 error(matrix norm) after 5300 iterations
+8.722292912508077 error(matrix norm) after 5400 iterations
+8.606185163500431 error(matrix norm) after 5500 iterations
+8.446652171407456 error(matrix norm) after 5600 iterations
+8.30828549681043 error(matrix norm) after 5700 iterations
+8.081311609422821 error(matrix norm) after 5800 iterations
+7.7909075158233785 error(matrix norm) after 5900 iterations
+7.688180334151822 error(matrix norm) after 6000 iterations
+7.502555374109201 error(matrix norm) after 6100 iterations
+7.243717148745631 error(matrix norm) after 6200 iterations
+7.030530522627505 error(matrix norm) after 6300 iterations
+6.8199101271392655 error(matrix norm) after 6400 iterations
+6.657289984683314 error(matrix norm) after 6500 iterations
+6.577586229427578 error(matrix norm) after 6600 iterations
+6.4372020991570125 error(matrix norm) after 6700 iterations
+6.294851485718392 error(matrix norm) after 6800 iterations
+6.1411910065828295 error(matrix norm) after 6900 iterations
+5.783374312239732 error(matrix norm) after 7000 iterations
+5.665494809539148 error(matrix norm) after 7100 iterations
+5.065621949416808 error(matrix norm) after 7200 iterations
+4.8797647655149365 error(matrix norm) after 7300 iterations
+4.70771650281633 error(matrix norm) after 7400 iterations
+4.509732980297426 error(matrix norm) after 7500 iterations
+4.377788626892295 error(matrix norm) after 7600 iterations
+4.219416316557018 error(matrix norm) after 7700 iterations
+4.088543248773484 error(matrix norm) after 7800 iterations
+3.7893892344906925 error(matrix norm) after 7900 iterations
+3.6856541181071285 error(matrix norm) after 8000 iterations
+3.5249271513966063 error(matrix norm) after 8100 iterations
+3.452695035475487 error(matrix norm) after 8200 iterations
+3.2717167756091983 error(matrix norm) after 8300 iterations
+3.099194756888991 error(matrix norm) after 8400 iterations
+3.0630583930213477 error(matrix norm) after 8500 iterations
+2.885089770511932 error(matrix norm) after 8600 iterations
+2.614956380165183 error(matrix norm) after 8700 iterations
+2.4872466781102434 error(matrix norm) after 8800 iterations
+2.3808301677962125 error(matrix norm) after 8900 iterations
+2.3412292034134268 error(matrix norm) after 9000 iterations
+2.1450658191204304 error(matrix norm) after 9100 iterations
+2.107216812761109 error(matrix norm) after 9200 iterations
+2.026120557783755 error(matrix norm) after 9300 iterations
+1.9859237381765107 error(matrix norm) after 9400 iterations
+1.923126119533001 error(matrix norm) after 9500 iterations
+1.843340721687056 error(matrix norm) after 9600 iterations
+1.8285045563136821 error(matrix norm) after 9700 iterations
+1.7833261573384098 error(matrix norm) after 9800 iterations
+1.5055060682851336 error(matrix norm) after 9900 iterations
+1.4663668263454614 error(matrix norm) after 10000 iterations
+1.305755396876698 error(matrix norm) after 10100 iterations
+1.188381364468732 error(matrix norm) after 10200 iterations
+1.1627690423410373 error(matrix norm) after 10300 iterations
+1.0791998523195194 error(matrix norm) after 10400 iterations
+0.9600456031561568 error(matrix norm) after 10500 iterations
+0.9425451541781811 error(matrix norm) after 10600 iterations
+0.862425581700581 error(matrix norm) after 10700 iterations
+0.8500137056372193 error(matrix norm) after 10800 iterations
+0.8245826243074365 error(matrix norm) after 10900 iterations
+0.7794291285874062 error(matrix norm) after 11000 iterations
+0.764817749819178 error(matrix norm) after 11100 iterations
+0.7482727778029316 error(matrix norm) after 11200 iterations
+0.6986055418660063 error(matrix norm) after 11300 iterations
+0.6712266114730643 error(matrix norm) after 11400 iterations
+0.6603821795533281 error(matrix norm) after 11500 iterations
+0.6379586722094368 error(matrix norm) after 11600 iterations
+0.606759539308133 error(matrix norm) after 11700 iterations
+0.5796502795838698 error(matrix norm) after 11800 iterations
+0.5712178806354846 error(matrix norm) after 11900 iterations
+0.5356093277537205 error(matrix norm) after 12000 iterations
+0.5170039855301743 error(matrix norm) after 12100 iterations
+0.49517428891473086 error(matrix norm) after 12200 iterations
+0.4899454918966857 error(matrix norm) after 12300 iterations
+0.4591919840861713 error(matrix norm) after 12400 iterations
+0.4226940683868528 error(matrix norm) after 12500 iterations
+0.41785557376247007 error(matrix norm) after 12600 iterations
+0.39883182731089123 error(matrix norm) after 12700 iterations
+0.37844405187136926 error(matrix norm) after 12800 iterations
+0.3673124814937054 error(matrix norm) after 12900 iterations
+0.363533822984416 error(matrix norm) after 13000 iterations
+0.35111644847918877 error(matrix norm) after 13100 iterations
+0.339657256687656 error(matrix norm) after 13200 iterations
+0.32319925487244505 error(matrix norm) after 13300 iterations
+0.3168504260858955 error(matrix norm) after 13400 iterations
+0.2991364915379164 error(matrix norm) after 13500 iterations
+0.27825030060717854 error(matrix norm) after 13600 iterations
+0.26979931320363754 error(matrix norm) after 13700 iterations
+0.25369070899385315 error(matrix norm) after 13800 iterations
+0.23104249703862967 error(matrix norm) after 13900 iterations
+0.2224827140886882 error(matrix norm) after 14000 iterations
+0.21491718032892437 error(matrix norm) after 14100 iterations
+0.2122379536960108 error(matrix norm) after 14200 iterations
+0.20360422579153578 error(matrix norm) after 14300 iterations
+0.1920417857390471 error(matrix norm) after 14400 iterations
+0.18317461370504046 error(matrix norm) after 14500 iterations
+0.18116698137463577 error(matrix norm) after 14600 iterations
+0.17396966220563134 error(matrix norm) after 14700 iterations
+0.16600333790007313 error(matrix norm) after 14800 iterations
+0.14420987294312604 error(matrix norm) after 14900 iterations
+0.1418551177914477 error(matrix norm) after 15000 iterations
+0.13380045973722343 error(matrix norm) after 15100 iterations
+0.12927482041087882 error(matrix norm) after 15200 iterations
+0.1224816653630161 error(matrix norm) after 15300 iterations
+0.12001185731566745 error(matrix norm) after 15400 iterations
+0.11105199622819495 error(matrix norm) after 15500 iterations
+0.10491527361339648 error(matrix norm) after 15600 iterations
+0.10367867684293683 error(matrix norm) after 15700 iterations
+0.10171289023565273 error(matrix norm) after 15800 iterations
+0.09817462429435138 error(matrix norm) after 15900 iterations
+0.08902856698824999 error(matrix norm) after 16000 iterations
+0.08289639443076724 error(matrix norm) after 16100 iterations
+0.08041592293327378 error(matrix norm) after 16200 iterations
+0.0789180667485389 error(matrix norm) after 16300 iterations
+0.06678891259807052 error(matrix norm) after 16400 iterations
+0.062260205699980815 error(matrix norm) after 16500 iterations
+0.060547462669382913 error(matrix norm) after 16600 iterations
+0.05893702223415389 error(matrix norm) after 16700 iterations
+0.057605258805136776 error(matrix norm) after 16800 iterations
+0.053905580945425136 error(matrix norm) after 16900 iterations
+0.04839440879828366 error(matrix norm) after 17000 iterations
+0.04732975628417881 error(matrix norm) after 17100 iterations
+0.046416545252388454 error(matrix norm) after 17200 iterations
+0.04294779187529068 error(matrix norm) after 17300 iterations
+0.03936152780509557 error(matrix norm) after 17400 iterations
+0.03764536320184076 error(matrix norm) after 17500 iterations
+0.0369992597634973 error(matrix norm) after 17600 iterations
+0.0351424491780717 error(matrix norm) after 17700 iterations
+0.03192899346262904 error(matrix norm) after 17800 iterations
+0.03128206038992179 error(matrix norm) after 17900 iterations
+0.0304346754239132 error(matrix norm) after 18000 iterations
+0.029777117524930344 error(matrix norm) after 18100 iterations
+0.02805064006496044 error(matrix norm) after 18200 iterations
+0.02613816605438698 error(matrix norm) after 18300 iterations
+0.02517863216202599 error(matrix norm) after 18400 iterations
+0.023903665370060605 error(matrix norm) after 18500 iterations
+0.023622351244264133 error(matrix norm) after 18600 iterations
+0.023062790020282897 error(matrix norm) after 18700 iterations
+0.020576836688206018 error(matrix norm) after 18800 iterations
+0.01858515550798552 error(matrix norm) after 18900 iterations
+0.01741825626092205 error(matrix norm) after 19000 iterations
+0.015493196973615174 error(matrix norm) after 19100 iterations
+0.015302365007834218 error(matrix norm) after 19200 iterations
+0.014352146354525957 error(matrix norm) after 19300 iterations
+0.014043816148278696 error(matrix norm) after 19400 iterations
+0.013286618325791795 error(matrix norm) after 19500 iterations
+0.01291012977006982 error(matrix norm) after 19600 iterations
+0.012784222997224676 error(matrix norm) after 19700 iterations
+0.01254836350613196 error(matrix norm) after 19800 iterations
+0.011633196382036215 error(matrix norm) after 19900 iterations
+0.011474834795740716 error(matrix norm) after 20000 iterations
+0.011098281581566984 error(matrix norm) after 20100 iterations
+0.010733900651837727 error(matrix norm) after 20200 iterations
+0.010370221439433266 error(matrix norm) after 20300 iterations
+0.00996441925890055 error(matrix norm) after 20364 iterations
+
+
