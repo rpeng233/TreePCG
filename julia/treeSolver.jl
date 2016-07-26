@@ -3,22 +3,25 @@ function treeSolver{Tv,Ti}(tree::SparseMatrixCSC{Tv,Ti})
     
     n = tree.n;
 
-    ord = (dfsOrder(tree))
+    ord = dfsOrder(tree)
     permTree = tree[ord,ord]
-    aux = copy(b[ord]);
-    geld = diag(lap(tree[ord,ord]))
+    permLapTree = lap(tree[ord,ord])
     father = ones(Int64,n);
 
-    function f(b::Array{Tv,1})
-        for u in 2:n
-            for i in 1:deg(permTree,u)
-                v = nbri(permTree,u,i)
-                if v < u
-                    father[u] = v
-                    break
-                end
+    for u in 2:n
+        for i in 1:deg(permTree,u)
+            v = nbri(permTree,u,i)
+            if v < u
+                father[u] = v
+                break
             end
         end
+    end
+
+    function f(b::Array{Tv,1})
+
+        geld = diag(permLapTree)
+        aux = copy(b[ord]) - mean(b);
 
         for u in n:-1:1
             for ind in 1:deg(permTree,u)
@@ -32,7 +35,7 @@ function treeSolver{Tv,Ti}(tree::SparseMatrixCSC{Tv,Ti})
             end
         end
 
-        res = ones(n);
+        res = ones(Tv,n);
         for i in 2:n
             res[i] = (aux[i] + geld[i] * res[father[i]]) / geld[i]
         end
