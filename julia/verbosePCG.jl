@@ -2,14 +2,6 @@ function pcgV{Tv}(mat, b::Array{Tv,1}, pre::Function; tol::Tv=1e-6, maxits=Inf, 
     pcgVBLAS(mat, b, pre, tol=tol, maxits=maxits, maxtime=maxtime, verbose=verbose)
 end
 
-# function pcgV(mat, b::Array{Float64,1}, pre::Function; tol::Float64=1e-6, maxits=Inf, maxtime=Inf, verbose=false)
-#     pcgVBLAS(mat, b, pre, tol=tol, maxits=maxits, maxtime=maxtime, verbose=verbose)
-# end
-
-# function pcgV(mat, b::Array{Float32,1}, pre::Function; tol::Tv=1e-6, maxits=Inf, maxtime=Inf, verbose=false)
-#     pcgVBLAS(mat, b, pre, tol=tol, maxits=maxits, maxtime=maxtime, verbose=verbose)
-# end
-
 function pcgVMatNorm{Tv}(mat, b::Array{Tv,1}, pre::Function, lhs::Array{Tv,1}; tol::Tv=1e-6, maxits=Inf, maxtime=Inf, verbose=false)
     return pcgVBLASMatNorm(mat, b, pre, lhs, tol=tol, maxits=maxits, maxtime=maxtime, verbose=verbose)
 end
@@ -96,7 +88,7 @@ function pcgVBLAS{Tval}(mat, b::Array{Tval,1}, pre;
 end
 
 
-function pcgVBLASMatNorm{Tval}(mat, b::Array{Tval,1}, pre, lhs::Array{Tval,1}; tol::Real=1e-6, maxits=Inf, maxtime=Inf, verbose=false)
+function pcgVBLASMatNorm{Tval}(mat, b::Array{Tval,1}, pre, lhs::Array{Tval,1}; tol::Tval=1e-6, maxits=Inf, maxtime=Inf, verbose=false)
 
     n = size(mat,2)
     

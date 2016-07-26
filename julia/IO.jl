@@ -2,7 +2,7 @@
 function writeToFile{Tv,Ti}(filename::ASCIIString, a::SparseMatrixCSC{Tv,Ti})
     f = open(filename, "w")
 
-    println("%%MatrixMarket matrix coordinate real symmetric")
+    println(f, "%%MatrixMarket matrix coordinate real symmetric")
     
     println(f, a.n, " ", a.m, " ", ceil(Int64,length(a.nzval) / 2))
 
