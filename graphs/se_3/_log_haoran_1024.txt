@@ -1,0 +1,44 @@
+lemon@Arch:~/335final$ ./treepcgsolver ~/TreePCG/graphs/se_3
+Avgstr = 92.3536294682010634
+CG Iteration #1, relres 0.9999999304370878
+CG Iteration #2, relres 0.9999933162239971
+CG Iteration #3, relres 0.9999721289666620
+CG Iteration #4, relres 0.9998176433944923
+CG Iteration #5, relres 0.9987188032693642
+CG Iteration #6, relres 0.9976344764500658
+CG Iteration #7, relres 0.9943477982105126
+CG Iteration #8, relres 0.9879437171777888
+CG Iteration #9, relres 0.9820665490445131
+CG Iteration #10, relres 0.9720237292205882
+CG Iteration #11, relres 0.9486046369731845
+CG Iteration #12, relres 0.9070027829935079
+CG Iteration #13, relres 0.8595375359039175
+CG Iteration #14, relres 0.7939771054169733
+CG Iteration #15, relres 0.7321344429452796
+CG Iteration #16, relres 0.6599670212469673
+CG Iteration #17, relres 0.5493681476292130
+CG Iteration #18, relres 0.4601683578476307
+CG Iteration #19, relres 0.3963159510902133
+CG Iteration #20, relres 0.3362547620641266
+CG Iteration #21, relres 0.2697638792306721
+CG Iteration #22, relres 0.2114163230765591
+CG Iteration #23, relres 0.1737398004411465
+CG Iteration #24, relres 0.1431709511033059
+CG Iteration #25, relres 0.1197020204687072
+CG Iteration #26, relres 0.0993671381387519
+CG Iteration #27, relres 0.0832613968724632
+CG Iteration #28, relres 0.0709394154399546
+CG Iteration #29, relres 0.0600941291741091
+CG Iteration #30, relres 0.0489264846999697
+CG Iteration #31, relres 0.0421230674437812
+CG Iteration #32, relres 0.0362085565507612
+CG Iteration #33, relres 0.0301241154894789
+CG Iteration #34, relres 0.0257200383591448
+CG Iteration #35, relres 0.0225205464648156
+CG Iteration #36, relres 0.0184855387567813
+CG Iteration #37, relres 0.0159286412266869
+CG Iteration #38, relres 0.0139808939990294
+CG Iteration #39, relres 0.0121677546761530
+CG Iteration #40, relres 0.0106933151011712
+CG Iteration #41, relres 0.0099149351778340
+ 
