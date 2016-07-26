@@ -36,7 +36,7 @@ function pcgVBLAS{Tval}(mat, b::Array{Tval,1}, pre;
     while itcnt < maxits
         itcnt = itcnt+1
 
-        if verbose && itcnt % 10 == 0
+        if verbose && itcnt % 100 == 0
             println("Working on iteration ", itcnt)
         end
         
@@ -112,8 +112,8 @@ function pcgVBLASMatNorm{Tval}(mat, b::Array{Tval,1}, pre, lhs::Array{Tval,1}; t
     while itcnt < maxits
         itcnt = itcnt+1
 
-        if verbose && itcnt % 10 == 1
-            println("Working on iteration ", itcnt)
+        if verbose && itcnt % 100 == 0
+            println("Working on iteration ", itcnt, " with error ", sqrt((lhs - x)' * mat * (lhs - x))[1] )
         end
         
         q = mat*p
