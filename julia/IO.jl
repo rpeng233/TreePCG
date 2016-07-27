@@ -66,18 +66,18 @@ function readFromFile(filename::ASCIIString)
 
     if ismat
         # We are reading a Sparse Matrix
-        m = parse(Int64, split(lines[start], ' ')[1])
-        n = parse(Int64, split(lines[start], ' ')[2])
-        nonzrs = parse(Int64, split(lines[start], ' ')[3])
+        m = parse(Int64, split(lines[start])[1])
+        n = parse(Int64, split(lines[start])[2])
+        nonzrs = parse(Int64, split(lines[start])[3])
 
         u = Array{Int64,1}(0)
         v = Array{Int64,1}(0)
         w = Array{Float64,1}(0)
 
         for i in 1:nonzrs
-            p = parse(Int64, split(lines[i+start], ' ')[1])
-            q = parse(Int64, split(lines[i+start], ' ')[2])
-            r = parse(Float64, split(lines[i+start], ' ')[3])
+            p = parse(Int64, split(lines[i+start])[1])
+            q = parse(Int64, split(lines[i+start])[2])
+            r = parse(Float64, split(lines[i+start])[3])
 
             push!(u, p)
             push!(v, q)
