@@ -8,16 +8,17 @@ function chainCycle(n::Int64; k::Int64=3)
     w = Array{Float64,1}(0)
 
     for i in 1:(n-1)
+        val = rand()
         push!(u, i)
         push!(v, i+1)
-        push!(w, 1.0)
+        push!(w, val)
         
         push!(u, i+1)
         push!(v, i)
-        push!(w, 1.0)
+        push!(w, val)
     end
 
-    valpool = rand() * exp(20 * rand(n));
+    valpool = rand() * exp(40 * rand(n));
 
     for i in 1:(n-2)
         if i % k == 1
@@ -33,7 +34,7 @@ function chainCycle(n::Int64; k::Int64=3)
         end
     end
 
-    a = sparse(u,v,w); la = lap(a); n = a.n;
+    a = sparse(u,v,w);
 
     utree = collect(1:(n-1))
     append!(utree, collect(2:n))
