@@ -18,7 +18,7 @@ function treeSolver{Tv,Ti}(tree::SparseMatrixCSC{Tv,Ti})
         end
     end
 
-    function f(b::Array{Tv,1})
+    function f{Tval}(b::Array{Tval,1})
 
         geld = diag(permLapTree)
         aux = copy(b[ord]) - mean(b);
@@ -35,7 +35,7 @@ function treeSolver{Tv,Ti}(tree::SparseMatrixCSC{Tv,Ti})
             end
         end
 
-        res = ones(Tv,n);
+        res = ones(Tval,n);
         for i in 2:n
             res[i] = (aux[i] + geld[i] * res[father[i]]) / geld[i]
         end
