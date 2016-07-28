@@ -1,0 +1,5 @@
+2-mesh with random weights
+
+precision   53    64  128  1024
+iter#     1201  1059  779   365
+
