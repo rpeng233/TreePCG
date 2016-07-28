@@ -26,7 +26,8 @@ function writeToFile{Tv}(filename::ASCIIString, a::Array{Tv,1})
     f = open(filename, "w")
     
     if typeof(a[1]) != ASCIIString
-        println(f, length(a))
+        println(f, "%%MatrixMarket matrix array real general")
+        println(f, length(a), " ", 1)
 
         for i in 1:length(a)
             println(f, a[i])
