@@ -18,6 +18,11 @@ function chainCycle(n::Int64; k::Int64=3)
         push!(w, val)
     end
 
+    utree = copy(u)
+    vtree = copy(v)
+    wtree = copy(w)
+    tree = sparse(utree,vtree,wtree)
+
     valpool = rand() * exp(40 * rand(n));
 
     for i in 1:(n-2)
@@ -35,15 +40,6 @@ function chainCycle(n::Int64; k::Int64=3)
     end
 
     a = sparse(u,v,w);
-
-    utree = collect(1:(n-1))
-    append!(utree, collect(2:n))
-
-    vtree = collect(2:n)
-    append!(vtree, collect(1:(n-1)))
-
-    wtree = ones(2 * n - 2)
-    tree = sparse(utree,vtree,wtree)
 
     return a, tree;
 
