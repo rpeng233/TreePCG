@@ -23,7 +23,7 @@ function chainCycle(n::Int64; k::Int64=3)
     wtree = copy(w)
     tree = sparse(utree,vtree,wtree)
 
-    valpool = rand() * exp(40 * rand(n));
+    valpool = rand() * exp(30 * rand(n));
 
     for i in 1:(n-2)
         if i % k == 1
