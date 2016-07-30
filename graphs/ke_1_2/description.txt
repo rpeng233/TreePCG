@@ -1,0 +1,5 @@
+graph from IPM data, SDDR folder (result of double cover reduction on SDD matrix)
+
+250000 vertices
+869898 edges
+

@@ -1,0 +1,6 @@
+graph from IPM data, SDD folder
+IPM generates SDDM matrix, this is result of removing its extra diagonal
+
+125000 vertices
+372449 edges
+
