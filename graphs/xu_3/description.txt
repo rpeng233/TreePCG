@@ -1,4 +1,4 @@
-3-mesh with random weights
+3-mesh with random weights distribution 1/Uniform(1,11)
 
 precision   53    64   128  1024
 iter#     2087  1830  1182   430
