@@ -1,43 +1,36 @@
-A random graph with 1000 vertices and 9912 edges.
+A random graph with 1000 vertices and 9888 edges.
 
 The graph is generated in the following way:
     - for each vertex, select n / 50.0 random neighbors
     - get rid of duplicate edges
-    - weights are reals sampled uniformly from 1/[1..100]
+    - weights are reals sampled uniformly from 1/[1..10]
 
 There are three trees in the folder.
 
-Tree1 - total stretch = 34923.28999502059, ave stretch = 1.7616671708545495
-(0,1) - 6646
-(1,2) - 8498
-(2,4) - 3254
-(4,8) - 1114
-(8,16) - 256
-(16,32) - 40
-(32,64) - 8
+Tree1 - total stretch = 29013.156349206347, ave stretch = 2.934178433374428
+(0,1) - 363
+(1,2) - 4625
+(2,4) - 2843
+(4,8) - 1485
+(8,16) - 531
+(16,32) - 32
 
-Tree2 - total stretch = 231136.19907552685, ave stretch = 11.659412786295745
-(0,1) - 240
-(1,2) - 2790
-(2,4) - 3268
-(4,8) - 6548
-(8,16) - 3852
-(16,32) - 1850
-(32,64) - 784
-(64,128) - 326
-(128,256) - 136
-(256,512) - 28
+Tree2 - total stretch = 102610.91825396827, ave stretch = 10.37731778458417
+(0,1) - 24
+(1,2) - 1139
+(2,4) - 1179
+(4,8) - 3415
+(8,16) - 2415
+(16,32) - 1152
+(32,64) - 501
 
-Tree3 - total stretch = 417975.0828244831, ave stretch = 21.08429594554495
-(0,1) - 124
-(1,2) - 2306
-(2,4) - 1022
-(4,8) - 3566
-(8,16) - 6124
-(16,32) - 3828
-(32,64) - 1738
-(64,128) - 738
-(128,256) - 252
-(256,512) - 112
-(512,1024) - 12
+Tree3 - total stretch = 231334.13095238095, ave stretch = 23.395442046155033
+(0,1) - 19
+(1,2) - 1067
+(2,4) - 231
+(4,8) - 1088
+(8,16) - 2830
+(16,32) - 2660
+(32,64) - 1266
+(64,128) - 574
 

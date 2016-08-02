@@ -1,4 +1,4 @@
-A random graph with 1000 vertices and 9902 edges.
+A random graph with 1000 vertices and 9899 edges.
 
 The graph is generated in the following way:
     - for each vertex, select n / 50.0 random neighbors
@@ -7,27 +7,28 @@ The graph is generated in the following way:
 
 There are three trees in the folder.
 
-Tree1 - total stretch = 83212.17698412699, ave stretch = 4.201786355490153
-(0,1) - 2764
-(1,2) - 3310
-(2,4) - 4946
-(4,8) - 7162
-(8,16) - 1218
+Tree1 - total stretch = 39581.82142857143, ave stretch = 3.998567676388668
+(0,1) - 1443
+(1,2) - 1655
+(2,4) - 2435
+(4,8) - 3625
+(8,16) - 673
+(16,32) - 66
 
-Tree2 - total stretch = 234903.08492063492, ave stretch = 11.861395926107601
-(0,1) - 754
-(1,2) - 1946
-(2,4) - 2120
-(4,8) - 3326
-(8,16) - 5760
-(16,32) - 5324
+Tree2 - total stretch = 106929.2884920635, ave stretch = 10.802029345596878
+(0,1) - 440
+(1,2) - 1087
+(2,4) - 1135
+(4,8) - 1951
+(8,16) - 2796
+(16,32) - 2276
 
-Tree3 - total stretch = 446141.1595238094, ave stretch = 22.527830717219217
-(0,1) - 986
-(1,2) - 1286
-(2,4) - 884
-(4,8) - 2236
-(8,16) - 3604
-(16,32) - 5458
-(32,64) - 4654
+Tree3 - total stretch = 192606.8349206349, ave stretch = 19.457201224430236
+(0,1) - 435
+(1,2) - 716
+(2,4) - 562
+(4,8) - 1273
+(8,16) - 2009
+(16,32) - 2904
+(32,64) - 1844
 

@@ -1,0 +1,47 @@
+A random graph with 1000 vertices and 110542 edges.
+
+The graph is generated in the following way:
+    - for each vertex, select n / 4.0 random neighbors
+    - get rid of duplicate edges
+    - weights are reals sampled uniformly from 1/[1..1000]
+
+There are three trees in the folder.
+
+Tree1 - total stretch = 38405.450251194045, ave stretch = 0.3474285814549587
+(0,1) - 102830
+(1,2) - 4856
+(2,4) - 1925
+(4,8) - 733
+(8,16) - 156
+(16,32) - 35
+(32,64) - 5
+
+Tree2 - total stretch = 1.1925327952458598e6, ave stretch = 10.788051557289172
+(0,1) - 10763
+(1,2) - 19894
+(2,4) - 33082
+(4,8) - 23664
+(8,16) - 11817
+(16,32) - 5924
+(32,64) - 2890
+(64,128) - 1376
+(128,256) - 646
+(256,512) - 305
+(512,1024) - 121
+(1024,2048) - 42
+
+Tree3 - total stretch = 2.958716722999425e6, ave stretch = 26.76554362142376
+(0,1) - 2666
+(1,2) - 5083
+(2,4) - 12219
+(4,8) - 31143
+(8,16) - 29668
+(16,32) - 15261
+(32,64) - 7556
+(64,128) - 3666
+(128,256) - 1776
+(256,512) - 866
+(512,1024) - 393
+(1024,2048) - 165
+(2048,4096) - 60
+
