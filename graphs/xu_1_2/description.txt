@@ -1,5 +1,7 @@
 just a random graph with random weights distribution 1/Uniform(1,11)
 tree is MST
 
+n=1000
+
 precision  53   64  128  1024
 iter#     453  375  213   110 
