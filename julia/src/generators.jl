@@ -1,3 +1,29 @@
+function wGrid2(n::Int64; weightGen::Function=rand)
+    gr2 = sparse(grid2(n));
+
+    gr2.nzval = Float64[weightGen() for i in 1:nnz(gr2)]
+
+    # symmetrize
+    gr2 = tril(gr2) + tril(gr2)'
+
+    return gr2
+end
+
+function wGrid3(n::Int64; weightGen::Function=rand)
+    gr2 = grid2(n);
+    
+    a = kron(speye(n), gr2);
+    b = kron(gr2, speye(n));
+
+    gr3 = sparse(a + b);
+    gr3.nzval = Float64[weightGen() for i in 1:nnz(gr3)]
+
+    # symmetrize
+    gr3 = tril(gr3) + tril(gr3)'
+
+    return gr3
+end
+
 function randGraph(n::Int64; p::Float64=0.5, weightGen::Function=rand)
     u = Array{Int64,1}(0)
     v = Array{Int64,1}(0)
