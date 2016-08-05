@@ -20,10 +20,6 @@ function pcgWorker{Tv}(mat, b::Array{Tv,1}, pre, lhs::Array{Tv,1}; maxits=1000, 
     itcnt = 0
     while itcnt < maxits
         itcnt = itcnt+1
-
-        if verbose && itcnt % 10 == 0
-            println("Working on iteration ", itcnt, " with a-norm error ", Float64(sqrt(abs((lhs - x)' * mat * (lhs - x))[1])))
-        end
         
         q = mat*p
 
@@ -31,14 +27,14 @@ function pcgWorker{Tv}(mat, b::Array{Tv,1}, pre, lhs::Array{Tv,1}; maxits=1000, 
 
         x = x + al * p
         r -= al * q
-        # BLAS.axpy!(al,p,x)  # x = x + al * p
-        # BLAS.axpy!(-al,q,r)  # r -= al*q
 
-        if true
-            errMN = Float64(sqrt(abs((lhs - x)' * mat * (lhs - x))[1]))
-            err2_a = Float64(norm(mat * x - b) / norm(b))
-            err2_b = Float64(norm(lhs - x))
-            push!(dbg, "iter = $(itcnt)      errA=$(errMN)      err2_a=$(err2_a)      err2_b=$(err2_b)")
+        errMN = Float64(sqrt(((lhs - x)' * mat * (lhs - x))[1] / (lhs' * mat * lhs)[1]))
+        err2 = Float64(norm(mat * x - b) / norm(b))
+
+        push!(dbg, "iter = $(itcnt)      errA=$(errMN)      err2=$(err2)")
+
+        if verbose && (itcnt % 10 == 1 || itcnt == maxits)
+            println("Finished iteration ", itcnt, " with errors ", errMN, " ", err2)
         end
 
         # here is the top of the code in numerical templates
@@ -53,13 +49,7 @@ function pcgWorker{Tv}(mat, b::Array{Tv,1}, pre, lhs::Array{Tv,1}; maxits=1000, 
         beta = rho/oldrho
 
         p = z + beta*p
-        # BLAS.scal!(n,beta,p,1) # p *= beta
-        # BLAS.axpy!(1.0,z,p) # p += z
       end
-
-    if verbose
-        println("PCG stopped after: ", itcnt, " iterations with relative error ", Float64(sqrt(abs((lhs - x)' * mat * (lhs - x))[1])), ".")
-    end
 
     return x,dbg
 end
