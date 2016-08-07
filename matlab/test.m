@@ -2,7 +2,7 @@ clear
 
 digits(1024);
 
-folder = '../graphs/pathDisjoint_30_exp20/';
+folder = '../graphs/pathDisjoint_1000_exp20/';
 f_log = fopen('log.txt', 'w');
 
 fprintf(f_log, '=========CG using MATLAB variable precision=====\n');
@@ -14,7 +14,6 @@ fprintf('=========CG using MATLAB variable precision=====\n');
 fprintf('====NUMBER OF DIGITS = %d\n', digits);
 fprintf('====DATA = %s\n', folder);
 fprintf('====error given as ||Ax - b||_2 / ||b||_2 and ||x - xbar||_A / ||xbar||_A\n', folder);
-fclose(f_log);
 
 f_matrix = strcat(folder, 'graph.mtx');
 f_tree = strcat(folder, 'tree.mtx');
@@ -31,8 +30,13 @@ onesN = vpa(ones(n, 1) / n);
 
 b2 = norm(b);
 xbarA = sqrt(xbar' * LG * xbar);
+
+fprintf(f_log, '||b||_2 = %f\n', b2);
+fprintf(f_log, '||xbar||_A = %f\n', xbarA);
 fprintf('||b||_2 = %f\n', b2);
 fprintf('||xbar||_A = %f\n', xbarA);
+
+fclose(f_log);
 
 %[sum(xbar), sum(b)]
 
@@ -53,8 +57,8 @@ for iter = 1:1000
     r = r - alpha * LG * p; %b - LG * x;
     
     f_log = fopen('log.txt', 'a');
-    fprintf(f_log,'i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r) / b2, (x - xbar)'*LG*(x - xbar) / xbarA);
-    fprintf('i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r) / b2, (x - xbar)'*LG*(x - xbar) / xbarA);
+    fprintf(f_log,'i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r) / b2, sqrt((x - xbar)'*LG*(x - xbar)) / xbarA);
+    fprintf('i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r) / b2, sqrt((x - xbar)'*LG*(x - xbar)) / xbarA);
     fclose(f_log);
     
     z = [LT(1:n-1,1:n-1) \ r(1:n-1); 0];
