@@ -1,4 +1,3 @@
-lemon@Arch:~/335final$ ./treepcgsolver ~/TreePCG/graphs/se_1
 Avgstr = 43537813.9168765991926193
 CG Iteration #1, relres 0.3275599229923138
 CG Iteration #2, relres 0.2105192653772558
@@ -162,5 +161,4 @@ CG Iteration #159, relres 0.0000011418313498
 CG Iteration #160, relres 0.0000015217012600
 CG Iteration #161, relres 0.0000015917905540
 CG Iteration #162, relres 0.0000008899222746
-n = 1000 iter = 162 time = 2.823s relres = 0.0000008899222746
- 
+n = 1000 iter = 162 time = 3.044s relres = 0.0000008899222746
