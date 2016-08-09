@@ -1,14 +1,10 @@
 =========CG using MATLAB variable precision=====
 ====NUMBER OF DIGITS = 1024
-====DATA = ../graphs/pathDisjoint_30_exp20/
+====DATA = ../graphs/pathDisjoint_1000_exp20/
 ====error given as ||Ax - b||_2 / ||b||_2 and ||x - xbar||_A / ||xbar||_A
-i=  1, err2=0.162317, errA = 335.189
-i=  2, err2=0.012346, errA = 38.7959
-i=  3, err2=0.00322047, errA = 5.47237
-i=  4, err2=0.00189766, errA = 1.90588
-i=  5, err2=0.00100413, errA = 0.588585
-i=  6, err2=0.000143508, errA = 0.243094
-i=  7, err2=0.00566505, errA = 0.167208
-i=  8, err2=3.87967e-05, errA = 0.0378066
-i=  9, err2=1.66733e-05, errA = 0.0300384
-i= 10, err2=1.16224e-05, errA = 0.0300337
+||b||_2 = 647190228.579262
+||xbar||_A = 31928.356634
+i=  1, err2=0.32756, errA = 0.50084
+i=  2, err2=0.210519, errA = 0.336735
+i=  3, err2=0.115277, errA = 0.239697
+i=  4, err2=0.0791404, errA = 0.194476
