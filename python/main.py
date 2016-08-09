@@ -30,7 +30,7 @@ def pcg(mat, b, pre, lhs, maxits, verbose):
 		x = x + al * p
 		r -= al * q
 
-		errMN = math.sqrt(np.linalg.norm((lhs - x) * mulMatVec(mat, lhs - x)) / np.linalg.norm(lhs * mulMatVec(mat, lhs)))
+		errMN = (np.linalg.norm((lhs - x) * mulMatVec(mat, lhs - x)) / np.linalg.norm(lhs * mulMatVec(mat, lhs))).sqrt()
 		err2 = np.linalg.norm(mulMatVec(mat, x) - b) / np.linalg.norm(b)
 
 		if verbose:
@@ -38,6 +38,8 @@ def pcg(mat, b, pre, lhs, maxits, verbose):
 			print errMN
 			print err2
 			print ""
+
+			# print al
 
 		z = pre(r)
 
@@ -192,12 +194,14 @@ def mulMatVec(M, x):
 
 # example code
 
-getcontext().prec = 53
+getcontext().prec = 50
 
-A = readMatrix("/Users/serbanstan/git/TreePCG/graphs/pathDisjoint_30_exp20/graph.mtx");
-tree = readMatrix("/Users/serbanstan/git/TreePCG/graphs/pathDisjoint_30_exp20/tree.mtx");
-truex = readArray("/Users/serbanstan/git/TreePCG/graphs/pathDisjoint_30_exp20/x.vec");
-b = mulMatVec(lap(tree), truex)
+path = "/Users/serbanstan/git/TreePCG/graphs/pathDisjoint_30_exp20/"
+
+A = readMatrix(path + "graph.mtx");
+tree = readMatrix(path + "tree.mtx");
+truex = readArray(path + "x.vec");
+b = mulMatVec(lap(A), truex)
 f = treeSolver(tree, np.array([0 for i in range(tree.shape[1])]))
 
 # myx = f(b)
