@@ -7,9 +7,11 @@ from scipy import io
 from math import sqrt
 
 def pcg(mat, b, pre, lhs, maxits, verbose):
-	n = mat.shape[0]
+	print "Running pcg with ", getcontext().prec, " precision"
 
-	x = np.array([Decimal(0) for i in range(n)])
+	n = len(b)
+
+	x = np.array([Decimal('0') for i in range(n)])
 
 	r = np.copy(b)
 	z = pre(r)
@@ -17,29 +19,19 @@ def pcg(mat, b, pre, lhs, maxits, verbose):
 
 	rho = np.dot(r, z)
 
-	print "Running pcg with ", getcontext().prec, " precision"
-
 	itcnt = 0
 	while itcnt < maxits:
 		itcnt += 1
 
-		q = mulMatVec(mat,p)
+		q = mulIJVVec(mat,p)
 
 		al = rho / np.dot(p,q)
 
 		x = x + al * p
 		r -= al * q
 
-		errMN = (np.linalg.norm((lhs - x) * mulMatVec(mat, lhs - x)) / np.linalg.norm(lhs * mulMatVec(mat, lhs))).sqrt()
-		err2 = np.linalg.norm(mulMatVec(mat, x) - b) / np.linalg.norm(b)
-
-		if verbose:
-			print "iteration ", itcnt
-			print '%.100f' % errMN
-			print '%.100f' % err2
-			print ""
-
-			# print al
+		errMN = (np.dot((lhs - x), mulIJVVec(mat, lhs - x)) / np.dot(lhs, mulIJVVec(mat, lhs))).sqrt()
+		err2 = np.linalg.norm(mulIJVVec(mat, x) - b) / np.linalg.norm(b)
 
 		z = pre(r)
 
@@ -49,6 +41,12 @@ def pcg(mat, b, pre, lhs, maxits, verbose):
 		beta = rho/oldrho
 		p = z + beta * p
 
+		if verbose:
+			print "iteration ", itcnt
+			print '%.100f' % errMN
+			print '%.100f' % err2
+			print ""
+
 	return x
 
 def treeSolver(tree, diag):
@@ -56,12 +54,9 @@ def treeSolver(tree, diag):
 
 	perm = bfsOrd(tree)
 	invperm = np.copy(perm)
-
 	perm = np.argsort(perm)
 
 	permTree = permMat(tree, perm)
-	permLapTree = lap(permTree) + sp.sparse.csc_matrix(np.diag(permArray(diag,perm)))
-
 	father = [0 for i in range(n)]
 
 	for u in range(1,n):
@@ -72,8 +67,15 @@ def treeSolver(tree, diag):
 				father[u] = v
 				break
 
+	# compute the stuff on the diagonal
+	auxgeld = [Decimal(el) for el in permArray(diag,perm)]
+	row,col,weight = sp.sparse.find(permTree)
+	for i in range(len(weight)):
+		auxgeld[row[i]] += Decimal(weight[i])
+
 	def f(b):
-		geld = np.array([Decimal(permLapTree[i,i]) for i in range(n)])
+		geld = np.copy(auxgeld)
+
 		aux = np.array([Decimal(el) for el in permArray(b, perm)])
 		if np.linalg.norm(diag) == 0:
 			aux = aux - np.mean(aux)
@@ -87,20 +89,22 @@ def treeSolver(tree, diag):
 
 			for i in range(len(nbrs)):
 				v = nbrs[i]
-				w = Decimal(weights[i])
+				w = Decimal(weights[i]) 
 
 				if v < u:
-					fact = w / geld[u]
+					fact = Decimal(w / geld[u])
 
 					geld[v] -= w * fact
 					aux[v] += aux[u] * fact
 
-		res = np.array([Decimal(1) for i in range(n)])
+		res = np.array([Decimal('1') for i in range(n)])
 		if np.linalg.norm(diag) != 0:
 			res[0] = res[0] / geld[0]
 
 		for i in range(1,n):
 			res[i] = (aux[i] + Decimal(permTree[father[i],i]) * res[father[i]]) / geld[i]
+
+		# print "solve accuracy ", '%.100f' % (np.linalg.norm(mulIJVVec(lap(permTree), res) - permArray(b,perm)) / np.linalg.norm(b))
 
 		if np.linalg.norm(diag) == 0:
 			res = res - np.mean(res)
@@ -152,42 +156,39 @@ def readMatrix(fileName):
 def readArray(fileName):
 	x = sp.io.mmread(fileName)
 
-	newx = []
-	for elem in x:
-		newx.append(Decimal(elem[0]))
-	newx = np.array(newx);
+	newx = np.array([Decimal(el[0]) for el in x])
 
 	return newx - np.mean(newx)
 
 def lap(M):
 	n = M.shape[0]
 
-	row,col,v = sp.sparse.find(M)
+	u,v,w = sp.sparse.find(M)
 
-	diag = [0 for i in range(n)]
-	for i in range(len(v)):
-		diag[row[i]] += v[i]
-		diag[col[i]] += v[i]
-	diag = np.array(diag)
+	u = np.array(u)
+	v = np.array(v)
+	w = np.array([-Decimal(el) for el in w])
 
-	row = np.append(row, [i for i in range(n)])
-	col = np.append(col, [i for i in range(n)])
-	v = np.append(-v, diag / 2)
+	diag = np.array([Decimal('0') for i in range(n)])
+	for i in range(len(u)):
+		diag[u[i]] -= w[i]
 
-	return sp.sparse.coo_matrix((v, (row, col))).tocsc()
+	u = np.append(u, np.array([i for i in range(n)]))
+	v = np.append(v, np.array([i for i in range(n)]))
+	w = np.append(w, diag)
+
+	return (u,v,w)
 
 def permMat(M,perm):
 	row,col,v = sp.sparse.find(M)
 	return sp.sparse.coo_matrix((v, (perm[row], perm[col]))).tocsc()
 
+def mulIJVVec(IJV, x):
+	res = np.array([Decimal('0') for i in range(len(x))])
 
-def mulMatVec(M, x):
-	res = np.array([Decimal(0) for i in range(M.shape[0])])
-
-	row,col,v = sp.sparse.find(M)
-
-	for ind in range(len(v)):
-		res[row[ind]] += Decimal(v[ind]) * x[col[ind]]
+	nnz = len(IJV[0])
+	for ind in range(nnz):
+		res[IJV[0][ind]] += Decimal(IJV[2][ind]) * x[IJV[1][ind]]
 
 	return res
 
@@ -201,18 +202,11 @@ path = "/Users/serbanstan/git/TreePCG/graphs/pathDisjoint_1000_exp30/"
 A = readMatrix(path + "graph.mtx");
 tree = readMatrix(path + "tree.mtx");
 truex = readArray(path + "x.vec");
-b = mulMatVec(lap(A), truex)
+b = mulIJVVec(lap(A), truex)
+b = b - np.mean(b) # with the newest changes this line should be redundant
+
 f = treeSolver(tree, np.array([0 for i in range(tree.shape[1])]))
+myx = f(b)
+print "per solve precision ", '%.100f' % (np.linalg.norm(mulIJVVec(lap(tree), myx) - b) / np.linalg.norm(b))
 
-ss = np.sum(truex)
-
-# myx = f(b)
-# print np.linalg.norm(mulMatVec(lap(tree), myx) - b) / np.linalg.norm(b)
-
-# print sum(truex)
-
-for x in mulMatVec(lap(A), mulMatVec(lap(A), truex)):
-	print '%.100f' % x
-
-
-# pcg(lap(A), b, f, truex, 30, True)
+pcg(lap(A), b, f, truex, 100, True)
