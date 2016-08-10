@@ -1,0 +1,12 @@
+anorm = sqrt((x-truex)' * la * (x-truex)), err2_a = norm(la*x-b) / norm(b), err2_b = norm(x-truex)
+10 iterations
+iter = 1      errA=Inf      err2=1.0430991529900284
+iter = 2      errA=Inf      err2=1.0108116605062707
+iter = 3      errA=Inf      err2=1.014064148407408
+iter = 4      errA=Inf      err2=1.0102199312673286
+iter = 5      errA=Inf      err2=1.057763060752737
+iter = 6      errA=Inf      err2=1.0340193047481723
+iter = 7      errA=Inf      err2=1.0512161157919004
+iter = 8      errA=Inf      err2=1.0528648844673572
+iter = 9      errA=Inf      err2=1.0447491853182231
+iter = 10      errA=Inf      err2=1.0316432949253582
