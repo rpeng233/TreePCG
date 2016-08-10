@@ -35,8 +35,8 @@ def pcg(mat, b, pre, lhs, maxits, verbose):
 
 		if verbose:
 			print "iteration ", itcnt
-			print errMN
-			print err2
+			print '%.100f' % errMN
+			print '%.100f' % err2
 			print ""
 
 			# print al
@@ -194,9 +194,9 @@ def mulMatVec(M, x):
 
 # example code
 
-getcontext().prec = 50
+getcontext().prec = 1000
 
-path = "/Users/serbanstan/git/TreePCG/graphs/pathDisjoint_30_exp20/"
+path = "/Users/serbanstan/git/TreePCG/graphs/pathDisjoint_1000_exp30/"
 
 A = readMatrix(path + "graph.mtx");
 tree = readMatrix(path + "tree.mtx");
@@ -204,7 +204,15 @@ truex = readArray(path + "x.vec");
 b = mulMatVec(lap(A), truex)
 f = treeSolver(tree, np.array([0 for i in range(tree.shape[1])]))
 
+ss = np.sum(truex)
+
 # myx = f(b)
 # print np.linalg.norm(mulMatVec(lap(tree), myx) - b) / np.linalg.norm(b)
 
-pcg(lap(A), b, f, truex, 10, True)
+# print sum(truex)
+
+for x in mulMatVec(lap(A), mulMatVec(lap(A), truex)):
+	print '%.100f' % x
+
+
+# pcg(lap(A), b, f, truex, 30, True)

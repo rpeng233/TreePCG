@@ -1,6 +1,14 @@
+############################################################################################################
+################################################################################################ Julia logs
+############################################################################################################
+
 # draw a png plot of the a-norm and 2-norm errors, and then save these files locally in the same folder
-function drawPlot(path::ASCIIString, treeIndex::ASCIIString; only2=false)
+function drawJuliaPlot(path::ASCIIString, treeIndex::ASCIIString; only2=false)
     names,dataA,data2 = aggJuliaRes(path, treeIndex);
+
+    if names == -1
+        return
+    end
 
     #first plot julia default
     for i in 1:length(names)
@@ -58,9 +66,11 @@ function aggJuliaRes(path::ASCIIString, treeIndex::ASCIIString)
     dataA = Array{Array{Float64,1},1}(0)
     data2 = Array{Array{Float64,1},1}(0)
 
+    haveData = false
+
     allLogs = readdir(path)
     for log in allLogs
-        if search(log, "julia").stop != -1 && search(log, treeIndex).stop != -1
+        if search(log, "julia").stop != -1 && search(log, treeIndex).stop != -1 && search(log, "png").stop == -1
             curData = parseData(path * log)
 
             normA = Array{Float64,1}(0)
@@ -81,7 +91,13 @@ function aggJuliaRes(path::ASCIIString, treeIndex::ASCIIString)
             push!(names, name)
             push!(dataA, normA)
             push!(data2, norm2)
+
+            haveData = true
         end
+    end
+
+    if !haveData
+        return -1,-1,-1
     end
 
     return names, dataA, data2
