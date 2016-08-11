@@ -220,9 +220,7 @@ def mulIJVVec(IJV, x):
 
 # example code
 
-# precision correspond to 64, 128, 256, 512 & 1024 bit precision
-# precision = np.array([28, 39, 78, 155, 309])
-# treeInd = np.array([1,2,3,4,5])
+
 
 # for curPrecision in precision:
 
@@ -247,7 +245,7 @@ f = treeSolver(tree, np.array([0 for i in range(tree.shape[1])]))
 # myx = f(b)
 # print "per solve precision ", '%.20f' % (np.linalg.norm(mulIJVVec(lap(tree), myx) - b) / np.linalg.norm(b))
 
-myx,myErrMN,myErr2 = pcg(lap(A), b, f, truex, 2, True)
+myx,myErrMN,myErr2 = pcg(lap(A), b, f, truex, 100, True)
 
 with open('_log_python_tree_' + str(treeInd) + '_' + str(getcontext().prec) + '_' + str(len(myErr2)) + 'iters.csv', 'w') as csvfile:
     fieldnames = ['A-norm', '2-norm']
