@@ -1,4 +1,4 @@
 %reads a vector
 function x = getVector(fileName) 
-    x = dlmread(fileName, ' ', 3, 0);
+    x = dlmread(fileName, ' ', 2, 0);
 end

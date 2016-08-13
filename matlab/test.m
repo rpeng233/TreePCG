@@ -1,116 +1,123 @@
 clear
 
-digits(1024);
+for treeIndex = [4,5]
+	for precision = [64,128,256,512,1024]
+		digits(precision)
 
-folder = '../graphs/pathDisjoint_1000_exp20/';
-f_log = fopen('log.txt', 'w');
+		folder = '../graphs/rand_1000_u1000/';
 
-fprintf(f_log, '=========CG using MATLAB variable precision=====\n');
-fprintf(f_log, '====NUMBER OF DIGITS = %d\n', digits);
-fprintf(f_log, '====DATA = %s\n', folder);
-fprintf(f_log, '====error given as ||Ax - b||_2 / ||b||_2 and ||x - xbar||_A / ||xbar||_A\n', folder);
+		logName = strcat('_log_matlab_tree', num2str(treeIndex), '_', num2str(precision), 'precision_100iters.txt')
+		f_log = fopen(logName, 'w');
 
-fprintf('=========CG using MATLAB variable precision=====\n');
-fprintf('====NUMBER OF DIGITS = %d\n', digits);
-fprintf('====DATA = %s\n', folder);
-fprintf('====error given as ||Ax - b||_2 / ||b||_2 and ||x - xbar||_A / ||xbar||_A\n', folder);
+		fprintf(f_log, '=========CG using MATLAB variable precision=====\n');
+		fprintf(f_log, '====NUMBER OF DIGITS = %d\n', digits);
+		fprintf(f_log, '====DATA = %s\n', folder);
+		fprintf(f_log, '====error given as ||Ax - b||_2 / ||b||_2 and ||x - xbar||_A / ||xbar||_A\n', folder);
 
-f_matrix = strcat(folder, 'graph.mtx');
-f_tree = strcat(folder, 'tree.mtx');
-f_b = strcat(folder, 'b.vec');
-f_x = strcat(folder, 'x.vec');
+		fprintf('=========CG using MATLAB variable precision=====\n');
+		fprintf('====NUMBER OF DIGITS = %d\n', digits);
+		fprintf('====DATA = %s\n', folder);
+		fprintf('====error given as ||Ax - b||_2 / ||b||_2 and ||x - xbar||_A / ||xbar||_A\n', folder);
 
-LG_default = getLaplacian(f_matrix);
-LG = vpa(LG_default);
-LT_default = getLaplacian(f_tree);
-LT = vpa(LT_default);
+		f_matrix = strcat(folder, 'graph.mtx');
+		f_tree = strcat(folder, strcat('tree', num2str(treeIndex), '.mtx'));
+		f_b = strcat(folder, 'b.vec');
+		f_x = strcat(folder, 'x.vec');
 
-n = size(LG, 1);
+		LG_default = getLaplacian(f_matrix);
+		LG = vpa(LG_default);
+		LT_default = getLaplacian(f_tree);
+		LT = vpa(LT_default);
 
-A = full(LT_default < 0);
-T = graph(A);
-ord = bfsearch(T, 1);
-parent = zeros(n, 1);
-wParent = vpa(zeros(n, 1));
+		n = size(LG, 1);
 
-seen = zeros(n, 1);
-seen(ord(1)) = 1;
-for i = 2:n
-  for j = 1:n
-      if seen(j) == 1 && A(ord(i), j) > 0
-          parent(i) = j;
-          wParent(i) = -vpa(LT_default(ord(i), j));
-      end
-  end
-  seen(ord(i)) = 1;
-end
+		A = full(LT_default < 0);
+		T = graph(A);
+		ord = bfsearch(T, 1);
+		parent = zeros(n, 1);
+		wParent = vpa(zeros(n, 1));
 
-b = vpa(getVector(f_b));
-xbar = vpa(getVector(f_x));
-n = size(b, 1);
-onesN = vpa(ones(n, 1) / n);
+		seen = zeros(n, 1);
+		seen(ord(1)) = 1;
+		for i = 2:n
+		  for j = 1:n
+		      if seen(j) == 1 && A(ord(i), j) > 0
+		          parent(i) = j;
+		          wParent(i) = -vpa(LT_default(ord(i), j));
+		      end
+		  end
+		  seen(ord(i)) = 1;
+		end
 
-xbar = xbar - sum(xbar) * onesN; 
-sum(xbar)
+		b = vpa(getVector(f_b));
+		xbar = vpa(getVector(f_x));
 
-b = LG * xbar;
+		n = size(b, 1);
+		onesN = vpa(ones(n, 1) / n);
 
-b2 = norm(b);
-xbarA = sqrt(xbar' * LG * xbar);
+		xbar = xbar - sum(xbar) * onesN; 
+		sum(xbar)
 
-fprintf(f_log, '||b||_2 = %f\n', b2);
-fprintf(f_log, '||xbar||_A = %f\n', xbarA);
-fprintf('||b||_2 = %f\n', b2);
-fprintf('||xbar||_A = %f\n', xbarA);
+		b = LG * xbar;
 
-fclose(f_log);
+		b2 = norm(b);
+		xbarA = sqrt(xbar' * LG * xbar);
 
-%[sum(xbar), sum(b)]
+		fprintf(f_log, '||b||_2 = %f\n', b2);
+		fprintf(f_log, '||xbar||_A = %f\n', xbarA);
+		fprintf('||b||_2 = %f\n', b2);
+		fprintf('||xbar||_A = %f\n', xbarA);
 
-%%%%CG copied from wiki
-x = vpa(zeros(n, 1));
-r = vpa(b);
-z = [LT(1:n-1,1:n-1) \ r(1:n-1); 0];
-z = z - sum(z) * onesN;
-p = z;
+		fclose(f_log);
 
-for iter = 1:100
-    alpha = (r' * z) / (p' * LG * p);
-    x = x + alpha * p;   
-   
-    rPrev = r;
-    zPrev = z;
-    
-    r = r - alpha * LG * p; %b - LG * x;
-    
-    f_log = fopen('log.txt', 'a');
-    fprintf(f_log,'i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r) / b2, sqrt((x - xbar)'*LG*(x - xbar)) / xbarA);
-    fprintf('i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r) / b2, sqrt((x - xbar)'*LG*(x - xbar)) / xbarA);
-    fclose(f_log);
-    
-%    z = [LT(1:n-1,1:n-1) \ r(1:n-1); 0];
+		%[sum(xbar), sum(b)]
 
-    r1 = r;
-    %%Gauss backwards
-    for i = n:-1:2
-        r1(parent(i)) = r1(parent(i)) + r1(ord(i));
-    end
+		%%%%CG copied from wiki
+		x = vpa(zeros(n, 1));
+		r = vpa(b);
+		z = [LT(1:n-1,1:n-1) \ r(1:n-1); 0];
+		z = z - sum(z) * onesN;
+		p = z;
 
-    %%Gauss down
-    z = r1;
-    for i = 2:n
-        z(ord(i)) = z(parent(i)) + r1(ord(i)) / wParent(i);
-    end
-    z = z - sum(z) * onesN;   
-    
-    norm(LT * z - r)
+		for iter = 1:100
+		    alpha = (r' * z) / (p' * LG * p);
+		    x = x + alpha * p;   
+		   
+		    rPrev = r;
+		    zPrev = z;
+		    
+		    r = r - alpha * LG * p; %b - LG * x;
+		    
+		    f_log = fopen(logName, 'a');
+		    fprintf(f_log,'i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r) / b2, sqrt((x - xbar)'*LG*(x - xbar)) / xbarA);
+		    fprintf('i=%3d, err2=%0.6g, errA = %0.6g\n', iter, norm(r) / b2, sqrt((x - xbar)'*LG*(x - xbar)) / xbarA);
+		    fclose(f_log);
+		    
+		%    z = [LT(1:n-1,1:n-1) \ r(1:n-1); 0];
 
-%[sum(z), sum(p)]
-    beta = (z' * r) / (zPrev' * rPrev);
+		    r1 = r;
+		    %%Gauss backwards
+		    for i = n:-1:2
+		        r1(parent(i)) = r1(parent(i)) + r1(ord(i));
+		    end
 
-    p = z + beta * p;
+		    %%Gauss down
+		    z = r1;
+		    for i = 2:n
+		        z(ord(i)) = z(parent(i)) + r1(ord(i)) / wParent(i);
+		    end
+		    z = z - sum(z) * onesN;   
+		    
+		    norm(LT * z - r)
 
-%[alpha, beta]
+		%[sum(z), sum(p)]
+		    beta = (z' * r) / (zPrev' * rPrev);
+
+		    p = z + beta * p;
+
+		%[alpha, beta]
+		end
+	end
 end
 
 

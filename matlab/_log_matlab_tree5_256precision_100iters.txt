@@ -1,0 +1,3 @@
+=========CG using MATLAB variable precision=====
+====NUMBER OF DIGITS = 256
+====DATA = ../graphs/rand_1000_u1000/
