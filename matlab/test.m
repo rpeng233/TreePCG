@@ -1,8 +1,13 @@
+%%%tuned to deal with rand_1000_10u,
+%%newline issues if want to port back
+
 clear
 
-digits(1024);
+digits(309);
 
-folder = '../graphs/pathDisjoint_1000_exp20/';
+%folder = '../graphs/pathDisjoint_30_exp20/';
+folder = '../graphs/rand_1000_u10/';
+
 f_log = fopen('log.txt', 'w');
 
 fprintf(f_log, '=========CG using MATLAB variable precision=====\n');
@@ -16,7 +21,7 @@ fprintf('====DATA = %s\n', folder);
 fprintf('====error given as ||Ax - b||_2 / ||b||_2 and ||x - xbar||_A / ||xbar||_A\n', folder);
 
 f_matrix = strcat(folder, 'graph.mtx');
-f_tree = strcat(folder, 'tree.mtx');
+f_tree = strcat(folder, 'tree1.mtx');
 f_b = strcat(folder, 'b.vec');
 f_x = strcat(folder, 'x.vec');
 
@@ -90,16 +95,14 @@ for iter = 1:100
     
 %    z = [LT(1:n-1,1:n-1) \ r(1:n-1); 0];
 
-    r1 = r;
+    z = r;
     %%Gauss backwards
     for i = n:-1:2
-        r1(parent(i)) = r1(parent(i)) + r1(ord(i));
+        z(parent(i)) = z(parent(i)) + z(ord(i));
     end
-
     %%Gauss down
-    z = r1;
     for i = 2:n
-        z(ord(i)) = z(parent(i)) + r1(ord(i)) / wParent(i);
+        z(ord(i)) = z(parent(i)) + z(ord(i)) / wParent(i);
     end
     z = z - sum(z) * onesN;   
     
