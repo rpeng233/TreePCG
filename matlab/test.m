@@ -6,7 +6,7 @@ clear
 iters = 100;
 
 for treeIndex = [0]
-	for precision = [64,128,256,512,1024]
+	for precision = [256,512,1024]
 		digits(precision)
 
 		folder = '../graphs/pathDisjoint_1000_exp20/';
