@@ -6,10 +6,10 @@ clear
 iters = 100;
 
 for treeIndex = [0]
-	for precision = [256,512,1024]
+	for precision = [64, 128, 256, 512, 1024]
 		digits(precision)
 
-		folder = '../graphs/pathDisjoint_1000_exp20/';
+		folder = '../graphs/pathDisjoint_1000_exp30/';
 
 		logName = strcat('_log_matlab_tree', num2str(treeIndex), '_', num2str(precision), 'precision_', num2str(iters), 'iters.txt')
 		f_log = fopen(logName, 'w');
