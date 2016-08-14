@@ -105,7 +105,7 @@ function aggJuliaRes(path::ASCIIString, treeIndex::ASCIIString)
 end
 
 # parse a julia log file, and return the anorm and 2norm errors
-function parseData(fn::ASCIIString)
+function parseData(fn::ASCIIString; only2 = false)
     f = open(fn)
     lines = readlines(f)
     close(f)
@@ -128,6 +128,15 @@ function parseData(fn::ASCIIString)
         end
         
         push!(results, thisLine)
+    end
+
+    # return only the two norm
+    if only2
+        results2 = []
+        for i in 1:length(results)
+            push!(results2, results[i][2])
+        end
+        results = copy(results2)
     end
     
     return results
