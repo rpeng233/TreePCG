@@ -1,0 +1,1006 @@
+=========CG using MATLAB variable precision=====
+====NUMBER OF DIGITS = 512
+====DATA = ../graphs/pathDisjoint_30_exp20/
+====error given as ||Ax - b||_2 / ||b||_2 and ||x - xbar||_A / ||xbar||_A
+||b||_2 = 10038889.327380
+||xbar||_A = 1870.562683
+i=  1, err2=0.162317, errA = 0.42331
+i=  2, err2=0.012346, errA = 0.144015
+i=  3, err2=0.00322047, errA = 0.0540881
+i=  4, err2=0.00189766, errA = 0.0319199
+i=  5, err2=0.00100413, errA = 0.0177386
+i=  6, err2=0.00014349, errA = 0.0113999
+i=  7, err2=3.88073e-05, errA = 0.00449597
+i=  8, err2=9.55827e-06, errA = 0.00400718
+i=  9, err2=4.70426e-07, errA = 0.00116796
+i= 10, err2=4.04517e-07, errA = 0.00109672
+i= 11, err2=0, errA = 0
+i= 12, err2=0, errA = 0
+i= 13, err2=0, errA = 0
+i= 14, err2=0, errA = 0
+i= 15, err2=0, errA = 0
+i= 16, err2=0, errA = 0
+i= 17, err2=0, errA = 0
+i= 18, err2=0, errA = 0
+i= 19, err2=0, errA = 0
+i= 20, err2=0, errA = 0
+i= 21, err2=0, errA = 0
+i= 22, err2=0, errA = 0
+i= 23, err2=0, errA = 0
+i= 24, err2=0, errA = 0
+i= 25, err2=0, errA = 0
+i= 26, err2=0, errA = 0
+i= 27, err2=0, errA = 0
+i= 28, err2=0, errA = 0
+i= 29, err2=0, errA = 0
+i= 30, err2=0, errA = 0
+i= 31, err2=0, errA = 0
+i= 32, err2=0, errA = 0
+i= 33, err2=0, errA = 0
+i= 34, err2=0, errA = 0
+i= 35, err2=0, errA = 0
+i= 36, err2=0, errA = 0
+i= 37, err2=0, errA = 0
+i= 38, err2=0, errA = 0
+i= 39, err2=0, errA = 0
+i= 40, err2=0, errA = 0
+i= 41, err2=0, errA = 0
+i= 42, err2=0, errA = 0
+i= 43, err2=0, errA = 0
+i= 44, err2=0, errA = 0
+i= 45, err2=0, errA = 0
+i= 46, err2=0, errA = 0
+i= 47, err2=0, errA = 0
+i= 48, err2=0, errA = 0
+i= 49, err2=0, errA = 0
+i= 50, err2=0, errA = 0
+i= 51, err2=0, errA = 0
+i= 52, err2=0, errA = 0
+i= 53, err2=0, errA = 0
+i= 54, err2=0, errA = 0
+i= 55, err2=0, errA = 0
+i= 56, err2=0, errA = 0
+i= 57, err2=0, errA = 0
+i= 58, err2=0, errA = 0
+i= 59, err2=0, errA = 0
+i= 60, err2=0, errA = 0
+i= 61, err2=0, errA = 0
+i= 62, err2=0, errA = 0
+i= 63, err2=0, errA = 0
+i= 64, err2=0, errA = 0
+i= 65, err2=0, errA = 0
+i= 66, err2=0, errA = 0
+i= 67, err2=0, errA = 0
+i= 68, err2=0, errA = 0
+i= 69, err2=0, errA = 0
+i= 70, err2=0, errA = 0
+i= 71, err2=0, errA = 0
+i= 72, err2=0, errA = 0
+i= 73, err2=0, errA = 0
+i= 74, err2=0, errA = 0
+i= 75, err2=0, errA = 0
+i= 76, err2=0, errA = 0
+i= 77, err2=0, errA = 0
+i= 78, err2=0, errA = 0
+i= 79, err2=0, errA = 0
+i= 80, err2=0, errA = 0
+i= 81, err2=0, errA = 0
+i= 82, err2=0, errA = 0
+i= 83, err2=0, errA = 0
+i= 84, err2=0, errA = 0
+i= 85, err2=0, errA = 0
+i= 86, err2=0, errA = 0
+i= 87, err2=0, errA = 0
+i= 88, err2=0, errA = 0
+i= 89, err2=0, errA = 0
+i= 90, err2=0, errA = 0
+i= 91, err2=0, errA = 0
+i= 92, err2=0, errA = 0
+i= 93, err2=0, errA = 0
+i= 94, err2=0, errA = 0
+i= 95, err2=0, errA = 0
+i= 96, err2=0, errA = 0
+i= 97, err2=0, errA = 0
+i= 98, err2=0, errA = 0
+i= 99, err2=0, errA = 0
+i=100, err2=0, errA = 0
+i=101, err2=0, errA = 0
+i=102, err2=0, errA = 0
+i=103, err2=0, errA = 0
+i=104, err2=0, errA = 0
+i=105, err2=0, errA = 0
+i=106, err2=0, errA = 0
+i=107, err2=0, errA = 0
+i=108, err2=0, errA = 0
+i=109, err2=0, errA = 0
+i=110, err2=0, errA = 0
+i=111, err2=0, errA = 0
+i=112, err2=0, errA = 0
+i=113, err2=0, errA = 0
+i=114, err2=0, errA = 0
+i=115, err2=0, errA = 0
+i=116, err2=0, errA = 0
+i=117, err2=0, errA = 0
+i=118, err2=0, errA = 0
+i=119, err2=0, errA = 0
+i=120, err2=0, errA = 0
+i=121, err2=0, errA = 0
+i=122, err2=0, errA = 0
+i=123, err2=0, errA = 0
+i=124, err2=0, errA = 0
+i=125, err2=0, errA = 0
+i=126, err2=0, errA = 0
+i=127, err2=0, errA = 0
+i=128, err2=0, errA = 0
+i=129, err2=0, errA = 0
+i=130, err2=0, errA = 0
+i=131, err2=0, errA = 0
+i=132, err2=0, errA = 0
+i=133, err2=0, errA = 0
+i=134, err2=0, errA = 0
+i=135, err2=0, errA = 0
+i=136, err2=0, errA = 0
+i=137, err2=0, errA = 0
+i=138, err2=0, errA = 0
+i=139, err2=0, errA = 0
+i=140, err2=0, errA = 0
+i=141, err2=0, errA = 0
+i=142, err2=0, errA = 0
+i=143, err2=0, errA = 0
+i=144, err2=0, errA = 0
+i=145, err2=0, errA = 0
+i=146, err2=0, errA = 0
+i=147, err2=0, errA = 0
+i=148, err2=0, errA = 0
+i=149, err2=0, errA = 0
+i=150, err2=0, errA = 0
+i=151, err2=0, errA = 0
+i=152, err2=0, errA = 0
+i=153, err2=0, errA = 0
+i=154, err2=0, errA = 0
+i=155, err2=0, errA = 0
+i=156, err2=0, errA = 0
+i=157, err2=0, errA = 0
+i=158, err2=0, errA = 0
+i=159, err2=0, errA = 0
+i=160, err2=0, errA = 0
+i=161, err2=0, errA = 0
+i=162, err2=0, errA = 0
+i=163, err2=0, errA = 0
+i=164, err2=0, errA = 0
+i=165, err2=0, errA = 0
+i=166, err2=0, errA = 0
+i=167, err2=0, errA = 0
+i=168, err2=0, errA = 0
+i=169, err2=0, errA = 0
+i=170, err2=0, errA = 0
+i=171, err2=0, errA = 0
+i=172, err2=0, errA = 0
+i=173, err2=0, errA = 0
+i=174, err2=0, errA = 0
+i=175, err2=0, errA = 0
+i=176, err2=0, errA = 0
+i=177, err2=0, errA = 0
+i=178, err2=0, errA = 0
+i=179, err2=0, errA = 0
+i=180, err2=0, errA = 0
+i=181, err2=0, errA = 0
+i=182, err2=0, errA = 0
+i=183, err2=0, errA = 0
+i=184, err2=0, errA = 0
+i=185, err2=0, errA = 0
+i=186, err2=0, errA = 0
+i=187, err2=0, errA = 0
+i=188, err2=0, errA = 0
+i=189, err2=0, errA = 0
+i=190, err2=0, errA = 0
+i=191, err2=0, errA = 0
+i=192, err2=0, errA = 0
+i=193, err2=0, errA = 0
+i=194, err2=0, errA = 0
+i=195, err2=0, errA = 0
+i=196, err2=0, errA = 0
+i=197, err2=0, errA = 0
+i=198, err2=0, errA = 0
+i=199, err2=0, errA = 0
+i=200, err2=0, errA = 0
+i=201, err2=0, errA = 0
+i=202, err2=0, errA = 0
+i=203, err2=0, errA = 0
+i=204, err2=0, errA = 0
+i=205, err2=0, errA = 0
+i=206, err2=0, errA = 0
+i=207, err2=0, errA = 0
+i=208, err2=0, errA = 0
+i=209, err2=0, errA = 0
+i=210, err2=0, errA = 0
+i=211, err2=0, errA = 0
+i=212, err2=0, errA = 0
+i=213, err2=0, errA = 0
+i=214, err2=0, errA = 0
+i=215, err2=0, errA = 0
+i=216, err2=0, errA = 0
+i=217, err2=0, errA = 0
+i=218, err2=0, errA = 0
+i=219, err2=0, errA = 0
+i=220, err2=0, errA = 0
+i=221, err2=0, errA = 0
+i=222, err2=0, errA = 0
+i=223, err2=0, errA = 0
+i=224, err2=0, errA = 0
+i=225, err2=0, errA = 0
+i=226, err2=0, errA = 0
+i=227, err2=0, errA = 0
+i=228, err2=0, errA = 0
+i=229, err2=0, errA = 0
+i=230, err2=0, errA = 0
+i=231, err2=0, errA = 0
+i=232, err2=0, errA = 0
+i=233, err2=0, errA = 0
+i=234, err2=0, errA = 0
+i=235, err2=0, errA = 0
+i=236, err2=0, errA = 0
+i=237, err2=0, errA = 0
+i=238, err2=0, errA = 0
+i=239, err2=0, errA = 0
+i=240, err2=0, errA = 0
+i=241, err2=0, errA = 0
+i=242, err2=0, errA = 0
+i=243, err2=0, errA = 0
+i=244, err2=0, errA = 0
+i=245, err2=0, errA = 0
+i=246, err2=0, errA = 0
+i=247, err2=0, errA = 0
+i=248, err2=0, errA = 0
+i=249, err2=0, errA = 0
+i=250, err2=0, errA = 0
+i=251, err2=0, errA = 0
+i=252, err2=0, errA = 0
+i=253, err2=0, errA = 0
+i=254, err2=0, errA = 0
+i=255, err2=0, errA = 0
+i=256, err2=0, errA = 0
+i=257, err2=0, errA = 0
+i=258, err2=0, errA = 0
+i=259, err2=0, errA = 0
+i=260, err2=0, errA = 0
+i=261, err2=0, errA = 0
+i=262, err2=0, errA = 0
+i=263, err2=0, errA = 0
+i=264, err2=0, errA = 0
+i=265, err2=0, errA = 0
+i=266, err2=0, errA = 0
+i=267, err2=0, errA = 0
+i=268, err2=0, errA = 0
+i=269, err2=0, errA = 0
+i=270, err2=0, errA = 0
+i=271, err2=0, errA = 0
+i=272, err2=0, errA = 0
+i=273, err2=0, errA = 0
+i=274, err2=0, errA = 0
+i=275, err2=0, errA = 0
+i=276, err2=0, errA = 0
+i=277, err2=0, errA = 0
+i=278, err2=0, errA = 0
+i=279, err2=0, errA = 0
+i=280, err2=0, errA = 0
+i=281, err2=0, errA = 0
+i=282, err2=0, errA = 0
+i=283, err2=0, errA = 0
+i=284, err2=0, errA = 0
+i=285, err2=0, errA = 0
+i=286, err2=0, errA = 0
+i=287, err2=0, errA = 0
+i=288, err2=0, errA = 0
+i=289, err2=0, errA = 0
+i=290, err2=0, errA = 0
+i=291, err2=0, errA = 0
+i=292, err2=0, errA = 0
+i=293, err2=0, errA = 0
+i=294, err2=0, errA = 0
+i=295, err2=0, errA = 0
+i=296, err2=0, errA = 0
+i=297, err2=0, errA = 0
+i=298, err2=0, errA = 0
+i=299, err2=0, errA = 0
+i=300, err2=0, errA = 0
+i=301, err2=0, errA = 0
+i=302, err2=0, errA = 0
+i=303, err2=0, errA = 0
+i=304, err2=0, errA = 0
+i=305, err2=0, errA = 0
+i=306, err2=0, errA = 0
+i=307, err2=0, errA = 0
+i=308, err2=0, errA = 0
+i=309, err2=0, errA = 0
+i=310, err2=0, errA = 0
+i=311, err2=0, errA = 0
+i=312, err2=0, errA = 0
+i=313, err2=0, errA = 0
+i=314, err2=0, errA = 0
+i=315, err2=0, errA = 0
+i=316, err2=0, errA = 0
+i=317, err2=0, errA = 0
+i=318, err2=0, errA = 0
+i=319, err2=0, errA = 0
+i=320, err2=0, errA = 0
+i=321, err2=0, errA = 0
+i=322, err2=0, errA = 0
+i=323, err2=0, errA = 0
+i=324, err2=0, errA = 0
+i=325, err2=0, errA = 0
+i=326, err2=0, errA = 0
+i=327, err2=0, errA = 0
+i=328, err2=0, errA = 0
+i=329, err2=0, errA = 0
+i=330, err2=0, errA = 0
+i=331, err2=0, errA = 0
+i=332, err2=0, errA = 0
+i=333, err2=0, errA = 0
+i=334, err2=0, errA = 0
+i=335, err2=0, errA = 0
+i=336, err2=0, errA = 0
+i=337, err2=0, errA = 0
+i=338, err2=0, errA = 0
+i=339, err2=0, errA = 0
+i=340, err2=0, errA = 0
+i=341, err2=0, errA = 0
+i=342, err2=0, errA = 0
+i=343, err2=0, errA = 0
+i=344, err2=0, errA = 0
+i=345, err2=0, errA = 0
+i=346, err2=0, errA = 0
+i=347, err2=0, errA = 0
+i=348, err2=0, errA = 0
+i=349, err2=0, errA = 0
+i=350, err2=0, errA = 0
+i=351, err2=0, errA = 0
+i=352, err2=0, errA = 0
+i=353, err2=0, errA = 0
+i=354, err2=0, errA = 0
+i=355, err2=0, errA = 0
+i=356, err2=0, errA = 0
+i=357, err2=0, errA = 0
+i=358, err2=0, errA = 0
+i=359, err2=0, errA = 0
+i=360, err2=0, errA = 0
+i=361, err2=0, errA = 0
+i=362, err2=0, errA = 0
+i=363, err2=0, errA = 0
+i=364, err2=0, errA = 0
+i=365, err2=0, errA = 0
+i=366, err2=0, errA = 0
+i=367, err2=0, errA = 0
+i=368, err2=0, errA = 0
+i=369, err2=0, errA = 0
+i=370, err2=0, errA = 0
+i=371, err2=0, errA = 0
+i=372, err2=0, errA = 0
+i=373, err2=0, errA = 0
+i=374, err2=0, errA = 0
+i=375, err2=0, errA = 0
+i=376, err2=0, errA = 0
+i=377, err2=0, errA = 0
+i=378, err2=0, errA = 0
+i=379, err2=0, errA = 0
+i=380, err2=0, errA = 0
+i=381, err2=0, errA = 0
+i=382, err2=0, errA = 0
+i=383, err2=0, errA = 0
+i=384, err2=0, errA = 0
+i=385, err2=0, errA = 0
+i=386, err2=0, errA = 0
+i=387, err2=0, errA = 0
+i=388, err2=0, errA = 0
+i=389, err2=0, errA = 0
+i=390, err2=0, errA = 0
+i=391, err2=0, errA = 0
+i=392, err2=0, errA = 0
+i=393, err2=0, errA = 0
+i=394, err2=0, errA = 0
+i=395, err2=0, errA = 0
+i=396, err2=0, errA = 0
+i=397, err2=0, errA = 0
+i=398, err2=0, errA = 0
+i=399, err2=0, errA = 0
+i=400, err2=0, errA = 0
+i=401, err2=0, errA = 0
+i=402, err2=0, errA = 0
+i=403, err2=0, errA = 0
+i=404, err2=0, errA = 0
+i=405, err2=0, errA = 0
+i=406, err2=0, errA = 0
+i=407, err2=0, errA = 0
+i=408, err2=0, errA = 0
+i=409, err2=0, errA = 0
+i=410, err2=0, errA = 0
+i=411, err2=0, errA = 0
+i=412, err2=0, errA = 0
+i=413, err2=0, errA = 0
+i=414, err2=0, errA = 0
+i=415, err2=0, errA = 0
+i=416, err2=0, errA = 0
+i=417, err2=0, errA = 0
+i=418, err2=0, errA = 0
+i=419, err2=0, errA = 0
+i=420, err2=0, errA = 0
+i=421, err2=0, errA = 0
+i=422, err2=0, errA = 0
+i=423, err2=0, errA = 0
+i=424, err2=0, errA = 0
+i=425, err2=0, errA = 0
+i=426, err2=0, errA = 0
+i=427, err2=0, errA = 0
+i=428, err2=0, errA = 0
+i=429, err2=0, errA = 0
+i=430, err2=0, errA = 0
+i=431, err2=0, errA = 0
+i=432, err2=0, errA = 0
+i=433, err2=0, errA = 0
+i=434, err2=0, errA = 0
+i=435, err2=0, errA = 0
+i=436, err2=0, errA = 0
+i=437, err2=0, errA = 0
+i=438, err2=0, errA = 0
+i=439, err2=0, errA = 0
+i=440, err2=0, errA = 0
+i=441, err2=0, errA = 0
+i=442, err2=0, errA = 0
+i=443, err2=0, errA = 0
+i=444, err2=0, errA = 0
+i=445, err2=0, errA = 0
+i=446, err2=0, errA = 0
+i=447, err2=0, errA = 0
+i=448, err2=0, errA = 0
+i=449, err2=0, errA = 0
+i=450, err2=0, errA = 0
+i=451, err2=0, errA = 0
+i=452, err2=0, errA = 0
+i=453, err2=0, errA = 0
+i=454, err2=0, errA = 0
+i=455, err2=0, errA = 0
+i=456, err2=0, errA = 0
+i=457, err2=0, errA = 0
+i=458, err2=0, errA = 0
+i=459, err2=0, errA = 0
+i=460, err2=0, errA = 0
+i=461, err2=0, errA = 0
+i=462, err2=0, errA = 0
+i=463, err2=0, errA = 0
+i=464, err2=0, errA = 0
+i=465, err2=0, errA = 0
+i=466, err2=0, errA = 0
+i=467, err2=0, errA = 0
+i=468, err2=0, errA = 0
+i=469, err2=0, errA = 0
+i=470, err2=0, errA = 0
+i=471, err2=0, errA = 0
+i=472, err2=0, errA = 0
+i=473, err2=0, errA = 0
+i=474, err2=0, errA = 0
+i=475, err2=0, errA = 0
+i=476, err2=0, errA = 0
+i=477, err2=0, errA = 0
+i=478, err2=0, errA = 0
+i=479, err2=0, errA = 0
+i=480, err2=0, errA = 0
+i=481, err2=0, errA = 0
+i=482, err2=0, errA = 0
+i=483, err2=0, errA = 0
+i=484, err2=0, errA = 0
+i=485, err2=0, errA = 0
+i=486, err2=0, errA = 0
+i=487, err2=0, errA = 0
+i=488, err2=0, errA = 0
+i=489, err2=0, errA = 0
+i=490, err2=0, errA = 0
+i=491, err2=0, errA = 0
+i=492, err2=0, errA = 0
+i=493, err2=0, errA = 0
+i=494, err2=0, errA = 0
+i=495, err2=0, errA = 0
+i=496, err2=0, errA = 0
+i=497, err2=0, errA = 0
+i=498, err2=0, errA = 0
+i=499, err2=0, errA = 0
+i=500, err2=0, errA = 0
+i=501, err2=0, errA = 0
+i=502, err2=0, errA = 0
+i=503, err2=0, errA = 0
+i=504, err2=0, errA = 0
+i=505, err2=0, errA = 0
+i=506, err2=0, errA = 0
+i=507, err2=0, errA = 0
+i=508, err2=0, errA = 0
+i=509, err2=0, errA = 0
+i=510, err2=0, errA = 0
+i=511, err2=0, errA = 0
+i=512, err2=0, errA = 0
+i=513, err2=0, errA = 0
+i=514, err2=0, errA = 0
+i=515, err2=0, errA = 0
+i=516, err2=0, errA = 0
+i=517, err2=0, errA = 0
+i=518, err2=0, errA = 0
+i=519, err2=0, errA = 0
+i=520, err2=0, errA = 0
+i=521, err2=0, errA = 0
+i=522, err2=0, errA = 0
+i=523, err2=0, errA = 0
+i=524, err2=0, errA = 0
+i=525, err2=0, errA = 0
+i=526, err2=0, errA = 0
+i=527, err2=0, errA = 0
+i=528, err2=0, errA = 0
+i=529, err2=0, errA = 0
+i=530, err2=0, errA = 0
+i=531, err2=0, errA = 0
+i=532, err2=0, errA = 0
+i=533, err2=0, errA = 0
+i=534, err2=0, errA = 0
+i=535, err2=0, errA = 0
+i=536, err2=0, errA = 0
+i=537, err2=0, errA = 0
+i=538, err2=0, errA = 0
+i=539, err2=0, errA = 0
+i=540, err2=0, errA = 0
+i=541, err2=0, errA = 0
+i=542, err2=0, errA = 0
+i=543, err2=0, errA = 0
+i=544, err2=0, errA = 0
+i=545, err2=0, errA = 0
+i=546, err2=0, errA = 0
+i=547, err2=0, errA = 0
+i=548, err2=0, errA = 0
+i=549, err2=0, errA = 0
+i=550, err2=0, errA = 0
+i=551, err2=0, errA = 0
+i=552, err2=0, errA = 0
+i=553, err2=0, errA = 0
+i=554, err2=0, errA = 0
+i=555, err2=0, errA = 0
+i=556, err2=0, errA = 0
+i=557, err2=0, errA = 0
+i=558, err2=0, errA = 0
+i=559, err2=0, errA = 0
+i=560, err2=0, errA = 0
+i=561, err2=0, errA = 0
+i=562, err2=0, errA = 0
+i=563, err2=0, errA = 0
+i=564, err2=0, errA = 0
+i=565, err2=0, errA = 0
+i=566, err2=0, errA = 0
+i=567, err2=0, errA = 0
+i=568, err2=0, errA = 0
+i=569, err2=0, errA = 0
+i=570, err2=0, errA = 0
+i=571, err2=0, errA = 0
+i=572, err2=0, errA = 0
+i=573, err2=0, errA = 0
+i=574, err2=0, errA = 0
+i=575, err2=0, errA = 0
+i=576, err2=0, errA = 0
+i=577, err2=0, errA = 0
+i=578, err2=0, errA = 0
+i=579, err2=0, errA = 0
+i=580, err2=0, errA = 0
+i=581, err2=0, errA = 0
+i=582, err2=0, errA = 0
+i=583, err2=0, errA = 0
+i=584, err2=0, errA = 0
+i=585, err2=0, errA = 0
+i=586, err2=0, errA = 0
+i=587, err2=0, errA = 0
+i=588, err2=0, errA = 0
+i=589, err2=0, errA = 0
+i=590, err2=0, errA = 0
+i=591, err2=0, errA = 0
+i=592, err2=0, errA = 0
+i=593, err2=0, errA = 0
+i=594, err2=0, errA = 0
+i=595, err2=0, errA = 0
+i=596, err2=0, errA = 0
+i=597, err2=0, errA = 0
+i=598, err2=0, errA = 0
+i=599, err2=0, errA = 0
+i=600, err2=0, errA = 0
+i=601, err2=0, errA = 0
+i=602, err2=0, errA = 0
+i=603, err2=0, errA = 0
+i=604, err2=0, errA = 0
+i=605, err2=0, errA = 0
+i=606, err2=0, errA = 0
+i=607, err2=0, errA = 0
+i=608, err2=0, errA = 0
+i=609, err2=0, errA = 0
+i=610, err2=0, errA = 0
+i=611, err2=0, errA = 0
+i=612, err2=0, errA = 0
+i=613, err2=0, errA = 0
+i=614, err2=0, errA = 0
+i=615, err2=0, errA = 0
+i=616, err2=0, errA = 0
+i=617, err2=0, errA = 0
+i=618, err2=0, errA = 0
+i=619, err2=0, errA = 0
+i=620, err2=0, errA = 0
+i=621, err2=0, errA = 0
+i=622, err2=0, errA = 0
+i=623, err2=0, errA = 0
+i=624, err2=0, errA = 0
+i=625, err2=0, errA = 0
+i=626, err2=0, errA = 0
+i=627, err2=0, errA = 0
+i=628, err2=0, errA = 0
+i=629, err2=0, errA = 0
+i=630, err2=0, errA = 0
+i=631, err2=0, errA = 0
+i=632, err2=0, errA = 0
+i=633, err2=0, errA = 0
+i=634, err2=0, errA = 0
+i=635, err2=0, errA = 0
+i=636, err2=0, errA = 0
+i=637, err2=0, errA = 0
+i=638, err2=0, errA = 0
+i=639, err2=0, errA = 0
+i=640, err2=0, errA = 0
+i=641, err2=0, errA = 0
+i=642, err2=0, errA = 0
+i=643, err2=0, errA = 0
+i=644, err2=0, errA = 0
+i=645, err2=0, errA = 0
+i=646, err2=0, errA = 0
+i=647, err2=0, errA = 0
+i=648, err2=0, errA = 0
+i=649, err2=0, errA = 0
+i=650, err2=0, errA = 0
+i=651, err2=0, errA = 0
+i=652, err2=0, errA = 0
+i=653, err2=0, errA = 0
+i=654, err2=0, errA = 0
+i=655, err2=0, errA = 0
+i=656, err2=0, errA = 0
+i=657, err2=0, errA = 0
+i=658, err2=0, errA = 0
+i=659, err2=0, errA = 0
+i=660, err2=0, errA = 0
+i=661, err2=0, errA = 0
+i=662, err2=0, errA = 0
+i=663, err2=0, errA = 0
+i=664, err2=0, errA = 0
+i=665, err2=0, errA = 0
+i=666, err2=0, errA = 0
+i=667, err2=0, errA = 0
+i=668, err2=0, errA = 0
+i=669, err2=0, errA = 0
+i=670, err2=0, errA = 0
+i=671, err2=0, errA = 0
+i=672, err2=0, errA = 0
+i=673, err2=0, errA = 0
+i=674, err2=0, errA = 0
+i=675, err2=0, errA = 0
+i=676, err2=0, errA = 0
+i=677, err2=0, errA = 0
+i=678, err2=0, errA = 0
+i=679, err2=0, errA = 0
+i=680, err2=0, errA = 0
+i=681, err2=0, errA = 0
+i=682, err2=0, errA = 0
+i=683, err2=0, errA = 0
+i=684, err2=0, errA = 0
+i=685, err2=0, errA = 0
+i=686, err2=0, errA = 0
+i=687, err2=0, errA = 0
+i=688, err2=0, errA = 0
+i=689, err2=0, errA = 0
+i=690, err2=0, errA = 0
+i=691, err2=0, errA = 0
+i=692, err2=0, errA = 0
+i=693, err2=0, errA = 0
+i=694, err2=0, errA = 0
+i=695, err2=0, errA = 0
+i=696, err2=0, errA = 0
+i=697, err2=0, errA = 0
+i=698, err2=0, errA = 0
+i=699, err2=0, errA = 0
+i=700, err2=0, errA = 0
+i=701, err2=0, errA = 0
+i=702, err2=0, errA = 0
+i=703, err2=0, errA = 0
+i=704, err2=0, errA = 0
+i=705, err2=0, errA = 0
+i=706, err2=0, errA = 0
+i=707, err2=0, errA = 0
+i=708, err2=0, errA = 0
+i=709, err2=0, errA = 0
+i=710, err2=0, errA = 0
+i=711, err2=0, errA = 0
+i=712, err2=0, errA = 0
+i=713, err2=0, errA = 0
+i=714, err2=0, errA = 0
+i=715, err2=0, errA = 0
+i=716, err2=0, errA = 0
+i=717, err2=0, errA = 0
+i=718, err2=0, errA = 0
+i=719, err2=0, errA = 0
+i=720, err2=0, errA = 0
+i=721, err2=0, errA = 0
+i=722, err2=0, errA = 0
+i=723, err2=0, errA = 0
+i=724, err2=0, errA = 0
+i=725, err2=0, errA = 0
+i=726, err2=0, errA = 0
+i=727, err2=0, errA = 0
+i=728, err2=0, errA = 0
+i=729, err2=0, errA = 0
+i=730, err2=0, errA = 0
+i=731, err2=0, errA = 0
+i=732, err2=0, errA = 0
+i=733, err2=0, errA = 0
+i=734, err2=0, errA = 0
+i=735, err2=0, errA = 0
+i=736, err2=0, errA = 0
+i=737, err2=0, errA = 0
+i=738, err2=0, errA = 0
+i=739, err2=0, errA = 0
+i=740, err2=0, errA = 0
+i=741, err2=0, errA = 0
+i=742, err2=0, errA = 0
+i=743, err2=0, errA = 0
+i=744, err2=0, errA = 0
+i=745, err2=0, errA = 0
+i=746, err2=0, errA = 0
+i=747, err2=0, errA = 0
+i=748, err2=0, errA = 0
+i=749, err2=0, errA = 0
+i=750, err2=0, errA = 0
+i=751, err2=0, errA = 0
+i=752, err2=0, errA = 0
+i=753, err2=0, errA = 0
+i=754, err2=0, errA = 0
+i=755, err2=0, errA = 0
+i=756, err2=0, errA = 0
+i=757, err2=0, errA = 0
+i=758, err2=0, errA = 0
+i=759, err2=0, errA = 0
+i=760, err2=0, errA = 0
+i=761, err2=0, errA = 0
+i=762, err2=0, errA = 0
+i=763, err2=0, errA = 0
+i=764, err2=0, errA = 0
+i=765, err2=0, errA = 0
+i=766, err2=0, errA = 0
+i=767, err2=0, errA = 0
+i=768, err2=0, errA = 0
+i=769, err2=0, errA = 0
+i=770, err2=0, errA = 0
+i=771, err2=0, errA = 0
+i=772, err2=0, errA = 0
+i=773, err2=0, errA = 0
+i=774, err2=0, errA = 0
+i=775, err2=0, errA = 0
+i=776, err2=0, errA = 0
+i=777, err2=0, errA = 0
+i=778, err2=0, errA = 0
+i=779, err2=0, errA = 0
+i=780, err2=0, errA = 0
+i=781, err2=0, errA = 0
+i=782, err2=0, errA = 0
+i=783, err2=0, errA = 0
+i=784, err2=0, errA = 0
+i=785, err2=0, errA = 0
+i=786, err2=0, errA = 0
+i=787, err2=0, errA = 0
+i=788, err2=0, errA = 0
+i=789, err2=0, errA = 0
+i=790, err2=0, errA = 0
+i=791, err2=0, errA = 0
+i=792, err2=0, errA = 0
+i=793, err2=0, errA = 0
+i=794, err2=0, errA = 0
+i=795, err2=0, errA = 0
+i=796, err2=0, errA = 0
+i=797, err2=0, errA = 0
+i=798, err2=0, errA = 0
+i=799, err2=0, errA = 0
+i=800, err2=0, errA = 0
+i=801, err2=0, errA = 0
+i=802, err2=0, errA = 0
+i=803, err2=0, errA = 0
+i=804, err2=0, errA = 0
+i=805, err2=0, errA = 0
+i=806, err2=0, errA = 0
+i=807, err2=0, errA = 0
+i=808, err2=0, errA = 0
+i=809, err2=0, errA = 0
+i=810, err2=0, errA = 0
+i=811, err2=0, errA = 0
+i=812, err2=0, errA = 0
+i=813, err2=0, errA = 0
+i=814, err2=0, errA = 0
+i=815, err2=0, errA = 0
+i=816, err2=0, errA = 0
+i=817, err2=0, errA = 0
+i=818, err2=0, errA = 0
+i=819, err2=0, errA = 0
+i=820, err2=0, errA = 0
+i=821, err2=0, errA = 0
+i=822, err2=0, errA = 0
+i=823, err2=0, errA = 0
+i=824, err2=0, errA = 0
+i=825, err2=0, errA = 0
+i=826, err2=0, errA = 0
+i=827, err2=0, errA = 0
+i=828, err2=0, errA = 0
+i=829, err2=0, errA = 0
+i=830, err2=0, errA = 0
+i=831, err2=0, errA = 0
+i=832, err2=0, errA = 0
+i=833, err2=0, errA = 0
+i=834, err2=0, errA = 0
+i=835, err2=0, errA = 0
+i=836, err2=0, errA = 0
+i=837, err2=0, errA = 0
+i=838, err2=0, errA = 0
+i=839, err2=0, errA = 0
+i=840, err2=0, errA = 0
+i=841, err2=0, errA = 0
+i=842, err2=0, errA = 0
+i=843, err2=0, errA = 0
+i=844, err2=0, errA = 0
+i=845, err2=0, errA = 0
+i=846, err2=0, errA = 0
+i=847, err2=0, errA = 0
+i=848, err2=0, errA = 0
+i=849, err2=0, errA = 0
+i=850, err2=0, errA = 0
+i=851, err2=0, errA = 0
+i=852, err2=0, errA = 0
+i=853, err2=0, errA = 0
+i=854, err2=0, errA = 0
+i=855, err2=0, errA = 0
+i=856, err2=0, errA = 0
+i=857, err2=0, errA = 0
+i=858, err2=0, errA = 0
+i=859, err2=0, errA = 0
+i=860, err2=0, errA = 0
+i=861, err2=0, errA = 0
+i=862, err2=0, errA = 0
+i=863, err2=0, errA = 0
+i=864, err2=0, errA = 0
+i=865, err2=0, errA = 0
+i=866, err2=0, errA = 0
+i=867, err2=0, errA = 0
+i=868, err2=0, errA = 0
+i=869, err2=0, errA = 0
+i=870, err2=0, errA = 0
+i=871, err2=0, errA = 0
+i=872, err2=0, errA = 0
+i=873, err2=0, errA = 0
+i=874, err2=0, errA = 0
+i=875, err2=0, errA = 0
+i=876, err2=0, errA = 0
+i=877, err2=0, errA = 0
+i=878, err2=0, errA = 0
+i=879, err2=0, errA = 0
+i=880, err2=0, errA = 0
+i=881, err2=0, errA = 0
+i=882, err2=0, errA = 0
+i=883, err2=0, errA = 0
+i=884, err2=0, errA = 0
+i=885, err2=0, errA = 0
+i=886, err2=0, errA = 0
+i=887, err2=0, errA = 0
+i=888, err2=0, errA = 0
+i=889, err2=0, errA = 0
+i=890, err2=0, errA = 0
+i=891, err2=0, errA = 0
+i=892, err2=0, errA = 0
+i=893, err2=0, errA = 0
+i=894, err2=0, errA = 0
+i=895, err2=0, errA = 0
+i=896, err2=0, errA = 0
+i=897, err2=0, errA = 0
+i=898, err2=0, errA = 0
+i=899, err2=0, errA = 0
+i=900, err2=0, errA = 0
+i=901, err2=0, errA = 0
+i=902, err2=0, errA = 0
+i=903, err2=0, errA = 0
+i=904, err2=0, errA = 0
+i=905, err2=0, errA = 0
+i=906, err2=0, errA = 0
+i=907, err2=0, errA = 0
+i=908, err2=0, errA = 0
+i=909, err2=0, errA = 0
+i=910, err2=0, errA = 0
+i=911, err2=0, errA = 0
+i=912, err2=0, errA = 0
+i=913, err2=0, errA = 0
+i=914, err2=0, errA = 0
+i=915, err2=0, errA = 0
+i=916, err2=0, errA = 0
+i=917, err2=0, errA = 0
+i=918, err2=0, errA = 0
+i=919, err2=0, errA = 0
+i=920, err2=0, errA = 0
+i=921, err2=0, errA = 0
+i=922, err2=0, errA = 0
+i=923, err2=0, errA = 0
+i=924, err2=0, errA = 0
+i=925, err2=0, errA = 0
+i=926, err2=0, errA = 0
+i=927, err2=0, errA = 0
+i=928, err2=0, errA = 0
+i=929, err2=0, errA = 0
+i=930, err2=0, errA = 0
+i=931, err2=0, errA = 0
+i=932, err2=0, errA = 0
+i=933, err2=0, errA = 0
+i=934, err2=0, errA = 0
+i=935, err2=0, errA = 0
+i=936, err2=0, errA = 0
+i=937, err2=0, errA = 0
+i=938, err2=0, errA = 0
+i=939, err2=0, errA = 0
+i=940, err2=0, errA = 0
+i=941, err2=0, errA = 0
+i=942, err2=0, errA = 0
+i=943, err2=0, errA = 0
+i=944, err2=0, errA = 0
+i=945, err2=0, errA = 0
+i=946, err2=0, errA = 0
+i=947, err2=0, errA = 0
+i=948, err2=0, errA = 0
+i=949, err2=0, errA = 0
+i=950, err2=0, errA = 0
+i=951, err2=0, errA = 0
+i=952, err2=0, errA = 0
+i=953, err2=0, errA = 0
+i=954, err2=0, errA = 0
+i=955, err2=0, errA = 0
+i=956, err2=0, errA = 0
+i=957, err2=0, errA = 0
+i=958, err2=0, errA = 0
+i=959, err2=0, errA = 0
+i=960, err2=0, errA = 0
+i=961, err2=0, errA = 0
+i=962, err2=0, errA = 0
+i=963, err2=0, errA = 0
+i=964, err2=0, errA = 0
+i=965, err2=0, errA = 0
+i=966, err2=0, errA = 0
+i=967, err2=0, errA = 0
+i=968, err2=0, errA = 0
+i=969, err2=0, errA = 0
+i=970, err2=0, errA = 0
+i=971, err2=0, errA = 0
+i=972, err2=0, errA = 0
+i=973, err2=0, errA = 0
+i=974, err2=0, errA = 0
+i=975, err2=0, errA = 0
+i=976, err2=0, errA = 0
+i=977, err2=0, errA = 0
+i=978, err2=0, errA = 0
+i=979, err2=0, errA = 0
+i=980, err2=0, errA = 0
+i=981, err2=0, errA = 0
+i=982, err2=0, errA = 0
+i=983, err2=0, errA = 0
+i=984, err2=0, errA = 0
+i=985, err2=0, errA = 0
+i=986, err2=0, errA = 0
+i=987, err2=0, errA = 0
+i=988, err2=0, errA = 0
+i=989, err2=0, errA = 0
+i=990, err2=0, errA = 0
+i=991, err2=0, errA = 0
+i=992, err2=0, errA = 0
+i=993, err2=0, errA = 0
+i=994, err2=0, errA = 0
+i=995, err2=0, errA = 0
+i=996, err2=0, errA = 0
+i=997, err2=0, errA = 0
+i=998, err2=0, errA = 0
+i=999, err2=0, errA = 0
+i=1000, err2=0, errA = 0
