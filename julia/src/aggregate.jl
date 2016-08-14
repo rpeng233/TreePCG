@@ -133,3 +133,57 @@ function parseData(fn::ASCIIString)
     return results
     
 end
+
+# parse a julia log file, and return the anorm and 2norm errors
+function parsePythonData(fn::ASCIIString)
+    f = open(fn)
+    lines = readlines(f)
+    close(f)
+    
+    results = Array{Array{Float64,1},1}(0)
+
+    nr = length(lines) - 1
+    for i in 2:(nr + 1)
+        wholeLn = split(lines[i], [','])
+
+        ln = []
+        for j in wholeLn
+            if j != ""
+                push!(ln, parse(Float64, j))
+            end
+        end
+        push!(results, ln)
+    end
+    
+    return results
+    
+end
+
+# parse a julia log file, and return the anorm and 2norm errors
+function parseMatlabData(fn::ASCIIString)
+    f = open(fn)
+    lines = readlines(f)
+    close(f)
+    
+    results = Array{Array{Float64,1},1}(0)
+
+    nr = length(lines)
+    for i in 7:nr
+        wholeLn = split(lines[i], [' ', '=', ',', '\n'])
+        ln = []
+        for j in wholeLn
+            if j != ""
+                push!(ln, j)
+            end
+        end
+        
+        thisLine = []
+        push!(thisLine, parse(Float64, ln[6]))
+        push!(thisLine, parse(Float64, ln[4]))
+        
+        push!(results, thisLine)
+    end
+    
+    return results
+    
+end
