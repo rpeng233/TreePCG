@@ -226,12 +226,13 @@ def mulIJVVec(IJV, x):
 
 precision = int(sys.argv[1])
 treeInd = int(sys.argv[2])
+path = sys.argv[3]
 
-print 'solving for tree ', treeInd, ' with precision ', precision
+print 'solving for graph ', path, ' and tree ', treeInd, ' with precision ', precision
 
 getcontext().prec = precision
 
-path = "/Users/serbanstan/git/TreePCG/graphs/rand_1000_u1000/"
+#path = "/Users/serbanstan/git/TreePCG/graphs/rand_1000_u1000/"
 
 A = readMatrix(path + "graph.mtx");
 tree = readMatrix(path + "tree" + str(treeInd) + ".mtx");
@@ -245,7 +246,7 @@ f = treeSolver(tree, np.array([0 for i in range(tree.shape[1])]))
 # myx = f(b)
 # print "per solve precision ", '%.20f' % (np.linalg.norm(mulIJVVec(lap(tree), myx) - b) / np.linalg.norm(b))
 
-myx,myErrMN,myErr2 = pcg(lap(A), b, f, truex, 100, True)
+myx,myErrMN,myErr2 = pcg(lap(A), b, f, truex, 1000, True)
 
 with open('_log_python_tree_' + str(treeInd) + '_' + str(getcontext().prec) + '_' + str(len(myErr2)) + 'iters.csv', 'w') as csvfile:
     fieldnames = ['A-norm', '2-norm']
