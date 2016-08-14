@@ -9,7 +9,7 @@ import os
 
 tree = 1
 prec = sys.argv[1]
-path = "/Users/serbanstan/git/TreePCG/graphs/rand_1000_iu1000/"
+path = "/Users/serbanstan/git/TreePCG/graphs/rand_1000_u1000/"
 
 print '*****************************************************************************************************************************'
 
