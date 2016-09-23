@@ -104,7 +104,7 @@ function aggJuliaRes(path::ASCIIString, treeIndex::ASCIIString)
 
 end
 
-# parse a julia log file, and return the anorm and 2norm errors
+# parse a julia log file, and return the anorm and 2norm errors (in this order)
 function parseData(fn::ASCIIString; only2 = false)
     f = open(fn)
     lines = readlines(f)
@@ -114,7 +114,7 @@ function parseData(fn::ASCIIString; only2 = false)
 
     nr = parse(Int64, split(lines[2], ' ')[1])
     for i in 3:(3 + nr - 1)
-        wholeLn = split(lines[i], [' ', '=', '\n'])
+        wholeLn = split(lines[i], [' ', '=', '\n', '\t'])
         ln = []
         for j in wholeLn
             if j != ""
@@ -191,6 +191,32 @@ function parseMatlabData(fn::ASCIIString)
         push!(thisLine, parse(Float64, ln[4]))
         
         push!(results, thisLine)
+    end
+    
+    return results
+    
+end
+
+
+# parse a julia log file, and return the anorm and 2norm errors
+function parseCPPData(fn::ASCIIString)
+    f = open(fn)
+    lines = readlines(f)
+    close(f)
+    
+    results = Array{Float64,1}(0)
+
+    nr = length(lines)
+    for i in 2:nr-1
+        wholeLn = split(lines[i], [' ', '=', ',', '\n', '\t'])
+        ln = []
+        for j in wholeLn
+            if j != ""
+                push!(ln, j)
+            end
+        end
+        
+        push!(results, parse(Float64, ln[end]))
     end
     
     return results
