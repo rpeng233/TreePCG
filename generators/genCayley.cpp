@@ -2,11 +2,12 @@
  * generates Cayley graphs on n vertices with a number of generators.
  *
  * Input parameters:
- *   first one: n
+ *   first: output file name 
+ *   second: n
  *   then 2n pairs, each containing (skip amount, weight)
  *
- *
- * Written by Richard on Oct 26, 16
+ * Output 
+ * Written by Richard Peng on Oct 27, 16
  *
  *
 */
@@ -18,29 +19,43 @@ int n, k;
 
 
 int main(int argt, char **args) {
-  if(argt <= 1 || (argt - 2) % 2 == 1) {
-    fprintf(stderr, "INCORRECT # OF ARGS, should be n followed by 2k info about generators\n");
+  if (argt <= 3 || (argt - 3) % 2 == 1) {
+    fprintf(stderr, "INCORRECT # OF ARGS,");
+    fprintf(stderr, "should be FILENAME,");
+    fprintf(stderr, "then n followed by 2k info about generators\n");
     exit(0);
   }
 
-  k = (argt - 2) / 2;
-  sscanf(args[1], "%d", &n);
-  printf("%d %d\n", n, k * n);
+  FILE *f_out = fopen(args[1], "w");
+  int buffer[3];
 
-  fprintf(stderr, "MAKING CAYLEY GRAPH ON %d VERTICES WITH %d GENERATORS\n", n, k);
+  k = (argt - 3) / 2;
+  sscanf(args[2], "%d", &n);
 
-  for(int i = 0; i < k; ++i) {
+
+  buffer[0] = n;
+  buffer[1] = k * n;
+  fwrite(buffer, sizeof(int), 2, f_out);
+
+  fprintf(stderr, "MAKING CAYLEY GRAPH ON %d VERTICES", n);
+  fprintf(stderr, "WITH %d GENERATORS\n", k);
+
+  for (int i = 0; i < k; ++i) {
     int skip, weight;
 
-    sscanf(args[2 + i * 2], "%d", &skip);
-    sscanf(args[3 + i * 2], "%d", &weight);
+    sscanf(args[3 + i * 2], "%d", &skip);
+    sscanf(args[4 + i * 2], "%d", &weight);
 
     fprintf(stderr, "EDGE TYPE %d: SKIP = %d, WEIGHT = %d\n", i, skip, weight);
 
 
-    for(int j = 0; j < n; ++j) {
-      printf("%d %d %d\n", j + 1, (j + skip) % n + 1, weight);
+    for (int j = 0; j < n; ++j) {
+      buffer[0] = j + 1;
+      buffer[1] = (j + skip) % n + 1;
+      buffer[2] = weight;
+      fwrite(buffer, sizeof(int), 3, f_out);
     }
   }
+  fclose(f_out);
   return 0;
 }

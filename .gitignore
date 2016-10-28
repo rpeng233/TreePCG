@@ -1,3 +1,9 @@
 */.ipynb_checkpoints/*
 */*/.ipynb_checkpoints/*
-*/*/*.exe
+*/*.exe
+generators/temp*
+graphs/cayley_cube_1000000_geometric/*.txt
+graphs/cayley_cube_1000000_geometric/*.mtx
+graphs/cayley_cube_8000000_uniform/*.bin
+graphs/cayley_cube_8000000_uniform/*.txt
+graphs/cayley_cube_8000000_uniform/*.mtx
