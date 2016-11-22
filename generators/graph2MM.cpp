@@ -6,15 +6,15 @@
  *     output file name
  *
  * Copied from graphSp2MM written by Haoran,
- *     editted by Richard on Oct 26, 16
+ *     editted by Richard on Nov 22, 16
  */
 
 #include <iostream>
 #include <cstdio>
 #include <string>
-#include "io.h"
-#include "graph.h"
-#include "matrix.h"
+#include "../common/io.h"
+#include "../common/graph.h"
+#include "../common/matrix.h"
 
 using std::cout;
 using std::cerr;
@@ -26,10 +26,11 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    string graphFile = argv[1];
-    string outFile = argv[2];
-    GraphSP g = IO::readGraph(graphFile);
-    Mat A = IO::constructMatrixFromGraph(g);
-    IO::saveMM(A, outFile);
+    string graph_file = argv[1];
+    string out_file = argv[2];
+
+    Graph g = IO::ReadGraph(graph_file, 0);
+    Matrix laplacian_g = IO::GraphToMatrix(g);
+    IO::SaveMMMatrix(laplacian_g, out_file);
     return 0;
 }

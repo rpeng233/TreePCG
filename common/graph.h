@@ -5,10 +5,11 @@
  * API Interface:
  *   struct Graph: definition of a graph (1-INDEXED).
  *     int .n: the size of graph
- *     vector< pair<int,FLOAT> > .e[i]: the neighbors of vertex i, 1<=i<=n
+ *     vector< pair<int,FLOAT> > .neighbor[i]:
+ *         the neighbors of vertex i, 1<=i<=n
  *     .freeMemory(): destroys graph and frees memory
  * 
- *   struct GraphSP: definition of a connected graph with a spanning tree (1-INDEXED).
+ *   struct TreePlusEdges: definition of a connected graph with a spanning tree (1-INDEXED).
  *     int .n: the size of graph
  *     vector< pair<int,FLOAT> > .e[i]: the children of vertex i in spanning tree, 1<=i<=n
  *                                       the tree is DIRECTED, and 1 is always the root
@@ -16,7 +17,7 @@
  *     .freeMemory(): destroys graph and frees memory
  * 
  * NOTE:
- *   The weight in Graph and GraphSP objects are always RESISTANCE, not WEIGHT!!!
+ *   The resistance in Graph and GraphSP objects are always RESISTANCE, not WEIGHT!!!
  * 
  *   Graph and GraphSP behave like objects in python or javascript. That is, if you do 
  *     Graph A; Graph B=A; 
@@ -34,54 +35,121 @@
 #ifndef __GRAPH_H__
 #define __GRAPH_H__
 
+#include <vector>
 #include "common.h"
 
-struct Graph
-{
-  int n;
-  vector< pair<int, FLOAT> > *e;
+struct Edge {
+  int u, v;
+  FLOAT resistance;
 
-  Graph(): n(0), e(NULL) {}
-
-  Graph(int n): n(n), e(new vector< pair<int,FLOAT> >[n+1]) {}
-
-  Graph(const Graph &b): n(b.n), e(b.e) {}
-
-  Graph &operator =(const Graph&& b) {
-    n = b.n;
-    e = b.e;
-    return (*this);
+  Edge() {
+    u = 0;
+    v = 0;
+    resistance = 0;
   }
 
-  void freeMemory() const {
-          delete[] e;
-        }
+  Edge(const Edge &o) {
+    u = o.u;
+    v = o.v;
+    resistance = o.resistance;
+  }
+
+  Edge &operator = (const Edge &o) {
+    u = o.u;
+    v = o.v;
+    resistance = o.resistance;
+  }
 };
 
-struct GraphSP
-{
+struct Arc {
+  int v;
+  FLOAT resistance;
+
+  Arc() {
+    v = 0;
+    resistance = 0;
+  }
+
+  Arc(int _v, FLOAT _resistance) {
+    v = _v;
+    resistance = _resistance;
+  }
+
+
+  Arc(const Arc &o) {
+    v = o.v;
+    resistance = o.resistance;
+  }
+
+  Arc &operator = (const Arc &o) {
+    v = o.v;
+    resistance = o.resistance;
+  }
+};
+
+struct Graph {
   int n;
+  vector<Arc> *neighbor_list;
 
-  vector< pair<int, FLOAT> > *e;
+  Graph() {
+    n = 0;
+    neighbor_list = NULL;
+  }
 
-  vector< tuple<int,int,FLOAT> > &o;
+  Graph(int _n) {
+    n = _n;
+    neighbor_list = new vector<Arc>[n];
+  }
 
-  GraphSP(): n(0), e(NULL), o(*new vector< tuple<int,int,FLOAT> >) {}
+  Graph(const Graph &o) {
+    n = o.n;
+    neighbor_list = o.neighbor_list;
+  }
 
-  GraphSP(int n): n(n), e(new vector< pair<int,FLOAT> >[n+1]), o(*new vector< tuple<int,int,FLOAT> >) {}
+  Graph &operator =(const Graph & o) {
+    n = o.n;
+    neighbor_list = o.neighbor_list;
+    return (*this);
+  }
 
-  GraphSP(const GraphSP &b): n(b.n), e(b.e), o(b.o) {}
+  void FreeMemory() const {
+    delete neighbor_list;
+  }
+};
 
-  GraphSP &operator =(const GraphSP&& b) {
-    n = b.n;
-    e = b.e;
-    o.swap(b.o); //Richard: why swap instead of assign
+struct TreePlusEdges {
+  int n;
+  vector<Arc> *children;
+  vector<Edge> *off_tree_edge;
+
+  TreePlusEdges() {
+    n = 0;
+    children = NULL;
+    off_tree_edge = NULL;
+  }
+
+  TreePlusEdges(int _n) {
+    n = _n;
+    children = new vector<Arc>[n];
+    off_tree_edge = new vector<Edge>;
+  }
+
+  TreePlusEdges(const TreePlusEdges &o) {
+    n = o.n;
+    children = o.children;
+    off_tree_edge = o.off_tree_edge;
+  }
+
+  TreePlusEdges &operator =(const TreePlusEdges &o) {
+    n = o.n;
+    children = o.children;
+    off_tree_edge = o.off_tree_edge;
     return (*this);
   }
 
   void freeMemory() const {
-    delete &o;
-    delete[] e;
+    delete children;
+    delete off_tree_edge;
   }
 };
 

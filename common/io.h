@@ -2,43 +2,51 @@
  * 
  * File IO Interface
  * 
+ * We assume that the files are 1-indexed.
+ * HOWEVER, all intermediate storages are 0-indexed
+ *
+ *
+ * Note:
+ *   matrices store conductances, or weights
+ *   graphs store resistances
+ *   BUT upon input, everything is in conductances
+ *
+ *
+ *
  * Public API:
- *     Mat IO::constructMatrixFromGraph(g):
+ *     Mat IO::ConstructMatrixFromGraph(g):
  *         GraphSP g: the graph
  *         returns a Mat, the Laplacian matrix of graph g
  * 
- *     GraphSP IO::convertLaplacianMatrixToGraphSP(const Mat &A)
+ *     GraphSP IO::ConvertLaplacianMatrixToGraph(const Mat &A)
  *         Mat A: the Laplacian matrix
  *         returns the graph corresponding to the Laplacian matrix
  *         FIXME: 
  *             Need to check input is indeed Laplacian matrix. 
- *             Currently I'm not doing this bcuz of floating error issues.
+ *             Currently I'm not doing this due tofloating error issues.
+ *             Richard: this is indeed tricky due to floating point issues
  * 
- *     GraphSP IO::readGraph(filename):
+ *     GraphSP IO::ReadGraph(filename):
  *         string filename: the input file name
- *        Reads input, calls the low stretch tree finder, and returns a GraphSP object.
+ *         Reads input, returns a graph object
  *   
- *     GraphSP IO::readGraphSP(filename):
- *         string filename: the input file name
- *         Reads input, returns the GraphSP object.
- *         It assumes that the first n-1 edges form a directed spanning tree rooted at 1.
- * 
- *     Mat IO::readMML(filename):
+ *     Mat IO::ReadMMMat(filename):
  *         string filename: the input file name
  *         Reads the Matrix Market format input, and returns the matrix.
  *        It assumes that the input contains only the upper-triangular part of the matrix.
  * 
- *     Mat IO::readMMA(filename):
- *         string filename: the input file name
- *         Reads the Matrix Market format input, and returns the matrix.
- *        It assumes that the input is the adjancy matrix of a graph, and contains only upper-triangular part.
- *         It then constructs the Laplacian matrix corresponding to the graph.
- * 
- *     Mat IO::readMMVec(filename):
+ *     Mat IO::ReadMMVec(filename):
  *         string filename: the input file name
  *         Reads the Matrix Market format input, and returns the vector.
- *        It assumes that the input is a dense matrix market format file, with a single column.
+ *         It assumes that the input is a dense matrix market format file,
+ *         with a single column.
  *
+ *
+ *
+ * FILE FORMATS:
+ *
+ *  0: Asc
+ *  1: binary of ints
  * 
  ********************************************************************************/
 
@@ -46,448 +54,216 @@
 #define GENERATORS_IO_H__
 
 #include <utility>
-#include <tuple>
 #include <string>
 #include <vector>
 #include "common.h"
 #include "matrix.h"
 #include "graph.h"
-#include "treeFinder.h"
 
 namespace IO {
 
-  FILE * openAsRead(string fileName) {
-    FILE *f_in = fopen(fileName.c_str(), "r");
-    if (!f_in) {
+  FILE *OpenAsRead(string file_name) {
+    FILE *file_in = fopen(file_name.c_str(), "r");
+
+    if (!file_in) {
       printf("File error.\n");
       assert(0);
     }
-    return f_in;
+
+    return file_in;
   }
 
-  FILE * openAsWrite(string fileName) {
-    FILE *f_out = fopen(fileName.c_str(), "w");
-    if (!f_out) {
+  FILE * OpenAsWrite(string file_name) {
+    FILE *file_out = fopen(file_name.c_str(), "w");
+
+    if (!file_out) {
       printf("File error.\n");
       assert(0);
     }
-    return f_out;
+
+    return file_out;
   }
 
-  Mat constructMatrixFromGraph(const GraphSP g) {
-    int n = g.n;
-    static FLOAT *s = new FLOAT[MAXN];
+  void SkipHeader(FILE *file_in) {
+    char buff[100], ch;
 
-#ifdef USE_MPFR
-    for (int i = 0; i < n; ++i) {
-      s[i] = 0;
+    do {
+      fgets(buff, 100, file_in);
+      ch = getc(file_in);
+      ungetc(ch, file_in);
+    } while (ch == '%');
+  }
+
+  inline int ReadInt(FILE *file_in, int format) {
+    int result;
+    if (format == 0) {
+      fscanf(file_in, "%d", &result);
+    } else if (format == 1) {
+      fread(&result, sizeof(int), 1, file_in);
     }
-#else
-    memset(s, 0, sizeof(FLOAT)*(n+1));
-#endif
+    return result;
+  }
 
-    Mat A(n, n);
-    for (int i = 1; i <= n; ++i) {
-      for (auto it = g.e[i].begin(); it != g.e[i].end(); ++it) {
-        int x = i;
-        int y = it->first;
-        FLOAT z = it->second;
+  inline FLOAT ReadFloat(FILE *file_in, int format) {
+    double result;
+    if (format == 0) {
+      fscanf(file_in, "%lf", &result);
+    } else if (format == 1) {
+      fread(&result, sizeof(double), 1, file_in);
+    }
+    return FLOAT(result);
+  }
 
-        x--;
-        y--;
-        z = 1.0 / z;
+  Matrix GraphToMatrix(const Graph graph) {
+    Matrix result(graph.n, graph.n);
 
-        A.entryAddValue(x, y, -z);
-        A.entryAddValue(y, x, -z);
-        s[x] += z;
-        s[y] += z;
+    for (int u = 0; u < graph.n; ++u) {
+      for (vector<Arc>::iterator it = graph.neighbor_list[u].begin();
+           it != graph.neighbor_list[u].end(); ++it) {
+        FLOAT weight = FLOAT(1.0) / it -> resistance;
+// off-diagonals
+        result.AddNonZero(u, it -> v, -weight);
+        result.AddNonZero(it -> v, u, -weight);
+// diagonals
+        result.AddNonZero(u, u, weight);
+        result.AddNonZero(it -> v, it -> v, weight);
       }
     }
 
-    for (auto it = g.o.begin(); it != g.o.end(); ++it) {
-      int x = get<0>(*it);
-      int y = get<1>(*it);
-      FLOAT z = get<2>(*it);
-
-      x--;
-      y--;
-      z = 1.0/z;
-      A.entryAddValue(x, y, -z);
-      A.entryAddValue(y, x, -z);
-
-      s[x] += z;
-      s[y] += z;
-    }
-
-    for (int i = 0; i < n; ++i) {
-      A.entryAddValue(i, i, s[i]);
-    }
-    A.sortup();
-    return A;
+    result.SortAndCombine();
+    return result;
   }
 
 
-  GraphSP convertLaplacianMatrixToGraphSP(const Mat &A) {
-  // WARNING: won't report error if matrix is not symmetric
-    assert(A.n == A.m);
-    Graph g(A.n);
+  Graph MatrixToGraph(const Matrix &matrix) {
+  // puts in arcs whose weights are the
+  // average of the upper off-diagonals
+  //
+  // also converts it to resistance
+  //
 
-    static FLOAT *s = new FLOAT[MAXN];
-    for (auto it = A.values.begin(); it != A.values.end(); ++it) {
-      int x = it->x;
-      int y = it->y;
-      FLOAT z = it->z;
+    assert(matrix.n == matrix.m);
+    Graph result(matrix.n);
 
-      if (x != y) {
-        if (z > 0) {
-          fprintf(stderr, "Warning: Given matrix is not Laplacian");
-          fprintf(stderr, "it has positive off-diagonals!\n");
-        }
-        s[x] += z;
-        z = -1.0/z;
-        g.e[x + 1].push_back(make_pair(y + 1, z));
+    for (vector<MatrixElement>::iterator it = matrix.non_zero -> begin();
+        it != matrix.non_zero -> end(); ++it) {
+      if (it -> row != it -> column) {
+        (result.neighbor_list[it -> row]).
+          push_back(Arc(it -> column, -FLOAT(1.0) / it -> value));
+      }
+    }
+
+    return result;
+  }
+
+
+  Graph ReadGraph(string file_name, int format) {
+// format:
+//   0: Asc
+//   1: binary of ints
+
+    FILE* file_in = fopen(file_name.c_str(), "r");
+
+    int num_vertices = ReadInt(file_in, format);
+    int num_edges = ReadInt(file_in, format);
+
+    Graph result(num_vertices);
+
+    for (int i = 0; i < num_vertices; ++i) {
+      result.neighbor_list[i].clear();
+    }
+
+    for (int i = 0; i < num_edges; ++i) {
+// convert out of 1-indexing
+      int row = ReadInt(file_in, format) - 1;
+      int column = ReadInt(file_in, format) - 1;
+
+// read float or int depending on format
+      FLOAT weight;
+      if (format == 0) {
+        weight = ReadFloat(file_in, format);
+      } else if (format == 1) {
+        weight = ReadInt(file_in, format);
       } else {
-        if (z < 0) {
-          fprintf(stderr, "Warning: Given matrix is not Laplacian,");
-          fprintf(stderr, " it has negative diagonals!\n");
-        }
-        s[x]+=z;
+        assert(0);
       }
-    }
-    //  rep(i,0,A.n-1) if (fabs(s[i])>1e-6)
-    //  printf("Warning: Given matrix is not Laplacian,
-    //  fpritnf("its row/col sum is not 0!\n");
-    //
+// convert to resistances
+      FLOAT resistance = FLOAT(1.0) / weight;
 
-    GraphSP g2 = TreeFinder::findLowStretchTree(g);
-    g.freeMemory();
-    return g2;
+      result.neighbor_list[row].push_back(Arc(column, resistance));
+      result.neighbor_list[column].push_back(Arc(row, resistance));
+    }
+    fclose(file_in);
+
+    return result;
   }
 
+  Matrix ReadMMMatrix(string file_name) {
+    FILE* file_in = OpenAsRead(file_name);
+    SkipHeader(file_in);
 
-  GraphSP readGraphSPAsc(string fileName) {
-    FILE* f_in = openAsRead(fileName);
+    int n = ReadInt(file_in, 0);
+    int m = ReadInt(file_in, 0);
+    int nnz = ReadInt(file_in, 0);
 
-    int n, m;
-    fscanf(f_in, "%d%d", &n, &m);
-
-    vector< pair<int, FLOAT> > *e = new vector< pair<int, FLOAT> >[n + 1];
-    vector< tuple<int, int, FLOAT> > o;
-    for (int i = 1; i <= n; ++i) {
-      e[i].clear();
+    Matrix result = Matrix(n, m);
+    for (int i = 0; i < nnz; ++i) {
+      int row = ReadInt(file_in, 0) - 1;
+      int column = ReadInt(file_in, 0) - 1;
+      FLOAT value = ReadFloat(file_in, 0);
+      result.AddNonZero(row, column, value);
     }
+    fclose(file_in);
 
-    for (int i = 1; i < n; ++i) {
-      int x, y;
-      double z;
-      fscanf(f_in, "%d%d%lf", &x, &y, &z);
-      e[x + 1].push_back(make_pair(y + 1, z));
-    }
-
-    o.clear();
-    for (int i = 1; i <= m - (n - 1); ++i) {
-      int x, y;
-      double z;
-      fscanf(f_in, "%d%d%lf", &x, &y, &z);
-      o.push_back(make_tuple(x + 1, y + 1, z));
-    }
-    fclose(f_in);
-
-    GraphSP g;
-    g.n = n;
-    g.e = e;
-    g.o.swap(o);
-    return g;
+    result.SortAndCombine();
+    return result;
   }
 
-  GraphSP readGraphAsc(string filename) {
-    FILE* f_in = fopen(filename.c_str(), "r");
-    if (!f_in) {
-      printf("File error.\n");
-      assert(0);
-    }
+  Vec readMMVec(string file_name) {
+    FILE* file_in = fopen(file_name.c_str(), "r");
+    SkipHeader(file_in);
 
-    int n, m;
-    fscanf(f_in, "%d%d", &n, &m);
-    Graph h(n);
-
-    for (int i = 1; i <= n; ++i) {
-      h.e[i].clear();
-    }
-
-    for (int i = 1; i <= m; ++i) {
-      int x, y;
-      double z;
-
-      fscanf(f_in, "%d%d%lf", &x, &y, &z);
-      h.e[x].push_back(make_pair(y, z));
-      h.e[y].push_back(make_pair(x, z));
-    }
-    fclose(f_in);
-
-    GraphSP g = TreeFinder::findLowStretchTree(h);
-    h.freeMemory();
-    return g;
-  }
-
-  GraphSP readGraphBin(string filename) {
-    FILE* f_in = fopen(filename.c_str(), "r");
-    if (!f_in) {
-      printf("File error.\n");
-      assert(0);
-    }
-    int buffer[3];
-
-    fread(buffer, sizeof(int), 2, f_in);
-    int n = buffer[0];
-    int m = buffer[1];
-    Graph h(n);
-
-    for (int i = 1; i <= n; ++i) {
-      h.e[i].clear();
-    }
-
-    for (int i = 0; i < m; ++i) {
-      fread(buffer, sizeof(int), 3, f_in);
-
-      int x = buffer[0];
-      int y = buffer[1];
-      int z = buffer[2];
-
-      h.e[x].push_back(make_pair(y, z));
-      h.e[y].push_back(make_pair(x, z));
-    }
-    fclose(f_in);
-
-    GraphSP g = TreeFinder::findLowStretchTree(h);
-    h.freeMemory();
-    return g;
-  }
-
-  // TOFIX Only works on symmetric mm right now
-  Mat readMML(string fileName) {
-    FILE* f_in = openAsRead(fileName);
-
-    int c;
-    char buff[100];
-
-    do {
-      fgets(buff, 100, f_in);
-      c = getc(f_in);
-      ungetc(c, f_in);
-    } while (c == '%');
-
-    int n, temp, m;
-    fscanf(f_in, "%d%d%d", &n, &temp, &m);
-
-    int x, y;
-    double z;
-
-    Mat A = Mat(n, n);
-    for (int i = 1; i <= m; ++i) {
-      fscanf(f_in, "%d%d%lf", &x, &y, &z);
-      x--;
-      y--;
-      A.entryAddValue(x, y, z);
-      if (x != y) {
-        A.entryAddValue(y, x, z);
-      }
-    }
-    fclose(f_in);
-
-    A.sortup();
-    return A;
-  }
-
-  // TOFIX Only works on symmetric mm right now
-  Mat readMMA(string fileName) {
-    FILE* f_in = openAsRead(fileName);
-    int c;
-    char buff[100];
-    do {
-      fgets(buff, 100, f_in);
-      c = getc(f_in);
-      ungetc(c, f_in);
-    } while (c == '%');
-
-    int n, temp, m;
-    fscanf(f_in, "%d%d%d", &n, &temp, &m);
-    static FLOAT *s = new FLOAT[MAXN];
-#ifdef USE_MPFR
-    for (int i = 0; i <= n; ++i) {
-      s[i] = 0;
-    }
-#else
-    memset(s, 0, sizeof(FLOAT) * (n + 1));
-#endif
-    int x, y;
-    double z;
-
-    Mat A = Mat(n, n);
-    for (int i = 1; i <= m; ++i) {
-      fscanf(f_in, "%d%d%lf", &x, &y, &z);
-      x--;
-      y--;
-
-      A.entryAddValue(x, y, -z);
-      A.entryAddValue(y, x, -z);
-      s[x] += z; s[y] += z;
-    }
-
-    fclose(f_in);
-
-    for (int i = 0; i < n; ++i) {
-      A.entryAddValue(i, i, s[i]);
-    }
-    A.sortup();
-    return A;
-  }
-
-  Vec readMMVec(string filename) {
-    FILE* f_in = fopen(filename.c_str(), "r");
-    if (!f_in) {
-      printf("File error.\n");
-      assert(0);
-    }
-
-    int c;
-    char buff[100];
-    do {
-      fgets(buff, 100, f_in);
-      c = getc(f_in);
-      ungetc(c, f_in);
-    } while (c == '%');
-
-    int n, m;
-    fscanf(f_in, "%d%d", &n, &m);
+    int n = ReadInt(file_in, 0);
+    int m = ReadInt(file_in, 0);
     assert(m == 1);
 
-    Vec v(n);
-
-    double z;
+    Vec result(n);
 
     for (int i = 0; i < n; ++i) {
-      fscanf(f_in, "%lf", &z);
-      FLOAT zz = z;
-      v[i] = zz;
+      result[i] = ReadFloat(file_in, 0);
     }
-    fclose(f_in);
-    return v;
+    fclose(file_in);
+    return result;
   }
 
-  void saveMMVec(const Vec &A, string filename) {
-    FILE* f_out = fopen(filename.c_str(), "w");
-    if (!f_out) {
-      printf("Write file error.\n");
-      assert(0);
-    }
+  void SaveMMVec(const Vec *vec, string file_name) {
+    FILE* file_out = OpenAsWrite(file_name);
 
-    fprintf(f_out, "%%%%MatrixMarket matrix array real general\n");
-    fprintf(f_out, "%% Generated \?\?-\?\?-\?\?\?\?\n");
-    fprintf(f_out, "%d %d\n", A.n, 1);
-    for (int i =0 ; i < A.n; ++i) {
-      fprintf(f_out, "%.16lf\n", printFloat(A[i]));
+    fprintf(file_out, "%%%%MatrixMarket matrix array real general\n");
+    fprintf(file_out, "%% Generated \?\?-\?\?-\?\?\?\?\n");
+    fprintf(file_out, "%d %d\n", vec -> n, 1);
+    for (int i =0 ; i < vec -> n; ++i) {
+      fprintf(file_out, "%.16lf\n", PrintFloat((*vec)[i]));
     }
-    fclose(f_out);
+    fclose(file_out);
   }
 
+  void SaveMMMatrix(const Matrix matrix, string file_name) {
+    matrix.SortAndCombine();
+    FILE* file_out = OpenAsWrite(file_name);
 
-  void saveMM(const Mat &A, string filename) {
-    A.sortup();
-    FILE* f_out = fopen(filename.c_str(), "w");
-    if (!f_out) {
-      printf("Write file error.\n");
-      assert(0);
+    fprintf(file_out, "%%%%MatrixMarket matrix coordinate real symmetric\n");
+    fprintf(file_out, "%% Generated \?\?-\?\?-\?\?\?\?\n");
+
+    fprintf(file_out, "%d %d %d\n", matrix.n,
+      matrix.m, (matrix.non_zero) -> size());
+    for (vector<MatrixElement>::iterator it = (matrix.non_zero) -> begin();
+        it != (matrix.non_zero) -> end(); ++it) {
+      fprintf(file_out, "%d %d ", it -> column + 1, it -> column + 1);
+      fprintf(file_out, "%.16lf\n", PrintFloat(it -> value));
     }
-
-    fprintf(f_out, "%%%%MatrixMarket matrix coordinate real symmetric\n");
-    fprintf(f_out, "%% Generated \?\?-\?\?-\?\?\?\?\n");
-
-    int cnt = 0;
-    for (auto it = A.values.begin(); it != A.values.end(); ++it) {
-      if (it->x >= it->y) {
-        cnt++;
-      }
-    }
-
-    fprintf(f_out, "%d %d %d\n", A.n, A.m, cnt);
-
-    for (auto it = A.values.begin(); it != A.values.end(); ++it) {
-      if (it -> x >= it -> y) {
-/*
-        char temp[30];
-        sprintf(temp, "%0.16lf", printFloat(it -> z));
-        int r = strlen(temp);
-        while(temp[r - 1] == '0') {
-          r--;
-        }
-        temp[r] = '\0';
-*/ 
-        fprintf(f_out, "%d %d ", it -> x + 1, it -> y + 1);
-        fprintf(f_out, "%0.16lf\n", printFloat(it -> z));
-      }
-    }
-    fclose(f_out);
+    fclose(file_out);
   }
 
-  void saveMMnonsym(const Mat &A, string filename) {
-    A.sortup();
-    FILE* f_out = fopen(filename.c_str(), "w");
-    if (!f_out) {
-      printf("Write file error.\n");
-      assert(0);
-    }
-
-    fprintf(f_out, "%%%%MatrixMarket matrix coordinate real general\n");
-    fprintf(f_out, "%% Generated 01-Feb-2016\n");
-    int cnt = 0;
-//  richard: why is this not just size?
-    for (auto it = A.values.begin(); it != A.values.end(); ++it) {
-      cnt++;
-    }
-
-    fprintf(f_out, "%d %d %d\n", A.n, A.m, cnt);
-    for (auto it = A.values.begin(); it != A.values.end(); ++it) {
-      fprintf(f_out, "%d %d ", it -> x + 1, it -> y + 1);
-      fprintf(f_out, "%.16lf\n", printFloat(it -> z));
-    }
-    fclose(f_out);
-  }
-
-  // assumes non-symmetric!
-  Mat readMMnonsym(string filename) {
-    FILE* f_in = fopen(filename.c_str(), "r");
-    if (!f_in) {
-      printf("File error.\n");
-      assert(0);
-    }
-
-    int c;
-    char buff[100];
-
-    do {
-      fgets(buff, 100, f_in);
-      c = getc(f_in);
-      ungetc(c, f_in);
-    } while (c == '%');
-
-    int n, m, nnz;
-    fscanf(f_in, "%d%d%d", &n, &m, &nnz);
-
-    int x, y;
-    double z;
-
-    Mat A = Mat(n, m);
-    for (int i = 0; i < nnz; ++i) {
-      fscanf(f_in, "%d%d%lf", &x, &y, &z);
-      x--;
-      y--;
-      A.entryAddValue(x, y, z);
-    }
-    fclose(f_in);
-
-    A.sortup();
-    return A;
-  }
 }      // namespace IO
 #endif  // GENERATORS_IO_H_
