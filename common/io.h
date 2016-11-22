@@ -52,7 +52,7 @@
 #include "common.h"
 #include "matrix.h"
 #include "graph.h"
-#include "treefinder.h"
+#include "treeFinder.h"
 
 namespace IO {
 
@@ -76,7 +76,7 @@ namespace IO {
 
   Mat constructMatrixFromGraph(const GraphSP g) {
     int n = g.n;
-    static FLOAT *s = new FLOAT[maxn];
+    static FLOAT *s = new FLOAT[MAXN];
 
 #ifdef USE_MPFR
     for (int i = 0; i < n; ++i) {
@@ -132,7 +132,7 @@ namespace IO {
     assert(A.n == A.m);
     Graph g(A.n);
 
-    static FLOAT *s = new FLOAT[maxn];
+    static FLOAT *s = new FLOAT[MAXN];
     for (auto it = A.values.begin(); it != A.values.end(); ++it) {
       int x = it->x;
       int y = it->y;
@@ -312,7 +312,7 @@ namespace IO {
 
     int n, temp, m;
     fscanf(f_in, "%d%d%d", &n, &temp, &m);
-    static FLOAT *s = new FLOAT[maxn];
+    static FLOAT *s = new FLOAT[MAXN];
 #ifdef USE_MPFR
     for (int i = 0; i <= n; ++i) {
       s[i] = 0;

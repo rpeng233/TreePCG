@@ -12,9 +12,9 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
-#include "io.h"
-#include "graph.h"
-#include "matrix.h"
+#include "../common/io.h"
+#include "../common/graph.h"
+#include "../common/matrix.h"
 
 using std::cout;
 using std::cerr;

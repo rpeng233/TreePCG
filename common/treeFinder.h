@@ -36,10 +36,10 @@
 namespace TarjanLCA
 {
 	vector< pair<int,FLOAT> > *e;
-	vector< pair<int,int> > *q=new vector< pair<int,int> >[maxn];
+	vector< pair<int,int> > *q=new vector< pair<int,int> >[MAXN];
 	vector<int> ret;
-	int *p=new int[maxn], *vis=new int[maxn];
-	FLOAT *osum_r=new FLOAT[maxn];
+	int *p=new int[MAXN], *vis=new int[MAXN];
+	FLOAT *osum_r=new FLOAT[MAXN];
 	
 	int find(int x)
 	{
@@ -107,9 +107,9 @@ namespace StretchCalculator
 
 namespace DijkstraTreeFinder
 {
-	int *place=new int[maxn], *prev=new int[maxn];
-	pair<int,FLOAT> *a=new pair<int,FLOAT>[maxn];
-	FLOAT *dis=new FLOAT[maxn], *prevd=new FLOAT[maxn];
+	int *place=new int[MAXN], *prev=new int[MAXN];
+	pair<int,FLOAT> *a=new pair<int,FLOAT>[MAXN];
+	FLOAT *dis=new FLOAT[MAXN], *prevd=new FLOAT[MAXN];
 	int hps;
 	
 	void heapdown(int i)
@@ -213,7 +213,7 @@ namespace DijkstraTreeFinder
 
 namespace MSTTreeFinder
 {
-	int *p=new int[maxn], *prev=new int[maxn];
+	int *p=new int[MAXN], *prev=new int[MAXN];
 	
 	int find(int x)
 	{
@@ -292,7 +292,7 @@ namespace TreeFinder
 {
 	GraphSP findLowStretchTree(const Graph &g)
 	{
-		static FLOAT *vis=new FLOAT[maxn];
+		static FLOAT *vis=new FLOAT[MAXN];
 		rep(i,1,g.n) vis[i]=0;
 		Graph g2(g.n);
 		rep(i,1,g.n)

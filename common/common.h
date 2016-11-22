@@ -41,18 +41,17 @@ using namespace std;
 typedef long long LL;
 typedef unsigned long long ULL;
 
+//THESE SHOULD ALL DISAPPEAR...
 #define SIZE(x) (int((x).size()))
 #define rep(i,l,r) for (int i=(l); i<=(r); i++)
 #define repd(i,r,l) for (int i=(r); i>=(l); i--)
 #define rept(i,c) for (__typeof((c).begin()) i=(c).begin(); i!=(c).end(); i++)
+const int MAXN = 10001000;
+////
+//
+//
 
-#ifndef ONLINE_JUDGE
-#define debug(x) { cerr<<#x<<" = "<<(x)<<endl; }
-#else
-#define debug(x) {}
-#endif
 
-#define maxn 1050001
 
 #ifdef USE_MPFR
 typedef mpfr::real<MPFR_PRECISION> FLOAT;
