@@ -63,24 +63,32 @@
 namespace IO {
 
   FILE *OpenAsRead(string file_name) {
-    FILE *file_in = fopen(file_name.c_str(), "r");
+    FILE *file_in;
+    if (ile_name == "__stdin") {
+      file_in = stdin;
+    } else {
+      file_in = fopen(file_name.c_str(), "r");
 
-    if (!file_in) {
-      printf("File error.\n");
-      assert(0);
+      if (!file_in) {
+        printf("File error.\n");
+        assert(0);
+      }
     }
-
     return file_in;
   }
 
   FILE * OpenAsWrite(string file_name) {
-    FILE *file_out = fopen(file_name.c_str(), "w");
+    FILE *file_out;
+    if (file_name == "__stdout") {
+      file_out = stdout;
+    } else {
+      file_out = fopen(file_name.c_str(), "w");
 
-    if (!file_out) {
-      printf("File error.\n");
-      assert(0);
+      if (!file_out) {
+        printf("File error.\n");
+        assert(0);
+      }
     }
-
     return file_out;
   }
 
@@ -189,7 +197,6 @@ namespace IO {
       }
 // convert to resistances
       FLOAT resistance = FLOAT(1.0) / weight;
-
       result.neighbor_list[row].push_back(Arc(column, resistance));
       result.neighbor_list[column].push_back(Arc(row, resistance));
     }
@@ -256,7 +263,7 @@ namespace IO {
     fprintf(file_out, "%% Generated \?\?-\?\?-\?\?\?\?\n");
 
     fprintf(file_out, "%d %d %d\n", matrix.n,
-      matrix.m, (matrix.non_zero) -> size());
+      matrix.m, int((matrix.non_zero) -> size()));
     for (vector<MatrixElement>::iterator it = (matrix.non_zero) -> begin();
         it != (matrix.non_zero) -> end(); ++it) {
       fprintf(file_out, "%d %d ", it -> column + 1, it -> column + 1);

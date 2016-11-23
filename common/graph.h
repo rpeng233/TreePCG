@@ -58,6 +58,7 @@ struct Edge {
     u = o.u;
     v = o.v;
     resistance = o.resistance;
+    return (*this);
   }
 };
 
@@ -84,6 +85,7 @@ struct Arc {
   Arc &operator = (const Arc &o) {
     v = o.v;
     resistance = o.resistance;
+    return (*this);
   }
 };
 

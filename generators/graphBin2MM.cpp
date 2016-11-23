@@ -22,7 +22,7 @@ using std::endl;
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
-        cerr << "Please specify graph file and output file" << endl;
+        cerr << "FORMAT: graph file and output file" << endl;
         return -1;
     }
 
@@ -34,11 +34,11 @@ int main(int argc, char *argv[]) {
     string graphFile = argv[1];
     string outFile = argv[2];
 
-    GraphSP g = IO::readGraphBin(graphFile);
+    Graph graph = IO::ReadGraph(graphFile, 1);
     fprintf(stderr, "FINISHED READING FILE\n");
-    Mat A = IO::constructMatrixFromGraph(g);
+    Matrix matrix = IO::GraphToMatrix(graph);
     fprintf(stderr, "CONSTRUCTED MATRIX\n");
-    IO::saveMM(A, outFile);
+    IO::SaveMMMatrix(matrix, outFile);
     fprintf(stderr, "DONE SAVING TO FILE\n");
     return 0;
 }

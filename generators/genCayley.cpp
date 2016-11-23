@@ -37,8 +37,9 @@ int main(int argt, char **args) {
   buffer[1] = k * n;
   fwrite(buffer, sizeof(int), 2, f_out);
 
-  fprintf(stderr, "MAKING CAYLEY GRAPH ON %d VERTICES", n);
-  fprintf(stderr, "WITH %d GENERATORS\n", k);
+  fprintf(stderr, "Making Cayley graph on %d vertices", n);
+  fprintf(stderr, "with %d generators\n", k);
+  fprintf(stderr, "outputting to binary format\n");
 
   for (int i = 0; i < k; ++i) {
     int skip, weight;
@@ -46,7 +47,8 @@ int main(int argt, char **args) {
     sscanf(args[3 + i * 2], "%d", &skip);
     sscanf(args[4 + i * 2], "%d", &weight);
 
-    fprintf(stderr, "EDGE TYPE %d: SKIP = %d, WEIGHT = %d\n", i, skip, weight);
+    fprintf(stderr, "edge type %d:\n", i);
+    fprintf(stderr, "  skip = %d, resistance = %d\n", skip, weight);
 
 
     for (int j = 0; j < n; ++j) {

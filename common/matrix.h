@@ -175,7 +175,7 @@ struct Matrix {
 
   void AddNonZero(int row, int column, FLOAT value) {
 #ifndef NO_RANGE_CHECK
-    assert(0 <= row && row < n && 0 < column && column < m);
+    assert(0 <= row && row < n && 0 <= column && column < m);
 #endif
     non_zero -> push_back(MatrixElement(row, column, value));
   }
@@ -193,18 +193,18 @@ struct Matrix {
         if (last.row >= 0) {
           (*non_zero)[new_nnz] = last;
           new_nnz++;
-          last = (*it);
-        } else {
-          last.value += it -> value;
-        }
+        } 
+        last = (*it);
+      } else {
+        last.value += it -> value;
       }
-
-      if (last.row >= 0) {
-        (*non_zero)[new_nnz] = last;
-        new_nnz++;
-      }
-      non_zero -> resize(new_nnz);
     }
+
+    if (last.row >= 0) {
+      (*non_zero)[new_nnz] = last;
+      new_nnz++;
+    }
+    non_zero -> resize(new_nnz);
   }
 
   Matrix transpose() const {
