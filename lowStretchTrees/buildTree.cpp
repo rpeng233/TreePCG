@@ -17,21 +17,20 @@
 #include "../common/graph.h"
 #include "../lowStretchTrees/treeFinder.h"
 
-using std::cout;
-using std::cerr;
-using std::endl;
-
 int main(int argc, char *argv[]) {
-    if (argc < 4) {
-        cerr << "FORMAT: tree type, graph file, output tree file" << endl;
+    if (argc < 6) {
+        fprintf(stderr, "FORMAT: tree type, graph file, format\n");
+        fprintf(stderr, "        output tree file, format\n");
         return -1;
     }
 
     string tree_type = argv[1];
     string graph_file = argv[2];
-    string out_file = argv[3];
+    char graph_format = IO::ParseFormat(argv[3]);
+    string out_file = argv[4];
+    char out_format = IO::ParseFormat(argv[5]);
 
-    Graph graph = IO::ReadGraph(graph_file, 1);
+    Graph graph = IO::ReadGraph(graph_file, graph_format);
     fprintf(stderr, "FINISHED READING FILE\n");
 
     vector<int> tree;
@@ -42,7 +41,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    IO::WriteVector(out_file, 0, tree);
+    IO::WriteVectorInt(out_file, out_format, tree);
     fprintf(stderr, "DONE SAVING TO FILE\n");
 
     TreePlusEdges g1 = GraphToTreePlusEdges(graph, tree);

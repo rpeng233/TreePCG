@@ -1,13 +1,13 @@
 CCOMP = g++
 CFLAGS = -Wall
 
-all: genCayley graphAsc2MM graphBin2MM
-genCayley: genCayley.cpp
+all: genCayley graphToMatrix graphToGraph
+genCayley: genCayley.cpp ../common/io.h ../common/graph.h
 	$(CCOMP) $(CFLAGS) genCayley.cpp -o genCayley
-graphAsc2MM: graphAsc2MM.cpp
-	$(CCOMP) $(CFLAGS) graphAsc2MM.cpp -o graphAsc2MM
-graphBin2MM: graphBin2MM.cpp
-	$(CCOMP) $(CFLAGS) graphBin2MM.cpp -o graphBin2MM
+graphToGraph: graphToGraph.cpp ../common/io.h ../common/graph.h
+	$(CCOMP) $(CFLAGS) graphToGraph.cpp -o graphToGraph
+graphToMatrix: graphToMatrix.cpp ../common/io.h ../common/graph.h ../common/matrix.h
+	$(CCOMP) $(CFLAGS) graphToMatrix.cpp -o graphToMatrix
 
 clean:
-	rm -f genCayley graph2MM graphAsc2MM graphBin2MM
+	rm -f genCayley graphToMatrix graphToGraph

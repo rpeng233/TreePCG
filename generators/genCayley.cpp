@@ -17,50 +17,42 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include "../common/io.h"
+#include "../common/graph.h"
 
 int n, k;
 
-
 int main(int argt, char **args) {
-  if (argt <= 3 || (argt - 3) % 2 == 1) {
+  if (argt <= 4 || (argt - 4) % 2 == 1) {
     fprintf(stderr, "INCORRECT # OF ARGS,");
-    fprintf(stderr, "should be FILENAME,");
+    fprintf(stderr, "should be FILENAME, format,");
     fprintf(stderr, "then n followed by 2k info about generators\n");
     exit(0);
   }
 
-  FILE *f_out = fopen(args[1], "w");
-  int buffer[3];
+  string out_file = args[1];
+  char out_format = IO::ParseFormat(args[2]);
 
   k = (argt - 3) / 2;
-  sscanf(args[2], "%d", &n);
+  sscanf(args[3], "%d", &n);
+  Graph result(n);
 
-
-  buffer[0] = n;
-  buffer[1] = k * n;
-  fwrite(buffer, sizeof(int), 2, f_out);
-
-  fprintf(stderr, "Making Cayley graph on %d vertices", n);
+  fprintf(stderr, "Making Cayley graph on %d vertices\n", n);
   fprintf(stderr, "with %d generators\n", k);
-  fprintf(stderr, "outputting to binary format\n");
 
   for (int i = 0; i < k; ++i) {
-    int skip, weight;
+    int skip;
+    double resistance;
 
-    sscanf(args[3 + i * 2], "%d", &skip);
-    sscanf(args[4 + i * 2], "%d", &weight);
+    sscanf(args[4 + i * 2], "%d", &skip);
+    sscanf(args[5 + i * 2], "%lf", &resistance);
 
     fprintf(stderr, "edge type %d:\n", i);
-    fprintf(stderr, "  skip = %d, resistance = %d\n", skip, weight);
-
-
+    fprintf(stderr, "  skip = %d, resistance = %0.16lf\n", skip, resistance);
     for (int j = 0; j < n; ++j) {
-      buffer[0] = j + 1;
-      buffer[1] = (j + skip) % n + 1;
-      buffer[2] = weight;
-      fwrite(buffer, sizeof(int), 3, f_out);
+      result.AddEdge(j, (j + skip) % n, resistance);
     }
   }
-  fclose(f_out);
+  IO::WriteGraph(out_file, out_format, result);
   return 0;
 }

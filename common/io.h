@@ -56,11 +56,29 @@
 #include <utility>
 #include <string>
 #include <vector>
+#include <sstream>
 #include "common.h"
 #include "matrix.h"
 #include "graph.h"
 
 namespace IO {
+
+  const char ASCII = 0;
+  const char BINARY = 1;
+  const char DIMACS = 2;
+
+  char ParseFormat(string format) {
+    if (format[0] == 'a' || format[0] == 'A') {
+      return ASCII;
+    } else if (format[0] == 'b' || format[0] == 'B') {
+      return BINARY;
+    } else if (format[0] == 'd' || format[0] == 'D') {
+      return DIMACS;
+    } else {
+      fprintf(stderr, "UNSUPPORTED FORMAT: %s\n", format.c_str());
+      exit(0);
+    }
+  }
 
   FILE *OpenAsRead(string file_name) {
     FILE *file_in;
@@ -92,68 +110,93 @@ namespace IO {
     return file_out;
   }
 
-  void SkipHeader(FILE *file_in) {
-    char buff[100], ch;
-
-    do {
-      fgets(buff, 100, file_in);
-      ch = getc(file_in);
-      ungetc(ch, file_in);
-    } while (ch == '%');
-  }
-
-  inline int ReadInt(FILE *file_in, int format) {
-    int result;
-    if (format == 0) {
-      fscanf(file_in, "%d", &result);
-    } else if (format == 1) {
-      fread(&result, sizeof(int), 1, file_in);
-    }
-    return result;
-  }
-
-  inline FLOAT ReadFloat(FILE *file_in, int format) {
-    double result;
-    if (format == 0) {
-      fscanf(file_in, "%lf", &result);
-    } else if (format == 1) {
-      fread(&result, sizeof(double), 1, file_in);
-    }
-    return FLOAT(result);
-  }
-
   void CloseInputFile(FILE *file_in) {
     if(file_in != stdin) {
       fclose(file_in);
     }
   }
  
-  inline void WriteSpace(FILE *file_out, int format) {
-    if (format == 0) {
-      fprintf(file_out, " ");
-    }
-  }
-
-  inline void WriteNewLine(FILE *file_out, int format) {
-    if (format == 0) {
-      fprintf(file_out, "\n");
-    }
-  }
- 
-  inline void WriteInt(FILE *file_out, int format, int v) {
-    if (format == 0) {
-      fprintf(file_out, "%d", v);
-    } else if (format == 1) {
-      fwrite(&v, sizeof(int), 1, file_out);
-    }
-  }
-
   void CloseOutputFile(FILE *file_out) {
     if(file_out != stdout) {
       fclose(file_out);
     }
   }
+
+  void SkipHeader(FILE *file_in, char skip) {
+    char buff[100], ch;
+    
+    while(true) {
+      ch = getc(file_in);
+      ungetc(ch, file_in);
+      if (ch != skip) {
+        break;
+      }
+      fgets(buff, 100, file_in);
+      fprintf(stderr, "COMMENT: %s", buff);
+    }
+  }
+
+  void SkipToken(FILE *file_in) {
+    char buff[100];
+    fscanf(file_in, "%s", buff);
+  }
+
  
+  inline int ReadInt(FILE *file_in, int format) {
+    int result;
+    if (format == ASCII || format == DIMACS) {
+      fscanf(file_in, "%d", &result);
+    } else if (format == BINARY) {
+      fread(&result, sizeof(int), 1, file_in);
+    } else {
+      assert(0);
+    }
+    return result;
+  }
+
+  inline FLOAT ReadFloat(FILE *file_in, int format) {
+    double result;
+    if (format == ASCII || format == DIMACS) {
+      fscanf(file_in, "%lf", &result);
+    } else if (format == BINARY) {
+      fread(&result, sizeof(double), 1, file_in);
+    } else {
+      assert(0);
+    }
+    return FLOAT(result);
+  }
+
+  void WriteFloat(FILE *file_out, int format, FLOAT x) {
+    if (format == ASCII || format == DIMACS) {
+      fprintf(file_out, "%.16lf", PrintFloat(x));
+    } else if (format == BINARY) {
+      fwrite(&x, sizeof(double), 1, file_out);
+    } else {
+      assert(0);
+    }
+  }
+
+  inline void WriteSpace(FILE *file_out, int format) {
+    if (format == ASCII || format == DIMACS) {
+      fprintf(file_out, " ");
+    }
+  }
+
+  inline void WriteNewLine(FILE *file_out, int format) {
+    if (format == ASCII || format == DIMACS) {
+      fprintf(file_out, "\n");
+    }
+  }
+ 
+  inline void WriteInt(FILE *file_out, char format, int v) {
+    if (format == ASCII || format == DIMACS) {
+      fprintf(file_out, "%d", v);
+    } else if (format == BINARY) {
+      fwrite(&v, sizeof(int), 1, file_out);
+    }
+  }
+
+
   Matrix GraphToMatrix(const Graph graph) {
     Matrix result(graph.n, graph.n);
 
@@ -197,49 +240,102 @@ namespace IO {
   }
 
 
-  Graph ReadGraph(string file_name, int format) {
-// format:
-//   0: Asc
-//   1: binary of ints
+  Graph ReadGraph(string file_name, char format) {
+    FILE* file_in = OpenAsRead(file_name);
+    int num_vertices;
+    int num_edges;
 
-    FILE* file_in = fopen(file_name.c_str(), "r");
+    if(format == DIMACS) {
+      SkipHeader(file_in, 'c');
+      char line[1234];
+      fgets(line, 100, file_in);
+      std::istringstream sin(line);
+      string temp1, temp2;
+      sin >> temp1 >> temp2 >> num_vertices >> num_edges;
+      SkipHeader(file_in, 'n');  // ignore source/sink
+    }
+    else {
+      num_vertices = ReadInt(file_in, format);
+      num_edges = ReadInt(file_in, format);
+    }
 
-    int num_vertices = ReadInt(file_in, format);
-    int num_edges = ReadInt(file_in, format);
+// fprintf(stderr, "V = %d E = %d\n", num_vertices, num_edges); fflush(stderr);
 
     Graph result(num_vertices);
-
     for (int i = 0; i < num_vertices; ++i) {
       result.neighbor_list[i].clear();
     }
 
     for (int i = 0; i < num_edges; ++i) {
+      if(format == DIMACS) {
+        SkipToken(file_in);
+      }
 // convert out of 1-indexing
       int row = ReadInt(file_in, format) - 1;
       int column = ReadInt(file_in, format) - 1;
-
 // read float or int depending on format
-      FLOAT weight;
-      if (format == 0) {
-        weight = ReadFloat(file_in, format);
-      } else if (format == 1) {
-        weight = ReadInt(file_in, format);
-      } else {
-        assert(0);
-      }
+      FLOAT weight = ReadFloat(file_in, format);
+
 // convert to resistances
       FLOAT resistance = FLOAT(1.0) / weight;
-      result.neighbor_list[row].push_back(Arc(column, resistance));
-      result.neighbor_list[column].push_back(Arc(row, resistance));
+
+// add in undirected edge, even if the input is directed
+      result.AddEdge(row, column, resistance);
+
+// fprintf(stderr, "%d %d %lf\n", row, column, resistance); fflush(stderr);
     }
 
     CloseInputFile(file_in);
     return result;
   }
 
+  void WriteGraph(string file_name, char format, const Graph &graph) {
+    FILE* file_out = OpenAsWrite(file_name);
+
+    int num_edges = 0;
+    for (int u = 0; u < graph.n; ++u) {
+      num_edges += graph.neighbor_list[u].size();
+    }
+    num_edges /= 2;
+
+    if(format == DIMACS) {
+      fprintf(file_out, "c DIMACS format generated from graphToGraph\n");
+      fprintf(file_out, "c   missing source / sink vertices\n");
+      fprintf(file_out, "p max ");
+    }
+
+    WriteInt(file_out, format, graph.n);
+    WriteSpace(file_out, format);
+    WriteInt(file_out, format, num_edges);
+    WriteNewLine(file_out, format);
+
+    for (int u = 0; u < graph.n; ++u) {
+      for (vector<Arc>::iterator it = graph.neighbor_list[u].begin();
+           it != graph.neighbor_list[u].end(); ++it) {
+        if (format == ASCII || format == BINARY){
+          if(u < it -> v) {
+            WriteInt(file_out, format, u + 1);
+            WriteSpace(file_out, format);
+            WriteInt(file_out, format, it -> v + 1);
+            WriteSpace(file_out, format);
+//convert back to weights
+            FLOAT weight = FLOAT(1) / it -> resistance;
+            WriteFloat(file_out, format, weight);
+            WriteNewLine(file_out, format);
+          }
+        } else if (format == DIMACS) {
+          fprintf(file_out, "a %d %d %.16lf\n", u + 1, it -> v + 1,
+              PrintFloat(FLOAT(1) / it -> resistance));
+        }
+      }
+    }
+    CloseOutputFile(file_out);
+  }
+
+ 
   Matrix ReadMMMatrix(string file_name) {
     FILE* file_in = OpenAsRead(file_name);
-    SkipHeader(file_in);
+    SkipHeader(file_in, ASCII);
 
     int n = ReadInt(file_in, 0);
     int m = ReadInt(file_in, 0);
@@ -260,7 +356,7 @@ namespace IO {
 
   Vec ReadMMVec(string file_name) {
     FILE* file_in = fopen(file_name.c_str(), "r");
-    SkipHeader(file_in);
+    SkipHeader(file_in, '%');
 
     int n = ReadInt(file_in, 0);
     int m = ReadInt(file_in, 0);
@@ -287,15 +383,6 @@ namespace IO {
     CloseOutputFile(file_out);
   }
 
-  void WriteVector(string file_name, int format, const vector<int> v) {
-    FILE* file_out = OpenAsWrite(file_name);
-    for(int i = 0; i < int(v.size()); ++i) {
-      WriteInt(file_out, format, v[i]);
-      WriteNewLine(file_out, format); 
-    }
-    CloseOutputFile(file_out);
-  }
-
   void WriteMMMatrix(string file_name, const Matrix matrix) {
     matrix.SortAndCombine();
     FILE* file_out = OpenAsWrite(file_name);
@@ -309,6 +396,26 @@ namespace IO {
         it != (matrix.non_zero) -> end(); ++it) {
       fprintf(file_out, "%d %d ", it -> column + 1, it -> column + 1);
       fprintf(file_out, "%.16lf\n", PrintFloat(it -> value));
+    }
+    CloseOutputFile(file_out);
+  }
+
+  vector<int> ReadVectorInt(string file_name, char format, int n) {
+    FILE* file_in = OpenAsWrite(file_name);
+    vector<int> result(n);
+    for (int i = 0; i < n; ++i) {
+      result[i] = ReadInt(file_in, format);
+    }
+    CloseOutputFile(file_in);
+    return result;
+  }
+
+
+  void WriteVectorInt(string file_name, char format, const vector<int> v) {
+    FILE* file_out = OpenAsWrite(file_name);
+    for (int i = 0; i < int(v.size()); ++i) {
+      WriteInt(file_out, format, v[i]);
+      WriteNewLine(file_out, format); 
     }
     CloseOutputFile(file_out);
   }
