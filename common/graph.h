@@ -3,21 +3,25 @@
  * Graph Definitions
  * 
  * API Interface:
- *   struct Graph: definition of a graph (1-INDEXED).
+ *   struct Graph: definition of a graph (0-INDEXED).
  *     int .n: the size of graph
- *     vector< pair<int,FLOAT> > .neighbor[i]:
- *         the neighbors of vertex i, 1<=i<=n
+ *     vector<Arc> .neighbor[i]:
+ *         the neighbors of vertex i, 0 <= i <n
  *     .freeMemory(): destroys graph and frees memory
  * 
- *   struct TreePlusEdges: definition of a connected graph with a spanning tree (1-INDEXED).
+ *   struct TreePlusEdges: definition of a connected graph with
+ *        a spanning tree (0-INDEXED), rooted at .root.
  *     int .n: the size of graph
- *     vector< pair<int,FLOAT> > .e[i]: the children of vertex i in spanning tree, 1<=i<=n
- *                                       the tree is DIRECTED, and 1 is always the root
- *     vector< tuple<int,int,FLOAT> > .o: the off-tree edges
+ *     vector<Arc> .children[i]:
+ *        the children of vertex i in spanning tree, 0 <= i < n
+ *        the tree is DIRECTED, and 0 is always the root
+ *
+ *     vector<Edge> .off_tree_edges: the list off-tree edges
  *     .freeMemory(): destroys graph and frees memory
  * 
  * NOTE:
- *   The resistance in Graph and GraphSP objects are always RESISTANCE, not WEIGHT!!!
+ *   The `edge weights' in Graph and TreePlusEdges
+ *   are always RESISTANCE, not WEIGHT!!!
  * 
  *   Graph and GraphSP behave like objects in python or javascript. That is, if you do 
  *     Graph A; Graph B=A; 
@@ -28,7 +32,7 @@
  *   so you have to run .freeMemory() to free memory of graphs that are no longer needed.
  *
  *   In Graph, every edge appears twice, in both direction.
- *   In GraphSP, however, every edge appears in only one direction.
+ *   In TreePlusEdges, however, every edge appears in only one direction.
  * 
  ********************************************************************************/
 
@@ -46,6 +50,12 @@ struct Edge {
     u = 0;
     v = 0;
     resistance = 0;
+  }
+
+  Edge(int _u, int _v, FLOAT _resistance) {
+    u = _u;
+    v = _v;
+    resistance = _resistance;
   }
 
   Edge(const Edge &o) {
@@ -89,6 +99,11 @@ struct Arc {
   }
 };
 
+bool CompareByResistance(const Arc &a1, const Arc &a2) {
+  return a1.resistance < a2.resistance;
+}
+
+
 struct Graph {
   int n;
   vector<Arc> *neighbor_list;
@@ -114,6 +129,16 @@ struct Graph {
     return (*this);
   }
 
+  void AddEdge(int u, int v, FLOAT resistance) {
+    neighbor_list[u].push_back(Arc(v, resistance));
+    neighbor_list[v].push_back(Arc(u, resistance));
+  }
+
+  void AddEdge(Edge e) {
+    AddEdge(e.u, e.v, e.resistance);
+  }
+
+
   void FreeMemory() const {
     delete neighbor_list;
   }
@@ -121,29 +146,34 @@ struct Graph {
 
 struct TreePlusEdges {
   int n;
+  int root;
   vector<Arc> *children;
-  vector<Edge> *off_tree_edge;
+  vector<Edge> off_tree_edge;
 
   TreePlusEdges() {
     n = 0;
+    root = 0;
     children = NULL;
-    off_tree_edge = NULL;
+    off_tree_edge.clear();
   }
 
   TreePlusEdges(int _n) {
     n = _n;
+    root = 0;
     children = new vector<Arc>[n];
-    off_tree_edge = new vector<Edge>;
+    off_tree_edge.clear();
   }
 
   TreePlusEdges(const TreePlusEdges &o) {
     n = o.n;
+    root = o.root;
     children = o.children;
     off_tree_edge = o.off_tree_edge;
   }
 
   TreePlusEdges &operator =(const TreePlusEdges &o) {
     n = o.n;
+    root = o.root;
     children = o.children;
     off_tree_edge = o.off_tree_edge;
     return (*this);
@@ -151,7 +181,6 @@ struct TreePlusEdges {
 
   void freeMemory() const {
     delete children;
-    delete off_tree_edge;
   }
 };
 

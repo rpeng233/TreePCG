@@ -31,6 +31,6 @@ int main(int argc, char *argv[]) {
 
     Graph g = IO::ReadGraph(graph_file, 0);
     Matrix laplacian_g = IO::GraphToMatrix(g);
-    IO::SaveMMMatrix(laplacian_g, out_file);
+    IO::WriteMMMatrix(out_file, laplacian_g);
     return 0;
 }

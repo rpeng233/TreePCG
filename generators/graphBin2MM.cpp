@@ -31,14 +31,14 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "TO MTX FILE:\n");
     fprintf(stderr, "%s\n", argv[2]);
 
-    string graphFile = argv[1];
-    string outFile = argv[2];
+    string graph_file = argv[1];
+    string out_file = argv[2];
 
-    Graph graph = IO::ReadGraph(graphFile, 1);
+    Graph graph = IO::ReadGraph(graph_file, 1);
     fprintf(stderr, "FINISHED READING FILE\n");
     Matrix matrix = IO::GraphToMatrix(graph);
     fprintf(stderr, "CONSTRUCTED MATRIX\n");
-    IO::SaveMMMatrix(matrix, outFile);
+    IO::WriteMMMatrix(out_file, matrix);
     fprintf(stderr, "DONE SAVING TO FILE\n");
     return 0;
 }

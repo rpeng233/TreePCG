@@ -64,7 +64,7 @@ namespace IO {
 
   FILE *OpenAsRead(string file_name) {
     FILE *file_in;
-    if (ile_name == "__stdin") {
+    if (file_name == "__stdin") {
       file_in = stdin;
     } else {
       file_in = fopen(file_name.c_str(), "r");
@@ -77,7 +77,7 @@ namespace IO {
     return file_in;
   }
 
-  FILE * OpenAsWrite(string file_name) {
+  FILE *OpenAsWrite(string file_name) {
     FILE *file_out;
     if (file_name == "__stdout") {
       file_out = stdout;
@@ -122,6 +122,38 @@ namespace IO {
     return FLOAT(result);
   }
 
+  void CloseInputFile(FILE *file_in) {
+    if(file_in != stdin) {
+      fclose(file_in);
+    }
+  }
+ 
+  inline void WriteSpace(FILE *file_out, int format) {
+    if (format == 0) {
+      fprintf(file_out, " ");
+    }
+  }
+
+  inline void WriteNewLine(FILE *file_out, int format) {
+    if (format == 0) {
+      fprintf(file_out, "\n");
+    }
+  }
+ 
+  inline void WriteInt(FILE *file_out, int format, int v) {
+    if (format == 0) {
+      fprintf(file_out, "%d", v);
+    } else if (format == 1) {
+      fwrite(&v, sizeof(int), 1, file_out);
+    }
+  }
+
+  void CloseOutputFile(FILE *file_out) {
+    if(file_out != stdout) {
+      fclose(file_out);
+    }
+  }
+ 
   Matrix GraphToMatrix(const Graph graph) {
     Matrix result(graph.n, graph.n);
 
@@ -200,8 +232,8 @@ namespace IO {
       result.neighbor_list[row].push_back(Arc(column, resistance));
       result.neighbor_list[column].push_back(Arc(row, resistance));
     }
-    fclose(file_in);
 
+    CloseInputFile(file_in);
     return result;
   }
 
@@ -220,13 +252,13 @@ namespace IO {
       FLOAT value = ReadFloat(file_in, 0);
       result.AddNonZero(row, column, value);
     }
-    fclose(file_in);
+    CloseInputFile(file_in);
 
     result.SortAndCombine();
     return result;
   }
 
-  Vec readMMVec(string file_name) {
+  Vec ReadMMVec(string file_name) {
     FILE* file_in = fopen(file_name.c_str(), "r");
     SkipHeader(file_in);
 
@@ -239,11 +271,11 @@ namespace IO {
     for (int i = 0; i < n; ++i) {
       result[i] = ReadFloat(file_in, 0);
     }
-    fclose(file_in);
+    CloseInputFile(file_in);
     return result;
   }
 
-  void SaveMMVec(const Vec *vec, string file_name) {
+  void WriteMMVec(const Vec *vec, string file_name) {
     FILE* file_out = OpenAsWrite(file_name);
 
     fprintf(file_out, "%%%%MatrixMarket matrix array real general\n");
@@ -252,10 +284,19 @@ namespace IO {
     for (int i =0 ; i < vec -> n; ++i) {
       fprintf(file_out, "%.16lf\n", PrintFloat((*vec)[i]));
     }
-    fclose(file_out);
+    CloseOutputFile(file_out);
   }
 
-  void SaveMMMatrix(const Matrix matrix, string file_name) {
+  void WriteVector(string file_name, int format, const vector<int> v) {
+    FILE* file_out = OpenAsWrite(file_name);
+    for(int i = 0; i < int(v.size()); ++i) {
+      WriteInt(file_out, format, v[i]);
+      WriteNewLine(file_out, format); 
+    }
+    CloseOutputFile(file_out);
+  }
+
+  void WriteMMMatrix(string file_name, const Matrix matrix) {
     matrix.SortAndCombine();
     FILE* file_out = OpenAsWrite(file_name);
 
@@ -269,7 +310,7 @@ namespace IO {
       fprintf(file_out, "%d %d ", it -> column + 1, it -> column + 1);
       fprintf(file_out, "%.16lf\n", PrintFloat(it -> value));
     }
-    fclose(file_out);
+    CloseOutputFile(file_out);
   }
 
 }      // namespace IO

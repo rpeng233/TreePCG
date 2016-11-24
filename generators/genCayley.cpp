@@ -1,4 +1,7 @@
 /*
+ * NOTE: this is a stand-alone code that does't use the graph
+ * and IO libraries
+ *
  * generates Cayley graphs on n vertices with a number of generators.
  *
  * Input parameters:
@@ -7,7 +10,7 @@
  *   then 2n pairs, each containing (skip amount, weight)
  *
  * Output 
- * Written by Richard Peng on Oct 27, 16
+ *   Written by Richard Peng on Oct 27, 16
  *
  *
 */
