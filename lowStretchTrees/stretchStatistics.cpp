@@ -46,9 +46,9 @@ int main(int argc, char *argv[]) {
 
     sort(stretch.begin(), stretch.end());
     double min_stretch = stretch[0];
-    fprintf(stderr, "min_stretch = %0.6lf\n", PrintFloat(min_stretch));
+    fprintf(stderr, "Minimum Stretch = %0.6lf\n", PrintFloat(min_stretch));
     double max_stretch = stretch[stretch.size() - 1];
-    fprintf(stderr, "max_stretch = %0.6lf\n", PrintFloat(max_stretch));
+    fprintf(stderr, "Maximum Stretch = %0.6lf\n", PrintFloat(max_stretch));
     int l = 0, r = 0;
     for(double x = min_stretch; x <= max_stretch; x *= double(2)) {
       while(l < (int)stretch.size() && stretch[l] < x) {

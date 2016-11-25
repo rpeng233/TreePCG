@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
     Graph graph = IO::ReadGraph(graph_file, graph_format);
     graph.SortAndCombine();
-    fprintf(stderr, "FINISHED READING FILE\n");
+    fprintf(stderr, "Read in graph\n");
 
 // IO::WriteGraph("__stdout", IO::ASCII, graph);
 
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
 
     IO::WriteVectorInt(out_file, out_format, tree);
-    fprintf(stderr, "DONE SAVING TO FILE\n");
+    fprintf(stderr, "Saved tree to file %s\n", argv[4]);
 
     TreePlusEdges g1 = GraphToTreePlusEdges(graph, tree);
     fprintf(stderr, "Total Stretch = %lf\n",
