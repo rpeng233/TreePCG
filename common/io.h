@@ -401,10 +401,11 @@ namespace IO {
   }
 
   vector<int> ReadVectorInt(string file_name, char format, int n) {
-    FILE* file_in = OpenAsWrite(file_name);
+    FILE* file_in = OpenAsRead(file_name);
     vector<int> result(n);
     for (int i = 0; i < n; ++i) {
-      result[i] = ReadInt(file_in, format);
+      // Converting from 1-indexing
+      result[i] = ReadInt(file_in, format) - 1;
     }
     CloseOutputFile(file_in);
     return result;
@@ -414,7 +415,8 @@ namespace IO {
   void WriteVectorInt(string file_name, char format, const vector<int> v) {
     FILE* file_out = OpenAsWrite(file_name);
     for (int i = 0; i < int(v.size()); ++i) {
-      WriteInt(file_out, format, v[i]);
+      // Converting to 1-indexing
+      WriteInt(file_out, format, v[i] + 1);
       WriteNewLine(file_out, format); 
     }
     CloseOutputFile(file_out);

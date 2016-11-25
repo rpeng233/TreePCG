@@ -31,7 +31,10 @@ int main(int argc, char *argv[]) {
     char out_format = IO::ParseFormat(argv[5]);
 
     Graph graph = IO::ReadGraph(graph_file, graph_format);
+    graph.SortAndCombine();
     fprintf(stderr, "FINISHED READING FILE\n");
+
+// IO::WriteGraph("__stdout", IO::ASCII, graph);
 
     vector<int> tree;
     if (tree_type[0] == 'D') {

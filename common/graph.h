@@ -70,6 +70,19 @@ struct Edge {
     resistance = o.resistance;
     return (*this);
   }
+
+  bool operator <(const Edge &o) const {
+    if (this -> u != o.u) {
+      return this -> u < o.u;
+    }
+
+    if (this -> v != o.v) {
+      return this -> v < o.v;
+    }
+
+    return this -> resistance < o.resistance;
+  }
+
 };
 
 struct Arc {
@@ -96,6 +109,14 @@ struct Arc {
     v = o.v;
     resistance = o.resistance;
     return (*this);
+  }
+
+  bool operator <(const Arc &o) const {
+    if (this -> v != o.v) {
+      return this -> v < o.v;
+    }
+
+    return this -> resistance < o.resistance;
   }
 };
 
@@ -138,7 +159,37 @@ struct Graph {
     AddEdge(e.u, e.v, e.resistance);
   }
 
+  void SortAndCombine() const {
+    for(int u = 0; u < n; ++u) {
+      int new_degree = 0;
+      sort(neighbor_list[u].begin(), neighbor_list[u].end());
 
+      int last_vertex = -1;
+      FLOAT last_weight = 0;
+
+      for (vector<Arc>::iterator it = neighbor_list[u].begin();
+          it != neighbor_list[u].end(); ++it) {
+        if (it -> v != last_vertex) {
+          if (last_vertex >= 0) {
+            neighbor_list[u][new_degree] =
+              Arc(last_vertex, FLOAT(1) / last_weight);
+            new_degree++;
+          } 
+          last_vertex = it -> v;
+        }
+        last_weight += FLOAT(1) / it -> resistance;
+      }
+
+      if (last_vertex >= 0) {
+        neighbor_list[u][new_degree] =
+          Arc(last_vertex, FLOAT(1) / last_weight);
+        new_degree++;
+      }
+      neighbor_list[u].resize(new_degree);
+    }
+  }
+
+ 
   void FreeMemory() const {
     delete neighbor_list;
   }

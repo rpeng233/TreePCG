@@ -128,6 +128,7 @@ void DFS(int n, int root, vector<Arc> *arc, int *event, int *parent) {
 TreePlusEdges GraphToTreePlusEdges(const Graph &graph,
                                    const vector<int> parent) {
   TreePlusEdges h(graph.n);
+  int parents_found = 0;
   for (int u = 0; u < graph.n; ++u) {
     if (parent[u] == -1) {
       h.root = u;
@@ -135,6 +136,7 @@ TreePlusEdges GraphToTreePlusEdges(const Graph &graph,
     for (vector<Arc>::iterator it = graph.neighbor_list[u].begin();
          it != graph.neighbor_list[u].end(); ++it) {
       if (u == parent[it -> v]) {
+        parents_found++;
 // printf("%d -> %d %lf\n", u, it -> v, it -> resistance);
         h.children[u].push_back(Arc(it -> v, it -> resistance));
       } else if (parent[u] != it -> v && u < it -> v) {
@@ -143,12 +145,13 @@ TreePlusEdges GraphToTreePlusEdges(const Graph &graph,
       }
     }
   }
+  assert(parents_found == graph.n - 1);
   return h;
 }
 
 
 namespace TreeFinder {
-  vector<FLOAT> PathResistance(const TreePlusEdges graph) {
+  vector<FLOAT> GetStretch(const TreePlusEdges graph) {
     int *event = new int[graph.n * 2];
     int *parent = new int[graph.n];
     DFS(graph.n, graph.root, graph.children, event, parent);
@@ -159,7 +162,7 @@ namespace TreeFinder {
     for (int i = 0; i < graph.n * 2; ++i) {
       if (event[i] % 2 == 0) {
         int u = event[i] / 2;
-// printf("%d %lf\n", u, distance_to_root[u]);
+// fprintf(stderr, "%d %lf\n", u, distance_to_root[u]);
         discover_time[u] = i;
         for (vector<Arc>::iterator it = graph.children[u].begin();
             it != graph.children[u].end(); ++it) {
@@ -192,8 +195,9 @@ namespace TreeFinder {
             it != query[u].end(); ++it) {
           int v = it -> first;
 // printf("%d %d %d\n", u, v, uf.FindSet(v));
-          result[it -> second] = distance_to_root[u] + distance_to_root[v]
-              - distance_to_root[uf.FindSet(v)] * FLOAT(2);
+          result[it -> second] = (distance_to_root[u] + distance_to_root[v]
+              - distance_to_root[uf.FindSet(v)] * FLOAT(2))
+                / graph.off_tree_edge[it -> second].resistance;
         }
       } else if (parent[u] != -1) {
         uf.Union(u, parent[u]);
@@ -212,11 +216,11 @@ namespace TreeFinder {
   }
 
   FLOAT TotalStretch(const TreePlusEdges graph) {
-    vector<FLOAT> path_resistance = PathResistance(graph);
+    vector<FLOAT> stretch = GetStretch(graph);
 
     FLOAT total = 0;
     for (int i = 0; i < int(graph.off_tree_edge.size()); ++i) {
-      total += path_resistance[i] / graph.off_tree_edge[i].resistance;
+      total += stretch[i];
     }
     return total;
   }
@@ -225,7 +229,7 @@ namespace TreeFinder {
 // Dijkstra tree from a random vertex
 //
 //
-    int root = rand() % graph.n + 1;
+    int root = rand() % graph.n;
 
     fprintf(stderr, "Running Dijkstra on %d Vertices\n", graph.n);
     fflush(stdout);
@@ -247,6 +251,7 @@ namespace TreeFinder {
 
     while (!Q.empty()) {
       int u = Q.top().second;
+// fprintf(stderr, "%d %lf\n", u, dist[u]);
       Q.pop();
       if (!checked[u]) {
         checked[u] = 1;
@@ -286,13 +291,16 @@ namespace TreeFinder {
     Graph h(graph.n);
     UnionFind uf(graph.n);
 
+    int tree_edges = 0;
     for (vector<Edge>::iterator it = edge_list.begin();
          it != edge_list.end(); ++it) {
       if (uf.FindSet(it -> u) != uf.FindSet(it -> v)) {
+        tree_edges++;
         uf.Union(it -> u, it -> v);
         h.AddEdge(*it);
       }
     }
+    assert(tree_edges == graph.n - 1);
 
     vector<int> parent(graph.n);
     int *event = new int[graph.n * 2];
