@@ -1,10 +1,10 @@
 // Copyright 2016 Haoran Xu
 
-#include "./io.h"
-#include "./graph.h"
-#include "./cg.h"
-#include "./jacobiprecon.h"
-#include "./treeprecon.h"
+#include "../haorancode/io.h"
+#include "../haorancode/graph.h"
+#include "../haorancode/cg.h"
+#include "../haorancode/jacobiprecon.h"
+#include "../haorancode/treeprecon.h"
 
 int main(int argc, char *argv[]) {
     string dir = argv[1];
