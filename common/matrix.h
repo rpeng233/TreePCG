@@ -1,7 +1,7 @@
 /********************************************************************************
- * 
+ *
  * Basic Definitions for Matrixrices and Vectors
- * 
+ *
  * Public API for Vec:
  *     Vec(n):             length-n vector, initialized to 0
  *     .n:                length of vector
@@ -10,7 +10,7 @@
  *    Vec*FLOAT:            scale multiplication
  *     Vec+Vec (Vec-Vec):    vector add/subtract
  *     Vec*Vec:            dot multiplication
- * 
+ *
  * Public API for Matrix:
  *     Matrix(n,m):            n x m sparse matrix initialized to 0
  *     .n (.m):            size of matrix
@@ -19,16 +19,16 @@
  *     .freeMemory():        destroys matrix and frees memory
  *     Matrix*Vec:            Matrix multiplication
  *     Vec*Matrix:            Matrix multiplication, Vec is treated as row vector
- *     
+ *
  * NOTE:
- *     Matrix behaves like objects in python or javascript. That is, if you do 
- *         Matrix A; Mat B=A; 
- *     Then A and B will be actually pointing to the same object, 
+ *     Matrix behaves like objects in python or javascript. That is, if you do
+ *         Matrix A; Mat B=A;
+ *     Then A and B will be actually pointing to the same object,
  *     i.e. modifying B will result in A being modified as well!
- * 
- *     However, C++ does not have an automatic garbage collection system, 
+ *
+ *     However, C++ does not have an automatic garbage collection system,
  *     so you have to run .freeMemory() to free memory of matrices that are no longer needed.
- * 
+ *
  ********************************************************************************/
 
 #include <algorithm>
@@ -40,8 +40,9 @@ using namespace std;
 
 #include "common.h"
 
+/*
 struct Vec {
-  int n;
+  size_t n;
   FLOAT *value;
 
   Vec() {
@@ -49,12 +50,12 @@ struct Vec {
     value = NULL;
   }
 
-  Vec(int _n) {
+  Vec(size_t _n) {
     n = _n;
     value = new FLOAT[n];
 
 #ifdef USE_MPFR
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
       value[i] = 0.0;
     }
 #else
@@ -67,7 +68,7 @@ struct Vec {
     value = new FLOAT[n];
 
 #ifdef USE_MPFR
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
       value[i] = o.a[i];
     }
 #else
@@ -81,7 +82,7 @@ struct Vec {
     value = NULL;
   }
 
-  FLOAT &operator[](int i) const {
+  FLOAT &operator[](size_t i) const {
 #ifndef NO_RANGE_CHECK
     assert(0 <= 0 && i < n);
 #endif
@@ -96,7 +97,7 @@ struct Vec {
     }
 
 #ifdef USE_MPFR
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
       value[i] = o.value[i];
     }
 #else
@@ -107,15 +108,17 @@ struct Vec {
 
   FLOAT Norm() const {
     FLOAT sum = 0;
-    for (int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
       sum += Sqr(value[i]);
     }
     return MYSQRT(sum);
   }
 };
+*/
 
 struct MatrixElement {
-  int row, column;
+  size_t row;
+  size_t column;
   FLOAT value;
 
   MatrixElement() {
@@ -124,40 +127,39 @@ struct MatrixElement {
     value = 0;
   }
 
-  MatrixElement(int _row, int _column, FLOAT _value) {
+  MatrixElement(size_t _row, size_t _column, FLOAT _value) {
     row = _row;
     column = _column;
     value = _value;
   }
 
   bool operator <(const MatrixElement &o) const {
-    if (this -> row != o.row) {
-      return this -> row < o.row;
+    if (this->row != o.row) {
+      return this->row < o.row;
     }
 
     if (this->column != o.column) {
-      return this -> column < o.column;
+      return this->column < o.column;
     }
 
-    return this -> value < o.value;
+    return this->value < o.value;
   }
 };
 
 
 struct Matrix {
-  int n, m;
-  vector<MatrixElement> *non_zero;
+  size_t n;
+  size_t m;
+  vector<MatrixElement> non_zero;
 
   Matrix() {
     n = 0;
     m = 0;
-    non_zero = new vector<MatrixElement>;
   }
 
-  Matrix(int _n, int _m) {
+  Matrix(size_t _n, size_t _m) {
     n = _n;
     m = _m;
-    non_zero = new vector<MatrixElement>;
   }
 
   Matrix(const Matrix &o) {
@@ -173,30 +175,31 @@ struct Matrix {
     return (*this);
   }
 
-  void AddNonZero(int row, int column, FLOAT value) {
+  void addNonZero(size_t row, size_t column, FLOAT value) {
 #ifndef NO_RANGE_CHECK
     assert(0 <= row && row < n && 0 <= column && column < m);
 #endif
-    non_zero -> push_back(MatrixElement(row, column, value));
+    non_zero.push_back(MatrixElement(row, column, value));
   }
 
-  void SortAndCombine() const {
+  /*
+  void sortAndCombine() const {
     int new_nnz = 0;
-    sort(non_zero -> begin(), non_zero -> end());
+    sort(non_zero.begin(), non_zero.end());
 
     MatrixElement last;
     last.row = -1;
 
-    for (vector<MatrixElement>::iterator it = non_zero -> begin();
-        it != non_zero -> end(); ++it) {
-      if (it -> row != last.row || it -> column != last.column) {
+    for (vector<MatrixElement>::iterator it = non_zero.begin();
+        it != non_zero.end(); ++it) {
+      if (it->row != last.row || it->column != last.column) {
         if (last.row >= 0) {
           (*non_zero)[new_nnz] = last;
           new_nnz++;
-        } 
+        }
         last = (*it);
       } else {
-        last.value += it -> value;
+        last.value += it->value;
       }
     }
 
@@ -204,32 +207,34 @@ struct Matrix {
       (*non_zero)[new_nnz] = last;
       new_nnz++;
     }
-    non_zero -> resize(new_nnz);
+    non_zero.resize(new_nnz);
   }
 
   Matrix transpose() const {
     Matrix result(n, m);
 
-    for (vector<MatrixElement>::iterator it = non_zero -> begin();
-        it != non_zero -> end(); ++it) {
-      result.non_zero -> push_back(
-        MatrixElement(it -> column, it -> row, it -> value));
+    for (vector<MatrixElement>::iterator it = non_zero.begin();
+        it != non_zero.end(); ++it) {
+      result.non_zero.push_back(
+        MatrixElement(it->column, it->row, it->value));
     }
 
-    result.SortAndCombine();
+    result.sortAndCombine();
     return result;
   }
 
   void freeMemory() const {
     delete &non_zero;
   }
+  */
 };
 
+/*
 FLOAT operator *(const Vec &a, const Vec &b) {
   assert(a.n == b.n);
   FLOAT result = 0;
 
-  for (int i = 0; i < a.n; ++i) {
+  for (size_t i = 0; i < a.n; ++i) {
     result += a.value[i] * b.value[i];
   }
 
@@ -238,7 +243,7 @@ FLOAT operator *(const Vec &a, const Vec &b) {
 
 Vec operator *(const Vec &a, FLOAT b) {
   Vec result(a.n);
-  for (int i = 0; i < a.n; ++i) {
+  for (size_t i = 0; i < a.n; ++i) {
     result[i] = a.value[i] * b;
   }
   return result;
@@ -248,7 +253,7 @@ Vec operator +(const Vec &a, const Vec &b) {
   assert(a.n == b.n);
   Vec result(a.n);
 
-  for (int i = 0; i < a.n; ++i) {
+  for (size_t i = 0; i < a.n; ++i) {
     result[i] = a.value[i] + b.value[i];
   }
   return result;
@@ -258,7 +263,7 @@ Vec operator -(const Vec &a, const Vec &b) {
   assert(a.n == b.n);
   Vec result(a.n);
 
-  for (int i = 0; i < a.n; ++i) {
+  for (size_t i = 0; i < a.n; ++i) {
     result[i] = a.value[i] - b.value[i];
   }
   return result;
@@ -268,9 +273,9 @@ Vec operator *(const Matrix &a, const Vec &b) {
   assert(a.m == b.n);
 
   Vec result(a.n);
-  for (vector<MatrixElement>::iterator it = a.non_zero -> begin();
-      it != a.non_zero -> end(); ++it) {
-    result.value[it -> row] += it -> value * b.value[it -> column];
+  for (vector<MatrixElement>::iterator it = a.non_zero.begin();
+      it != a.non_zero.end(); ++it) {
+    result.value[it->row] += it->value * b.value[it->column];
   }
   return result;
 }
@@ -279,11 +284,12 @@ Vec operator *(const Vec &a, const Matrix &b) {
   assert(a.n == b.n);
   Vec result(b.m);
 
-  for (vector<MatrixElement>::iterator it = b.non_zero -> begin();
-      it != b.non_zero -> end(); ++it) {
-    result.value[it -> column] += it->value * a.value[it -> row];
+  for (vector<MatrixElement>::iterator it = b.non_zero.begin();
+      it != b.non_zero.end(); ++it) {
+    result.value[it->column] += it->value * a.value[it->row];
   }
   return result;
 }
+*/
 
 #endif   // __MATRIX_H__

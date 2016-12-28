@@ -159,7 +159,7 @@ struct Graph {
     AddEdge(e.u, e.v, e.resistance);
   }
 
-  void SortAndCombine() const {
+  void sortAndCombine() const {
     for(int u = 0; u < n; ++u) {
       int new_degree = 0;
       sort(neighbor_list[u].begin(), neighbor_list[u].end());
