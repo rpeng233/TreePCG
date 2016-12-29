@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include "AbstractSolver.h"
+#include "common.h"
 
 class IdentitySolver {
 public:

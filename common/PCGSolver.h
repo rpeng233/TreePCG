@@ -3,21 +3,18 @@
 
 #include <cmath>
 #include <iostream>
-#include <type_traits>
 #include "common.h"
 #include "linalg.h"
 #include "matrix.h"
 
 template <typename Preconditioner>
 class PCGSolver {
-
 public:
 
   PCGSolver(Preconditioner p, Matrix A_) {
     preconditioner = p;
     A = A_;
   }
-
 
   void solve(
       const std::vector<FLOAT>& b,
@@ -38,7 +35,7 @@ public:
     // size_t i = 0;
     mv(-1, A, x, 1, b, r);                    // r = b - A * x
     FLOAT res = (r * r);
-    preconditioner.solve(r, d, tol, maxit);   // Solve P * d = r
+    preconditioner.solve(r, d);   // Solve P * d = r
     delta_new = r * d;
     for (;;) {
       mv(1, A, d, 0, q);                      // q = A * d
@@ -47,7 +44,7 @@ public:
       mv(-1, A, x, 1, b, r);                  // r = b - A * x
       res = sqrt(r * r);
       if (res < tol) return;
-      preconditioner.solve(r, s, tol, maxit); // Solve P * s = r
+      preconditioner.solve(r, s); // Solve P * s = r
       delta_old = delta_new;
       delta_new = r * s;
       beta = delta_new / delta_old;
