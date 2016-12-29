@@ -195,20 +195,42 @@ struct Graph {
   }
 };
 
-
 struct TreeVertex {
-public:
 	size_t parent;
-	size_t ref_count;
+	size_t children_count;
 	FLOAT parent_resistance;
 	bool eliminated;
 
 	TreeVertex()
-	: parent(0), ref_count(0), parent_resistance(0.0), eliminated(false)
+	: parent(0), children_count(0), parent_resistance(0.0), eliminated(false)
 	{ }
-
 };
 
+struct Tree {
+  size_t n;
+  std::vector<TreeVertex> vertices;
+
+  Tree() {
+    n = 0;
+  }
+
+  Tree(size_t _n)
+  {
+    n = _n;
+    vertices.resize(n);
+    for (size_t i = 0; i < n; i++) {
+      vertices[i].parent = i;
+    }
+  }
+
+  void setParent(size_t v, size_t p, FLOAT r) {
+    vertices[v].parent = p;
+    vertices[v].parent_resistance = r;
+    vertices[p].children_count++;
+  }
+};
+
+/*
 struct TreePlusEdges {
   size_t n;
   // size_t root;
@@ -254,5 +276,6 @@ struct TreePlusEdges {
     off_tree_edges.emplace_back(u, v, r);
   }
 };
+*/
 
 #endif

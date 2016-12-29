@@ -122,7 +122,7 @@ inline void mv(
 
 inline void mv(
     FLOAT alpha,
-    const TreePlusEdges& tree,
+    const Tree& tree,
     const std::vector<FLOAT>& x,
     FLOAT beta,
     const std::vector<FLOAT>& y,
@@ -130,9 +130,10 @@ inline void mv(
 ) {
   auto n = tree.vertices.size();
   assert(n == x.size());
-  assert(n == x.size());
+  assert(n == y.size());
+  assert(n == result.size());
 
-  for (FLOAT& f : result) {
+  for (auto& f : result) {
     f = 0;
   }
 
@@ -142,12 +143,6 @@ inline void mv(
     FLOAT current = (x[i] - x[vs[i].parent]) / vs[i].parent_resistance;
     result[i] += current;
     result[vs[i].parent] -= current;
-  }
-
-  for (const auto& e : tree.off_tree_edges) {
-    FLOAT current = (x[e.u] - x[e.v]) / e.resistance;
-    result[e.u] += current;
-    result[e.v] -= current;
   }
 
   for (size_t i = 0; i < n; i++) {
