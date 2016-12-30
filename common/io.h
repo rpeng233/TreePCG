@@ -218,7 +218,7 @@ namespace IO {
   }
 
 
-  Graph MatrixToGraph(const Matrix &matrix) {
+  Graph MatrixToGraph(Matrix &matrix) {
   // puts in arcs whose weights are the
   // average of the upper off-diagonals
   //
@@ -228,8 +228,8 @@ namespace IO {
     assert(matrix.n == matrix.m);
     Graph result(matrix.n);
 
-    for (vector<MatrixElement>::iterator it = matrix.non_zero -> begin();
-        it != matrix.non_zero -> end(); ++it) {
+    for (vector<MatrixElement>::iterator it = matrix.non_zero.begin();
+        it != matrix.non_zero.end(); ++it) {
       if (it -> row != it -> column) {
         (result.neighbor_list[it -> row]).
           push_back(Arc(it -> column, -FLOAT(1.0) / it -> value));
@@ -383,7 +383,8 @@ namespace IO {
     CloseOutputFile(file_out);
   }
 
-  void WriteMMMatrix(string file_name, const Matrix matrix) {
+  void WriteMMMatrix(string file_name, Matrix &matrix) {
+  //warning: this `reorders' the matrix
     matrix.SortAndCombine();
     FILE* file_out = OpenAsWrite(file_name);
 
@@ -391,9 +392,9 @@ namespace IO {
     fprintf(file_out, "%% Generated \?\?-\?\?-\?\?\?\?\n");
 
     fprintf(file_out, "%d %d %d\n", matrix.n,
-      matrix.m, int((matrix.non_zero) -> size()));
-    for (vector<MatrixElement>::iterator it = (matrix.non_zero) -> begin();
-        it != (matrix.non_zero) -> end(); ++it) {
+      matrix.m, int(matrix.non_zero.size()));
+    for (vector<MatrixElement>::iterator it = matrix.non_zero.begin();
+        it != matrix.non_zero.end(); ++it) {
       fprintf(file_out, "%d %d ", it -> column + 1, it -> column + 1);
       fprintf(file_out, "%.16lf\n", PrintFloat(it -> value));
     }

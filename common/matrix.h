@@ -40,7 +40,6 @@ using namespace std;
 
 #include "common.h"
 
-/*
 struct Vec {
   size_t n;
   FLOAT *value;
@@ -114,7 +113,6 @@ struct Vec {
     return MYSQRT(sum);
   }
 };
-*/
 
 struct MatrixElement {
   size_t row;
@@ -175,15 +173,14 @@ struct Matrix {
     return (*this);
   }
 
-  void addNonZero(size_t row, size_t column, FLOAT value) {
+  void AddNonZero(size_t row, size_t column, FLOAT value) {
 #ifndef NO_RANGE_CHECK
     assert(0 <= row && row < n && 0 <= column && column < m);
 #endif
     non_zero.push_back(MatrixElement(row, column, value));
   }
 
-  /*
-  void sortAndCombine() const {
+  void SortAndCombine() {
     int new_nnz = 0;
     sort(non_zero.begin(), non_zero.end());
 
@@ -194,7 +191,7 @@ struct Matrix {
         it != non_zero.end(); ++it) {
       if (it->row != last.row || it->column != last.column) {
         if (last.row >= 0) {
-          (*non_zero)[new_nnz] = last;
+          non_zero[new_nnz] = last;
           new_nnz++;
         }
         last = (*it);
@@ -204,13 +201,13 @@ struct Matrix {
     }
 
     if (last.row >= 0) {
-      (*non_zero)[new_nnz] = last;
+      non_zero[new_nnz] = last;
       new_nnz++;
     }
     non_zero.resize(new_nnz);
   }
 
-  Matrix transpose() const {
+  Matrix Transpose() {
     Matrix result(n, m);
 
     for (vector<MatrixElement>::iterator it = non_zero.begin();
@@ -219,14 +216,13 @@ struct Matrix {
         MatrixElement(it->column, it->row, it->value));
     }
 
-    result.sortAndCombine();
+    result.SortAndCombine();
     return result;
   }
 
-  void freeMemory() const {
+  void FreeMemory() {
     delete &non_zero;
   }
-  */
 };
 
 /*
