@@ -43,7 +43,7 @@
 #include "common.h"
 
 struct Edge {
-  int u, v;
+  size_t u, v;
   FLOAT resistance;
 
   Edge() {
@@ -52,7 +52,7 @@ struct Edge {
     resistance = 0;
   }
 
-  Edge(int _u, int _v, FLOAT _resistance) {
+  Edge(size_t _u, size_t _v, FLOAT _resistance) {
     u = _u;
     v = _v;
     resistance = _resistance;
@@ -72,21 +72,21 @@ struct Edge {
   }
 
   bool operator <(const Edge &o) const {
-    if (this -> u != o.u) {
-      return this -> u < o.u;
+    if (this->u != o.u) {
+      return this->u < o.u;
     }
 
-    if (this -> v != o.v) {
-      return this -> v < o.v;
+    if (this->v != o.v) {
+      return this->v < o.v;
     }
 
-    return this -> resistance < o.resistance;
+    return this->resistance < o.resistance;
   }
 
 };
 
 struct Arc {
-  int v;
+  size_t v;
   FLOAT resistance;
 
   Arc() {
@@ -98,7 +98,6 @@ struct Arc {
     v = _v;
     resistance = _resistance;
   }
-
 
   Arc(const Arc &o) {
     v = o.v;
@@ -112,11 +111,11 @@ struct Arc {
   }
 
   bool operator <(const Arc &o) const {
-    if (this -> v != o.v) {
-      return this -> v < o.v;
+    if (this->v != o.v) {
+      return this->v < o.v;
     }
 
-    return this -> resistance < o.resistance;
+    return this->resistance < o.resistance;
   }
 };
 
@@ -125,85 +124,89 @@ inline bool CompareByResistance(const Arc &a1, const Arc &a2) {
 }
 
 
+struct Vertex {
+  std::vector<Arc> nghbrs;
+
+  void addArc(size_t v, FLOAT resistance) {
+    nghbrs.emplace_back(v, resistance);
+  }
+};
+
 struct Graph {
-  int n;
-  std::vector<Arc> *neighbor_list;
+  size_t n;
+  std::vector<Vertex> vertices;
 
   Graph() {
     n = 0;
-    neighbor_list = NULL;
   }
 
   Graph(int _n) {
     n = _n;
-    neighbor_list = new std::vector<Arc>[n];
+    vertices.resize(n);
   }
 
   Graph(const Graph &o) {
     n = o.n;
-    neighbor_list = o.neighbor_list;
+    vertices = o.vertices;
   }
 
   Graph &operator =(const Graph & o) {
     n = o.n;
-    neighbor_list = o.neighbor_list;
+    vertices = o.vertices;
     return (*this);
   }
 
-  void AddEdge(int u, int v, FLOAT resistance) {
-    neighbor_list[u].push_back(Arc(v, resistance));
-    neighbor_list[v].push_back(Arc(u, resistance));
+  void addEdge(size_t u, size_t v, FLOAT resistance) {
+    vertices[u].addArc(v, resistance);
+    vertices[v].addArc(u, resistance);
   }
 
-  void AddEdge(Edge e) {
-    AddEdge(e.u, e.v, e.resistance);
+  void addEdge(Edge e) {
+    addEdge(e.u, e.v, e.resistance);
   }
 
+  /*
   void sortAndCombine() const {
-    for(int u = 0; u < n; ++u) {
+    for(size_t u = 0; u < n; ++u) {
       int new_degree = 0;
-      sort(neighbor_list[u].begin(), neighbor_list[u].end());
+      sort(vertices[u].begin(), vertices[u].end());
 
       int last_vertex = -1;
       FLOAT last_weight = 0;
 
-      for (std::vector<Arc>::iterator it = neighbor_list[u].begin();
-          it != neighbor_list[u].end(); ++it) {
-        if (it -> v != last_vertex) {
+      for (std::vector<Arc>::iterator it = vertices[u].begin();
+          it != vertices[u].end(); ++it) {
+        if (it->v != last_vertex) {
           if (last_vertex >= 0) {
-            neighbor_list[u][new_degree] =
+            vertices[u][new_degree] =
               Arc(last_vertex, FLOAT(1) / last_weight);
             new_degree++;
           }
-          last_vertex = it -> v;
+          last_vertex = it->v;
         }
-        last_weight += FLOAT(1) / it -> resistance;
+        last_weight += FLOAT(1) / it->resistance;
       }
 
       if (last_vertex >= 0) {
-        neighbor_list[u][new_degree] =
+        vertices[u][new_degree] =
           Arc(last_vertex, FLOAT(1) / last_weight);
         new_degree++;
       }
-      neighbor_list[u].resize(new_degree);
+      vertices[u].resize(new_degree);
     }
   }
-
-
-  void FreeMemory() const {
-    delete neighbor_list;
-  }
+  */
 };
 
 struct TreeVertex {
-	size_t parent;
-	size_t children_count;
-	FLOAT parent_resistance;
-	bool eliminated;
+  size_t parent;
+  size_t children_count;
+  FLOAT parent_resistance;
+  bool eliminated;
 
-	TreeVertex()
-	: parent(0), children_count(0), parent_resistance(0.0), eliminated(false)
-	{ }
+  TreeVertex()
+  : parent(0), children_count(0), parent_resistance(0.0), eliminated(false)
+  { }
 };
 
 struct Tree {

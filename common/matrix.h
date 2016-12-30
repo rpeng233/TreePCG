@@ -68,7 +68,7 @@ struct Vec {
 
 #ifdef USE_MPFR
     for (size_t i = 0; i < n; ++i) {
-      value[i] = o.a[i];
+      value[i] = o.value[i];
     }
 #else
     memcpy(value, o.value, n * sizeof(FLOAT));
@@ -108,7 +108,7 @@ struct Vec {
   FLOAT Norm() const {
     FLOAT sum = 0;
     for (size_t i = 0; i < n; ++i) {
-      sum += Sqr(value[i]);
+      sum += value[i] * value[i];
     }
     return MYSQRT(sum);
   }
@@ -173,55 +173,45 @@ struct Matrix {
     return (*this);
   }
 
-  void AddNonZero(size_t row, size_t column, FLOAT value) {
+  void addNonZero(size_t row, size_t column, FLOAT value) {
 #ifndef NO_RANGE_CHECK
     assert(0 <= row && row < n && 0 <= column && column < m);
 #endif
-    non_zero.push_back(MatrixElement(row, column, value));
+    non_zero.emplace_back(row, column, value);
   }
 
-  void SortAndCombine() {
-    int new_nnz = 0;
+  void sortAndCombine() {
+    if (non_zero.empty()) return;
+
     sort(non_zero.begin(), non_zero.end());
 
-    MatrixElement last;
-    last.row = -1;
+    size_t new_nnz = 0;
+    MatrixElement last(non_zero[0].row, non_zero[0].column, 0);
 
-    for (vector<MatrixElement>::iterator it = non_zero.begin();
-        it != non_zero.end(); ++it) {
-      if (it->row != last.row || it->column != last.column) {
-        if (last.row >= 0) {
-          non_zero[new_nnz] = last;
-          new_nnz++;
-        }
-        last = (*it);
+    for (const auto& nz : non_zero) {
+      if (nz.row == last.row && nz.column == last.column) {
+        last.value += nz.value;
       } else {
-        last.value += it->value;
+        non_zero[new_nnz] = last;
+        new_nnz++;
+        last = nz;
       }
     }
 
-    if (last.row >= 0) {
-      non_zero[new_nnz] = last;
-      new_nnz++;
-    }
+    non_zero[new_nnz] = last;
+    new_nnz++;
     non_zero.resize(new_nnz);
   }
 
-  Matrix Transpose() {
-    Matrix result(n, m);
+  Matrix transpose() const {
+    Matrix result(m, n);
 
-    for (vector<MatrixElement>::iterator it = non_zero.begin();
-        it != non_zero.end(); ++it) {
-      result.non_zero.push_back(
-        MatrixElement(it->column, it->row, it->value));
+    for (const auto& nz : non_zero) {
+      result.addNonZero(nz.column, nz.row, nz.value);
     }
 
-    result.SortAndCombine();
+    result.sortAndCombine();
     return result;
-  }
-
-  void FreeMemory() {
-    delete &non_zero;
   }
 };
 

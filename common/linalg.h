@@ -6,7 +6,6 @@
 #include "common.h"
 #include "matrix.h"
 
-
 inline FLOAT operator *(
     const std::vector<FLOAT>& a,
     const std::vector<FLOAT>& b
@@ -20,7 +19,6 @@ inline FLOAT operator *(
 
   return result;
 }
-
 
 inline void axpy(
     FLOAT a,
@@ -36,41 +34,13 @@ inline void axpy(
   }
 }
 
-
-inline void axpy(
-    FLOAT a,
-    const std::vector<FLOAT>& x,
-    std::vector<FLOAT>& y
-) {
-  axpy(a, x, y, y);
-}
-
-
-inline void axpby(
-    FLOAT a,
-    const std::vector<FLOAT>& x,
-    FLOAT b,
-    const std::vector<FLOAT>& y,
-    std::vector<FLOAT>& result
-) {
-  assert(x.size() == y.size());
-  assert(x.size() == result.size());
-
-  for (size_t i = 0; i < x.size(); i++) {
-    result[i] = a * x[i] + b * y[i];
-  }
-}
-
-
-inline void axpby(
-    FLOAT a,
-    const std::vector<FLOAT>& x,
-    FLOAT b,
-    std::vector<FLOAT>& y
-) {
-  axpby(a, x, b, y, y);
-}
-
+// inline void axpy(
+//     FLOAT a,
+//     const std::vector<FLOAT>& x,
+//     std::vector<FLOAT>& y
+// ) {
+//   axpy(a, x, y, y);
+// }
 
 inline void mv(
     FLOAT alpha,
@@ -97,28 +67,26 @@ inline void mv(
   }
 }
 
-
-inline void mv(
-    FLOAT alpha,
-    const Matrix& A,
-    const std::vector<FLOAT>& x,
-    FLOAT beta,
-    std::vector<FLOAT>& y
-) {
-  assert(A.m == x.size());
-  assert(x.size() == y.size());
-
-  std::vector<FLOAT> tmp(x.size(), 0);
-
-  for (const MatrixElement& e : A.non_zero) {
-    tmp[e.row] += e.value * x[e.column];
-  }
-
-  for (size_t i = 0; i < x.size(); i++) {
-    y[i] = alpha * tmp[i] + beta * y[i];
-  }
-}
-
+// inline void mv(
+//     FLOAT alpha,
+//     const Matrix& A,
+//     const std::vector<FLOAT>& x,
+//     FLOAT beta,
+//     std::vector<FLOAT>& y
+// ) {
+//   assert(A.m == x.size());
+//   assert(x.size() == y.size());
+// 
+//   std::vector<FLOAT> tmp(x.size(), 0);
+// 
+//   for (const MatrixElement& e : A.non_zero) {
+//     tmp[e.row] += e.value * x[e.column];
+//   }
+// 
+//   for (size_t i = 0; i < x.size(); i++) {
+//     y[i] = alpha * tmp[i] + beta * y[i];
+//   }
+// }
 
 inline void mv(
     FLOAT alpha,
@@ -149,4 +117,5 @@ inline void mv(
     result[i] = alpha * result[i] +  beta * y[i];
   }
 }
+
 #endif

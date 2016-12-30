@@ -3,7 +3,6 @@
 #include <vector>
 #include "common.h"
 #include "graph.h"
-#include "io.h"
 #include "matrix.h"
 #include "IdentitySolver.h"
 #include "PCGSolver.h"

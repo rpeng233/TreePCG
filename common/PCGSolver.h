@@ -38,9 +38,9 @@ public:
     preconditioner.solve(r, d);   // Solve P * d = r
     delta_new = r * d;
     for (;;) {
-      mv(1, A, d, 0, q);                      // q = A * d
+      mv(1, A, d, 0, q, q);                      // q = A * d
       alpha = delta_new / (d * q);
-      axpy(alpha, d, x);                      // x = alpha * d + x
+      axpy(alpha, d, x, x);                   // x = alpha * d + x
       mv(-1, A, x, 1, b, r);                  // r = b - A * x
       res = sqrt(r * r);
       if (res < tol) return;
@@ -48,7 +48,7 @@ public:
       delta_old = delta_new;
       delta_new = r * s;
       beta = delta_new / delta_old;
-      axpby(1, s, beta, d);                   // d = s + beta * d
+      axpy(beta, d, s, d);                    // d = s + beta * d
     }
   }
 
