@@ -4,9 +4,9 @@
 #include "common.h"
 #include "graph.h"
 #include "matrix.h"
-#include "IdentitySolver.h"
-#include "PCGSolver.h"
-#include "TreeSolver.h"
+#include "identity_solver.h"
+#include "pcg_solver.h"
+#include "tree_solver.h"
 
 void bst(std::mt19937& rng) {
   size_t n = 65535;

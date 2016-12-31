@@ -1,4 +1,4 @@
-#include "TreeSolver.h"
+#include "tree_solver.h"
 #include <tuple>
 #include <utility>
 
