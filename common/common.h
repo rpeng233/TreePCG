@@ -14,7 +14,7 @@
  * overrides USE_FLOAT128
  */
 
-// #define USE_MPFR
+#define USE_MPFR
 
 const int MPFR_PRECISION = 1024;  // bit precision of MPFR
 
