@@ -8,10 +8,9 @@
 #include "PCGSolver.h"
 #include "TreeSolver.h"
 
-int main(void) {
+void bst(std::mt19937& rng) {
   size_t n = 65535;
   Tree tree(n);
-  std::mt19937 rng(std::random_device{}());
   std::uniform_real_distribution<> weight(1, 10);
 
   // a complete binary tree
@@ -40,25 +39,37 @@ int main(void) {
   std::vector<FLOAT> r(n);
   mv(-1, tree, x, 1, b, r);
 
+  std::cout << "bst\n";
   std::cout << r * r << std::endl;
+}
 
-  // size_t n = 5;
-  // Matrix A(n, n);
-  // std::vector<FLOAT> b(n);
-  // std::vector<FLOAT> x(n, 0);
+void pcg(std::mt19937& rng) {
+  size_t n = 5;
+  Matrix A(n, n);
+  std::vector<FLOAT> b(n);
+  std::vector<FLOAT> x(n, 0);
 
-  // for (size_t i = 0; i < n; i++) {
-  //   A.addNonZero(i, i, i + 1);
-  //   b[i] = 1;
-  // }
+  std::uniform_real_distribution<> weight(1, 10);
+  for (size_t i = 0; i < n; i++) {
+    A.addNonZero(i, i, weight(rng));
+    b[i] = 1;
+  }
 
-  // PCGSolver<IdentitySolver> s(IdentitySolver(), A);
+  PCGSolver<Matrix, IdentitySolver> s(IdentitySolver(), A);
 
-  // s.solve(b, x);
+  s.solve(b, x);
 
-  // for (const FLOAT& f : x) {
-  //   std::cout << f << '\n';
-  // }
+  std::vector<FLOAT> r(n);
 
-  return 0;
+  mv(-1, A, x, 1, b, r);
+
+  std::cout << "pcg\n";
+  std::cout << r * r << std::endl;
+}
+
+int main(void) {
+  std::mt19937 rng(std::random_device{}());
+
+  bst(rng);
+  pcg(rng);
 }

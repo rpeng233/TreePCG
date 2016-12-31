@@ -7,14 +7,15 @@
 #include "linalg.h"
 #include "matrix.h"
 
-template <typename Preconditioner>
+template <typename MatrixType, typename Preconditioner>
 class PCGSolver {
 public:
 
-  PCGSolver(Preconditioner p, Matrix A_) {
-    preconditioner = p;
-    A = A_;
-  }
+  PCGSolver(const Preconditioner& p, const MatrixType& A_)
+    : preconditioner(p), A(A_) { }
+
+  PCGSolver(Preconditioner&& p, MatrixType&& A_)
+    : preconditioner(std::move(p)), A(std::move(A_)) {}
 
   void solve(
       const std::vector<FLOAT>& b,
@@ -55,7 +56,7 @@ public:
 private:
 
   Preconditioner preconditioner;
-  Matrix A;
+  MatrixType A;
 };
 
 #endif

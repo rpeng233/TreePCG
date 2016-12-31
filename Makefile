@@ -8,7 +8,7 @@ CXXFLAGS += -lmpfr
 
 all : bin/test
 
-bin/test : common/graph.h common/common.h common/matrix.h
+bin/test : common/*.h
 bin/test : src/test.cpp obj/TreeSolver.o
 	$(CXX) $(CXXFLAGS) $< obj/*.o -o $@
 

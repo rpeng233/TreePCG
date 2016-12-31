@@ -144,7 +144,6 @@ struct MatrixElement {
   }
 };
 
-
 struct Matrix {
   size_t n;
   size_t m;

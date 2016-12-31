@@ -34,14 +34,6 @@ inline void axpy(
   }
 }
 
-// inline void axpy(
-//     FLOAT a,
-//     const std::vector<FLOAT>& x,
-//     std::vector<FLOAT>& y
-// ) {
-//   axpy(a, x, y, y);
-// }
-
 inline void mv(
     FLOAT alpha,
     const Matrix& A,
@@ -67,27 +59,6 @@ inline void mv(
   }
 }
 
-// inline void mv(
-//     FLOAT alpha,
-//     const Matrix& A,
-//     const std::vector<FLOAT>& x,
-//     FLOAT beta,
-//     std::vector<FLOAT>& y
-// ) {
-//   assert(A.m == x.size());
-//   assert(x.size() == y.size());
-// 
-//   std::vector<FLOAT> tmp(x.size(), 0);
-// 
-//   for (const MatrixElement& e : A.non_zero) {
-//     tmp[e.row] += e.value * x[e.column];
-//   }
-// 
-//   for (size_t i = 0; i < x.size(); i++) {
-//     y[i] = alpha * tmp[i] + beta * y[i];
-//   }
-// }
-
 inline void mv(
     FLOAT alpha,
     const Tree& tree,
@@ -96,7 +67,7 @@ inline void mv(
     const std::vector<FLOAT>& y,
     std::vector<FLOAT>& result
 ) {
-  auto n = tree.vertices.size();
+  auto n = tree.n;
   assert(n == x.size());
   assert(n == y.size());
   assert(n == result.size());
@@ -118,4 +89,33 @@ inline void mv(
   }
 }
 
+inline void mv(
+    FLOAT alpha,
+    const Graph& graph,
+    const std::vector<FLOAT>& x,
+    FLOAT beta,
+    const std::vector<FLOAT>& y,
+    std::vector<FLOAT>& result
+) {
+  auto n = graph.n;
+  assert(n == x.size());
+  assert(n == y.size());
+  assert(n == result.size());
+
+  for (auto& f : result) {
+    f = 0;
+  }
+
+  auto& vs = graph.vertices;
+  for (size_t i = 0; i < n; i++) {
+    for (const auto& a : vs[i].nghbrs) {
+      FLOAT current = (x[i] - x[a.v]) / a.resistance;
+      result[i] += current;
+    }
+  }
+
+  for (size_t i = 0; i < n; i++) {
+    result[i] = alpha * result[i] +  beta * y[i];
+  }
+}
 #endif

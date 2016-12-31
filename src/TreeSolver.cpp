@@ -3,9 +3,10 @@
 #include <utility>
 
 using std::vector;
+using std::pair;
 
-static std::pair<size_t, vector<ElimnatedLeaf>>
-eliminate_leaves(vector<TreeVertex>& vs) {
+static inline
+pair<size_t, vector<ElimnatedLeaf>> eliminate_leaves(vector<TreeVertex>& vs) {
   vector<ElimnatedLeaf> elims;
   size_t root;
   size_t found_root = 0;
@@ -37,8 +38,9 @@ eliminate_leaves(vector<TreeVertex>& vs) {
   return std::make_pair(root, std::move(elims));
 }
 
-static vector<FLOAT> eliminate_rhs(const vector<ElimnatedLeaf>& elims,
-                                   const vector<FLOAT>& rhs_) {
+static inline
+vector<FLOAT> eliminate_rhs(const vector<ElimnatedLeaf>& elims,
+                            const vector<FLOAT>& rhs_) {
   vector<FLOAT> rhs(rhs_);
   vector<FLOAT> rhs_elims(elims.size());
 
@@ -50,9 +52,10 @@ static vector<FLOAT> eliminate_rhs(const vector<ElimnatedLeaf>& elims,
   return rhs_elims;
 }
 
-static void back_substitution(const vector<ElimnatedLeaf>& elims,
-                              const vector<FLOAT>& rhs_elims,
-                              vector<FLOAT>& x) {
+static inline
+void back_substitution(const vector<ElimnatedLeaf>& elims,
+                       const vector<FLOAT>& rhs_elims,
+                       vector<FLOAT>& x) {
   for (size_t i = elims.size(); i > 0; i--) {
     auto& e = elims[i - 1];
     x[e.v] = rhs_elims[i - 1] * e.resistance + x[e.parent];

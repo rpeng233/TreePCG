@@ -123,12 +123,35 @@ inline bool CompareByResistance(const Arc &a1, const Arc &a2) {
   return a1.resistance < a2.resistance;
 }
 
-
 struct Vertex {
   std::vector<Arc> nghbrs;
 
   void addArc(size_t v, FLOAT resistance) {
     nghbrs.emplace_back(v, resistance);
+  }
+
+  void sortAndCombine() {
+    if (nghbrs.empty()) return;
+    sort(nghbrs.begin(), nghbrs.end());
+    size_t new_degree = 0;
+    size_t last_nghbr = nghbrs[0].v;
+    FLOAT conductance = 0;
+
+    for (const auto& a : nghbrs) {
+      if (a.v == last_nghbr) {
+        conductance += 1 / a.resistance;
+      } else {
+        nghbrs[new_degree].v = last_nghbr;
+        nghbrs[new_degree].resistance = 1 / conductance;
+        new_degree++;
+        last_nghbr = a.v;
+        conductance = 1 / a.resistance;
+      }
+    }
+    nghbrs[new_degree].v = last_nghbr;
+    nghbrs[new_degree].resistance = 1 / conductance;
+    new_degree++;
+    nghbrs.resize(new_degree);
   }
 };
 
@@ -165,37 +188,11 @@ struct Graph {
     addEdge(e.u, e.v, e.resistance);
   }
 
-  /*
-  void sortAndCombine() const {
-    for(size_t u = 0; u < n; ++u) {
-      int new_degree = 0;
-      sort(vertices[u].begin(), vertices[u].end());
-
-      int last_vertex = -1;
-      FLOAT last_weight = 0;
-
-      for (std::vector<Arc>::iterator it = vertices[u].begin();
-          it != vertices[u].end(); ++it) {
-        if (it->v != last_vertex) {
-          if (last_vertex >= 0) {
-            vertices[u][new_degree] =
-              Arc(last_vertex, FLOAT(1) / last_weight);
-            new_degree++;
-          }
-          last_vertex = it->v;
-        }
-        last_weight += FLOAT(1) / it->resistance;
-      }
-
-      if (last_vertex >= 0) {
-        vertices[u][new_degree] =
-          Arc(last_vertex, FLOAT(1) / last_weight);
-        new_degree++;
-      }
-      vertices[u].resize(new_degree);
+  void sortAndCombine() {
+    for (auto& v : vertices) {
+      v.sortAndCombine();
     }
   }
-  */
 };
 
 struct TreeVertex {
