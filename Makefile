@@ -1,4 +1,4 @@
-CXX = g++ --std=c++11
+CXX = g++
 CXXFLAGS += -I./include
 CXXFLAGS += -Wall -pedantic
 # CXXFLAGS += -O3

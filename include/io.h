@@ -50,8 +50,8 @@
  * 
  ********************************************************************************/
 
-#ifndef GENERATORS_IO_H__
-#define GENERATORS_IO_H__
+#ifndef INCLUDE_IO_H__
+#define INCLUDE_IO_H__
 
 #include <utility>
 #include <string>
@@ -111,20 +111,20 @@ namespace IO {
   }
 
   void CloseInputFile(FILE *file_in) {
-    if(file_in != stdin) {
+    if (file_in != stdin) {
       fclose(file_in);
     }
   }
- 
+
   void CloseOutputFile(FILE *file_out) {
-    if(file_out != stdout) {
+    if (file_out != stdout) {
       fclose(file_out);
     }
   }
 
   void SkipHeader(FILE *file_in, char skip) {
     char buff[100], ch;
-    
+
     while(true) {
       ch = getc(file_in);
       ungetc(ch, file_in);
@@ -141,7 +141,6 @@ namespace IO {
     fscanf(file_in, "%s", buff);
   }
 
- 
   inline int ReadInt(FILE *file_in, int format) {
     int result;
     if (format == ASCII || format == DIMACS) {
@@ -187,7 +186,7 @@ namespace IO {
       fprintf(file_out, "\n");
     }
   }
- 
+
   inline void WriteInt(FILE *file_out, char format, int v) {
     if (format == ASCII || format == DIMACS) {
       fprintf(file_out, "%d", v);
@@ -245,7 +244,7 @@ namespace IO {
     int num_vertices;
     int num_edges;
 
-    if(format == DIMACS) {
+    if (format == DIMACS) {
       SkipHeader(file_in, 'c');
       char line[1234];
       fgets(line, 100, file_in);
@@ -253,8 +252,7 @@ namespace IO {
       string temp1, temp2;
       sin >> temp1 >> temp2 >> num_vertices >> num_edges;
       SkipHeader(file_in, 'n');  // ignore source/sink
-    }
-    else {
+    } else {
       num_vertices = ReadInt(file_in, format);
       num_edges = ReadInt(file_in, format);
     }
@@ -267,7 +265,7 @@ namespace IO {
     }
 
     for (int i = 0; i < num_edges; ++i) {
-      if(format == DIMACS) {
+      if (format == DIMACS) {
         SkipToken(file_in);
       }
 // convert out of 1-indexing
@@ -298,7 +296,7 @@ namespace IO {
     }
     num_edges /= 2;
 
-    if(format == DIMACS) {
+    if (format == DIMACS) {
       fprintf(file_out, "c DIMACS format generated from graphToGraph\n");
       fprintf(file_out, "c   missing source / sink vertices\n");
       fprintf(file_out, "p max ");
@@ -312,13 +310,13 @@ namespace IO {
     for (int u = 0; u < graph.n; ++u) {
       for (vector<Arc>::iterator it = graph.neighbor_list[u].begin();
            it != graph.neighbor_list[u].end(); ++it) {
-        if (format == ASCII || format == BINARY){
-          if(u < it -> v) {
+        if (format == ASCII || format == BINARY) {
+          if (u < it -> v) {
             WriteInt(file_out, format, u + 1);
             WriteSpace(file_out, format);
             WriteInt(file_out, format, it -> v + 1);
             WriteSpace(file_out, format);
-//convert back to weights
+// convert back to weights
             FLOAT weight = FLOAT(1) / it -> resistance;
             WriteFloat(file_out, format, weight);
             WriteNewLine(file_out, format);
@@ -332,7 +330,6 @@ namespace IO {
     CloseOutputFile(file_out);
   }
 
- 
   Matrix ReadMMMatrix(string file_name) {
     FILE* file_in = OpenAsRead(file_name);
     SkipHeader(file_in, ASCII);
@@ -384,7 +381,7 @@ namespace IO {
   }
 
   void WriteMMMatrix(string file_name, Matrix &matrix) {
-  //warning: this `reorders' the matrix
+  // warning: this `reorders' the matrix
     matrix.sortAndCombine();
     FILE* file_out = OpenAsWrite(file_name);
 
@@ -418,10 +415,10 @@ namespace IO {
     for (int i = 0; i < int(v.size()); ++i) {
       // Converting to 1-indexing
       WriteInt(file_out, format, v[i] + 1);
-      WriteNewLine(file_out, format); 
+      WriteNewLine(file_out, format);
     }
     CloseOutputFile(file_out);
   }
 
 }      // namespace IO
-#endif  // GENERATORS_IO_H_
+#endif  // INCLUDE_IO_H_

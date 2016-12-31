@@ -36,9 +36,10 @@
  *
  ********************************************************************************/
 
-#ifndef __GRAPH_H__
-#define __GRAPH_H__
+#ifndef INCLUDE_GRAPH_H_
+#define INCLUDE_GRAPH_H_
 
+#include <algorithm>
 #include <vector>
 #include "common.h"
 
@@ -82,7 +83,6 @@ struct Edge {
 
     return this->resistance < o.resistance;
   }
-
 };
 
 struct Arc {
@@ -127,7 +127,7 @@ struct Vertex {
   std::vector<Arc> nghbrs;
 
   void addArc(size_t v, FLOAT resistance) {
-    nghbrs.emplace_back(v, resistance);
+    nghbrs.push_back(Arc(v, resistance));
   }
 
   void sortAndCombine() {
@@ -137,15 +137,16 @@ struct Vertex {
     size_t last_nghbr = nghbrs[0].v;
     FLOAT conductance = 0;
 
-    for (const auto& a : nghbrs) {
-      if (a.v == last_nghbr) {
-        conductance += 1 / a.resistance;
+    for(std::vector<Arc>::iterator ii = nghbrs.begin();
+         ii != nghbrs.end(); ++ii) {
+      if (ii -> v == last_nghbr) {
+        conductance += 1 / ii -> resistance;
       } else {
         nghbrs[new_degree].v = last_nghbr;
         nghbrs[new_degree].resistance = 1 / conductance;
         new_degree++;
-        last_nghbr = a.v;
-        conductance = 1 / a.resistance;
+        last_nghbr = ii -> v;
+        conductance = 1 / ii -> resistance;
       }
     }
     nghbrs[new_degree].v = last_nghbr;
@@ -190,7 +191,7 @@ struct Graph {
   }
 
   void sortAndCombine() const {
-    for(int u = 0; u < n; ++u) {
+    for (int u = 0; u < n; ++u) {
       int new_degree = 0;
       sort(neighbor_list[u].begin(), neighbor_list[u].end());
 
@@ -244,8 +245,7 @@ struct Tree {
     n = 0;
   }
 
-  Tree(size_t _n)
-  {
+  Tree(size_t _n) {
     n = _n;
     vertices.resize(n);
     for (size_t i = 0; i < n; i++) {
@@ -303,9 +303,9 @@ struct TreePlusEdges {
   }
 
   void addEdge(size_t u, size_t v, FLOAT r) {
-    off_tree_edges.emplace_back(u, v, r);
+    off_tree_edges.push_back(Edge(u, v, r));
   }
 };
 */
 
-#endif
+#endif  // INCLUDE_GRAPH_H_

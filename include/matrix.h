@@ -35,8 +35,8 @@
 #include <vector>
 using namespace std;
 
-#ifndef __MATRIX_H__
-#define __MATRIX_H__
+#ifndef INCLUDE_MATRIX_H__
+#define INCLUDE_MATRIX_H__
 
 #include "common.h"
 
@@ -176,7 +176,7 @@ struct Matrix {
 #ifndef NO_RANGE_CHECK
     assert(0 <= row && row < n && 0 <= column && column < m);
 #endif
-    non_zero.emplace_back(row, column, value);
+    non_zero.push_back(MatrixElement(row, column, value));
   }
 
   void sortAndCombine() {
@@ -187,13 +187,14 @@ struct Matrix {
     size_t new_nnz = 0;
     MatrixElement last(non_zero[0].row, non_zero[0].column, 0);
 
-    for (const auto& nz : non_zero) {
-      if (nz.row == last.row && nz.column == last.column) {
-        last.value += nz.value;
+    for(vector<MatrixElement>::iterator ii = non_zero.begin();
+        ii != non_zero.end(); ++ii) {
+      if (ii -> row == last.row && ii -> column == last.column) {
+        last.value += ii -> value;
       } else {
         non_zero[new_nnz] = last;
         new_nnz++;
-        last = nz;
+        last = (*ii);
       }
     }
 
@@ -202,11 +203,12 @@ struct Matrix {
     non_zero.resize(new_nnz);
   }
 
-  Matrix transpose() const {
+  Matrix transpose() {
     Matrix result(m, n);
 
-    for (const auto& nz : non_zero) {
-      result.addNonZero(nz.column, nz.row, nz.value);
+    for(vector<MatrixElement>::iterator ii = non_zero.begin();
+      ii != non_zero.end(); ++ii) {
+      result.addNonZero(ii -> column, ii -> row, ii -> value);
     }
 
     result.sortAndCombine();
@@ -277,4 +279,4 @@ Vec operator *(const Vec &a, const Matrix &b) {
 }
 */
 
-#endif   // __MATRIX_H__
+#endif   // INCLUDE_MATRIX_H__

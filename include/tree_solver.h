@@ -1,5 +1,5 @@
-#ifndef __TREESOLVER_H__
-#define __TREESOLVER_H__
+#ifndef INCLUDE_TREE_SOLVER_H__
+#define INCLUDE_TREE_SOLVER_H__
 
 #include <tuple>
 #include <vector>
@@ -7,7 +7,7 @@
 #include "graph.h"
 
 class ElimnatedLeaf {
-public:
+ public:
   size_t v;
   size_t parent;
   FLOAT resistance;
@@ -20,14 +20,14 @@ public:
 };
 
 class TreeSolver {
-public:
+ public:
   TreeSolver(const Tree& tree);
   void solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x);
 
-private:
+ private:
   size_t n;
   size_t root;
   std::vector<ElimnatedLeaf> elims;
 };
 
-#endif
+#endif  // INCLUDE_TREE_SOLVER_H_

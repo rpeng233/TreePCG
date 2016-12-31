@@ -1,5 +1,5 @@
-#ifndef __LINALG_H__
-#define __LINALG_H__
+#ifndef INCLUDE_LINEAR_ALGEBRA_H__
+#define INCLUDE_LINEAR_ALGEBRA_H__
 
 #include <cassert>
 #include <vector>
@@ -61,13 +61,13 @@ inline void mv(
 
 inline void mv(
     FLOAT alpha,
-    const Tree& tree,
+    Tree& tree,
     const std::vector<FLOAT>& x,
     FLOAT beta,
     const std::vector<FLOAT>& y,
     std::vector<FLOAT>& result
 ) {
-  auto n = tree.n;
+  int n = tree.n;
   assert(n == x.size());
   assert(n == y.size());
   assert(n == result.size());
@@ -76,7 +76,7 @@ inline void mv(
     f = 0;
   }
 
-  auto& vs = tree.vertices;
+  std::vector<TreeVertex>& vs = tree.vertices;
   for (size_t i = 0; i < n; i++) {
     if (vs[i].parent == i) continue;
     FLOAT current = (x[i] - x[vs[i].parent]) / vs[i].parent_resistance;
@@ -120,4 +120,4 @@ inline void mv(
   }
 }
 */
-#endif
+#endif  // INCLUDE_LINEAR_ALGEBRA_H

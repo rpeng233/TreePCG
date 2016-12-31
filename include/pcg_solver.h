@@ -1,16 +1,17 @@
-#ifndef PCGSOLVER_H
-#define PCGSOLVER_H
+#ifndef INCLUDE_PCG_SOLVER_H_
+#define INCLUDE_PCG_SOLVER_H_
 
 #include <cmath>
 #include <iostream>
+#include <utility>
+#include <vector>
 #include "common.h"
 #include "linear_algebra.h"
 #include "matrix.h"
 
 template <typename MatrixType, typename Preconditioner>
 class PCGSolver {
-public:
-
+ public:
   PCGSolver(const Preconditioner& p, const MatrixType& A_)
     : preconditioner(p), A(A_) { }
 
@@ -20,9 +21,8 @@ public:
   void solve(
       const std::vector<FLOAT>& b,
       std::vector<FLOAT>& x,
-      FLOAT tol=1e-6,
-      int maxit=-1
-  ) const {
+      FLOAT tol = 1e-6,
+      int maxit = -1) const {
     size_t n = A.n;
     vector<FLOAT> r(n);
     vector<FLOAT> q(n);
@@ -45,7 +45,7 @@ public:
       mv(-1, A, x, 1, b, r);                  // r = b - A * x
       res = sqrt(r * r);
       if (res < tol) return;
-      preconditioner.solve(r, s); // Solve P * s = r
+      preconditioner.solve(r, s);  // Solve P * s = r
       delta_old = delta_new;
       delta_new = r * s;
       beta = delta_new / delta_old;
@@ -53,10 +53,9 @@ public:
     }
   }
 
-private:
-
+ private:
   Preconditioner preconditioner;
   MatrixType A;
 };
 
-#endif
+#endif  // INCLUDE_PCG_SOLVER_H_
