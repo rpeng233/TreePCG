@@ -12,9 +12,9 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
-#include "../common/io.h"
-#include "../common/graph.h"
-#include "../common/matrix.h"
+#include "../include/io.h"
+#include "../include/graph.h"
+#include "../include/matrix.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 4) {

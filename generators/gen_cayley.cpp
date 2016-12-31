@@ -17,8 +17,8 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include "../common/io.h"
-#include "../common/graph.h"
+#include "../include/io.h"
+#include "../include/graph.h"
 
 int n, k;
 

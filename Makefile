@@ -3,16 +3,16 @@ CXXFLAGS += -I./include
 CXXFLAGS += -Wall -pedantic
 # CXXFLAGS += -O3
 # CXXFLAGS += -g
-CXXFLAGS += -lmpfr
+CXXFLAGS += 
 
 
 all : bin/test
 
 bin/test : include/*.h
-bin/test : src/test.cpp obj/TreeSolver.o
+bin/test : src/test.cpp obj/tree_solver.o
 	$(CXX) $(CXXFLAGS) $< obj/*.o -o $@
 
-obj/TreeSolver.o : src/TreeSolver.cpp include/TreeSolver.h
+obj/tree_solver.o : src/tree_solver.cpp include/tree_solver.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 clean :

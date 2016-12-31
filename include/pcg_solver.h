@@ -4,7 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include "common.h"
-#include "linalg.h"
+#include "linear_algebra.h"
 #include "matrix.h"
 
 template <typename MatrixType, typename Preconditioner>
