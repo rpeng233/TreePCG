@@ -156,42 +156,72 @@ struct Vertex {
 };
 
 struct Graph {
-  size_t n;
-  std::vector<Vertex> vertices;
+  int n;
+  std::vector<Arc> *neighbor_list;
 
   Graph() {
     n = 0;
+    neighbor_list = NULL;
   }
 
   Graph(int _n) {
     n = _n;
-    vertices.resize(n);
+    neighbor_list = new std::vector<Arc>[n];
   }
 
   Graph(const Graph &o) {
     n = o.n;
-    vertices = o.vertices;
+    neighbor_list = o.neighbor_list;
   }
 
   Graph &operator =(const Graph & o) {
     n = o.n;
-    vertices = o.vertices;
+    neighbor_list = o.neighbor_list;
     return (*this);
   }
 
-  void addEdge(size_t u, size_t v, FLOAT resistance) {
-    vertices[u].addArc(v, resistance);
-    vertices[v].addArc(u, resistance);
+  void AddEdge(int u, int v, FLOAT resistance) {
+    neighbor_list[u].push_back(Arc(v, resistance));
+    neighbor_list[v].push_back(Arc(u, resistance));
   }
 
-  void addEdge(Edge e) {
-    addEdge(e.u, e.v, e.resistance);
+  void AddEdge(Edge e) {
+    AddEdge(e.u, e.v, e.resistance);
   }
 
-  void sortAndCombine() {
-    for (auto& v : vertices) {
-      v.sortAndCombine();
+  void sortAndCombine() const {
+    for(int u = 0; u < n; ++u) {
+      int new_degree = 0;
+      sort(neighbor_list[u].begin(), neighbor_list[u].end());
+
+      int last_vertex = -1;
+      FLOAT last_weight = 0;
+
+      for (std::vector<Arc>::iterator it = neighbor_list[u].begin();
+          it != neighbor_list[u].end(); ++it) {
+        if (it -> v != last_vertex) {
+          if (last_vertex >= 0) {
+            neighbor_list[u][new_degree] =
+              Arc(last_vertex, FLOAT(1) / last_weight);
+            new_degree++;
+          }
+          last_vertex = it -> v;
+        }
+        last_weight += FLOAT(1) / it -> resistance;
+      }
+
+      if (last_vertex >= 0) {
+        neighbor_list[u][new_degree] =
+          Arc(last_vertex, FLOAT(1) / last_weight);
+        new_degree++;
+      }
+      neighbor_list[u].resize(new_degree);
     }
+  }
+
+
+  void FreeMemory() const {
+    delete neighbor_list;
   }
 };
 

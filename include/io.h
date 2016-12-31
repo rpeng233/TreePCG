@@ -205,15 +205,15 @@ namespace IO {
            it != graph.neighbor_list[u].end(); ++it) {
         FLOAT weight = FLOAT(1.0) / it -> resistance;
 // off-diagonals
-        result.AddNonZero(u, it -> v, -weight);
-        result.AddNonZero(it -> v, u, -weight);
+        result.addNonZero(u, it -> v, -weight);
+        result.addNonZero(it -> v, u, -weight);
 // diagonals
-        result.AddNonZero(u, u, weight);
-        result.AddNonZero(it -> v, it -> v, weight);
+        result.addNonZero(u, u, weight);
+        result.addNonZero(it -> v, it -> v, weight);
       }
     }
 
-    result.SortAndCombine();
+    result.sortAndCombine();
     return result;
   }
 
@@ -346,11 +346,11 @@ namespace IO {
       int row = ReadInt(file_in, 0) - 1;
       int column = ReadInt(file_in, 0) - 1;
       FLOAT value = ReadFloat(file_in, 0);
-      result.AddNonZero(row, column, value);
+      result.addNonZero(row, column, value);
     }
     CloseInputFile(file_in);
 
-    result.SortAndCombine();
+    result.sortAndCombine();
     return result;
   }
 
@@ -385,7 +385,7 @@ namespace IO {
 
   void WriteMMMatrix(string file_name, Matrix &matrix) {
   //warning: this `reorders' the matrix
-    matrix.SortAndCombine();
+    matrix.sortAndCombine();
     FILE* file_out = OpenAsWrite(file_name);
 
     fprintf(file_out, "%%%%MatrixMarket matrix coordinate real symmetric\n");

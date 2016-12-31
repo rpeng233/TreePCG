@@ -89,6 +89,7 @@ inline void mv(
   }
 }
 
+/*
 inline void mv(
     FLOAT alpha,
     const Graph& graph,
@@ -118,4 +119,5 @@ inline void mv(
     result[i] = alpha * result[i] +  beta * y[i];
   }
 }
+*/
 #endif
