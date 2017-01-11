@@ -3,8 +3,9 @@
 #include <vector>
 #include "common.h"
 #include "graph.h"
-#include "matrix.h"
 #include "identity_solver.h"
+#include "low_stretch_tree.h"
+#include "matrix.h"
 #include "pcg_solver.h"
 #include "tree_solver.h"
 

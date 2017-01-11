@@ -9,12 +9,14 @@ CXXFLAGS +=
 all : bin/test bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 
 bin/test : include/*.h
-bin/test : src/test.cpp obj/tree_solver.o
+bin/test : src/test.cpp obj/tree_solver.o obj/graph.o
 	$(CXX) $(CXXFLAGS) $< obj/*.o -o $@
 
 obj/tree_solver.o : src/tree_solver.cpp include/tree_solver.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
+obj/graph.o : src/graph.cpp include/graph.h
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 bin/gen_cayley : generators/gen_cayley.cpp include/*.h
 	$(CXX) $(CXXFLAGS) $(CFLAGS) $< -o $@

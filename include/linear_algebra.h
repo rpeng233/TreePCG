@@ -67,7 +67,7 @@ inline void mv(
     const std::vector<FLOAT>& y,
     std::vector<FLOAT>& result
 ) {
-  int n = tree.n;
+  size_t n = tree.n;
   assert(n == x.size());
   assert(n == y.size());
   assert(n == result.size());

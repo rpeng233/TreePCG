@@ -126,11 +126,11 @@ inline bool CompareByResistance(const Arc &a1, const Arc &a2) {
 struct Vertex {
   std::vector<Arc> nghbrs;
 
-  void addArc(size_t v, FLOAT resistance) {
+  void AddArc(size_t v, FLOAT resistance) {
     nghbrs.push_back(Arc(v, resistance));
   }
 
-  void sortAndCombine() {
+  void SortAndCombine() {
     if (nghbrs.empty()) return;
     sort(nghbrs.begin(), nghbrs.end());
     size_t new_degree = 0;
@@ -190,7 +190,7 @@ struct Graph {
     AddEdge(e.u, e.v, e.resistance);
   }
 
-  void sortAndCombine() const {
+  void SortAndCombine() const {
     for (int u = 0; u < n; ++u) {
       int new_degree = 0;
       sort(neighbor_list[u].begin(), neighbor_list[u].end());
@@ -257,6 +257,63 @@ struct Tree {
     vertices[v].parent = p;
     vertices[v].parent_resistance = r;
     vertices[p].children_count++;
+  }
+};
+
+struct EdgeList {
+  size_t n;
+  std::vector<Edge> edges;
+
+  void AddEdge(size_t u, size_t v, FLOAT resistance) {
+    edges.push_back(Edge(u, v, resistance));
+  }
+
+  void Clear() {
+    n = 0;
+    edges.clear();
+  }
+};
+
+struct Graph2 {
+  size_t n;
+  std::vector<Arc> arcs;
+  std::vector<size_t> first_arc;
+
+  Graph2(const EdgeList& es) {
+    n = es.n;
+    size_t m = es.edges.size();
+
+    arcs.resize(m * 2);
+    first_arc.resize(n + 1);
+    std::vector<size_t> degrees(n);
+
+    for (std::vector<Edge>::const_iterator it = es.edges.begin();
+         it != es.edges.end();
+         ++it) {
+      degrees[it->u]++;
+      degrees[it->v]++;
+    }
+
+    first_arc[0] = 0;
+    for (size_t i = 0; i < n - 1; i++) {
+      first_arc[i + 1] = degrees[i] + first_arc[i];
+    }
+    first_arc[n] = m * 2;
+
+    size_t tmp_index;
+    for (std::vector<Edge>::const_iterator it = es.edges.begin();
+         it != es.edges.end();
+         ++it) {
+      degrees[it->u]--;
+      tmp_index = first_arc[it->u] + degrees[it->u];
+      arcs[tmp_index].v = it->v;
+      arcs[tmp_index].resistance = it->resistance;
+
+      degrees[it->v]--;
+      tmp_index = first_arc[it->v] + degrees[it->v];
+      arcs[tmp_index].v = it->u;
+      arcs[tmp_index].resistance = it->resistance;
+    }
   }
 };
 
