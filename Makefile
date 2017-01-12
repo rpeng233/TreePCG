@@ -1,16 +1,15 @@
 CXX = g++
 CXXFLAGS += -I./include
 CXXFLAGS += -Wall -pedantic
-# CXXFLAGS += -O3
+CXXFLAGS += -O3
 # CXXFLAGS += -g
-CXXFLAGS += 
 
 
 all : bin/test bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 
 bin/test : include/*.h
 bin/test : src/test.cpp obj/tree_solver.o obj/graph.o
-	$(CXX) $(CXXFLAGS) $< obj/*.o -o $@
+	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@
 
 obj/tree_solver.o : src/tree_solver.cpp include/tree_solver.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@

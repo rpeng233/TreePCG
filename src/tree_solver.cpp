@@ -1,12 +1,12 @@
-#include "tree_solver.h"
-#include <tuple>
+#include <iostream>
 #include <utility>
+#include "tree_solver.h"
 
 using std::vector;
 using std::pair;
 
 static inline
-pair<size_t, vector<ElimnatedLeaf>> eliminate_leaves(vector<TreeVertex>& vs) {
+pair<size_t, vector<ElimnatedLeaf> > eliminate_leaves(vector<TreeVertex>& vs) {
   vector<ElimnatedLeaf> elims;
   size_t root;
   size_t found_root = 0;
@@ -26,7 +26,7 @@ pair<size_t, vector<ElimnatedLeaf>> eliminate_leaves(vector<TreeVertex>& vs) {
       size_t p = vs[cur].parent;
       assert(p != cur);
       assert(vs[p].eliminated == false);
-      elims.emplace_back(cur, p, vs[cur].parent_resistance);
+      elims.push_back(ElimnatedLeaf(cur, p, vs[cur].parent_resistance));
       vs[p].children_count--;
       vs[cur].eliminated = true;
       cur = p;
@@ -35,7 +35,7 @@ pair<size_t, vector<ElimnatedLeaf>> eliminate_leaves(vector<TreeVertex>& vs) {
 
   assert(found_root == 1);
 
-  return std::make_pair(root, std::move(elims));
+  return std::make_pair(root, elims);
 }
 
 static inline
@@ -57,7 +57,7 @@ void back_substitution(const vector<ElimnatedLeaf>& elims,
                        const vector<FLOAT>& rhs_elims,
                        vector<FLOAT>& x) {
   for (size_t i = elims.size(); i > 0; i--) {
-    auto& e = elims[i - 1];
+    const ElimnatedLeaf& e = elims[i - 1];
     x[e.v] = rhs_elims[i - 1] * e.resistance + x[e.parent];
   }
 }
@@ -65,11 +65,13 @@ void back_substitution(const vector<ElimnatedLeaf>& elims,
 TreeSolver::TreeSolver(const Tree& tree) {
   n = tree.n;
   vector<TreeVertex> vs(tree.vertices);
-  std::tie(root, elims) = eliminate_leaves(vs);
+  pair<size_t, vector<ElimnatedLeaf> > p = eliminate_leaves(vs);
+  root = p.first;
+  elims = p.second;
   assert(elims.size() == tree.n - 1);
 }
 
-void TreeSolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) {
+void TreeSolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
   assert(b.size() == x.size());
   assert(b.size() == n);
 
@@ -78,11 +80,11 @@ void TreeSolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) {
   back_substitution(elims, rhs_elims, x);
 
   FLOAT sum = 0;
-  for (const auto& f : x) {
-    sum += f;
+  for (size_t i = 0; i < n; i++) {
+    sum += x[i];
   }
   sum /= n;
-  for (auto& f : x) {
-    f -= sum;
+  for (size_t i = 0; i < n; i++) {
+    x[i] -= sum;
   }
 }

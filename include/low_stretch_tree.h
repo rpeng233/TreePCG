@@ -14,7 +14,7 @@ Tree DijkstraTree(const Graph2& graph, size_t root) {
 
   std::vector<bool> finished(n, false);
   std::vector<double> dist(n, std::numeric_limits<double>::max());
-  std::priority_queue<std::pair<double, size_t>> queue;
+  std::priority_queue<std::pair<double, size_t> > queue;
 
   dist[root] = 0;
   queue.push(std::make_pair(0, root));
@@ -30,8 +30,7 @@ Tree DijkstraTree(const Graph2& graph, size_t root) {
       double tmp = dist[u] + arc.resistance;
       if (tmp < dist[arc.v]) {
         dist[arc.v] = tmp;
-        tree.vertices[arc.v].parent = u;
-        tree.vertices[arc.v].parent_resistance = arc.resistance;
+        tree.SetParent(arc.v, u, arc.resistance);
         queue.push(std::make_pair(-tmp, arc.v));
       }
     }

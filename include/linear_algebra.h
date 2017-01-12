@@ -46,12 +46,14 @@ inline void mv(
   assert(x.size() == y.size());
   assert(x.size() == result.size());
 
-  for (FLOAT& f : result) {
-    f = 0;
+  for (size_t i = 0; i < A.m; i++) {
+    result[i] = 0;
   }
 
-  for (const MatrixElement& e : A.non_zero) {
-    result[e.row] += e.value * x[e.column];
+  for (std::vector<MatrixElement>::const_iterator it = A.non_zero.begin();
+       it != A.non_zero.end();
+       ++it) {
+    result[it->row] += it->value * x[it->column];
   }
 
   for (size_t i = 0; i < x.size(); i++) {
@@ -72,8 +74,8 @@ inline void mv(
   assert(n == y.size());
   assert(n == result.size());
 
-  for (auto& f : result) {
-    f = 0;
+  for (size_t i = 0; i < n; i++) {
+    result[i] = 0;
   }
 
   std::vector<TreeVertex>& vs = tree.vertices;
@@ -82,6 +84,38 @@ inline void mv(
     FLOAT current = (x[i] - x[vs[i].parent]) / vs[i].parent_resistance;
     result[i] += current;
     result[vs[i].parent] -= current;
+  }
+
+  for (size_t i = 0; i < n; i++) {
+    result[i] = alpha * result[i] +  beta * y[i];
+  }
+}
+
+inline void mv(
+    FLOAT alpha,
+    const EdgeList& es,
+    const std::vector<FLOAT>& x,
+    FLOAT beta,
+    const std::vector<FLOAT>& y,
+    std::vector<FLOAT>& result
+) {
+  size_t n = es.n;
+  assert(n == x.size());
+  assert(n == y.size());
+  assert(n == result.size());
+
+  for (size_t i = 0; i < n; i++) {
+    result[i] = 0;
+  }
+
+  const std::vector<Edge>& edges = es.edges;
+  for (size_t i = 0; i < edges.size(); i++) {
+    size_t u = edges[i].u;
+    size_t v = edges[i].v;
+    const FLOAT& r = edges[i].resistance;
+    FLOAT current = (x[u] - x[v]) / r;
+    result[u] += current;
+    result[v] -= current;
   }
 
   for (size_t i = 0; i < n; i++) {

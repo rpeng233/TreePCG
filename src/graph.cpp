@@ -54,6 +54,7 @@ void cycle(size_t n,
 
 void torus(size_t n, size_t m, EdgeList& es) {
   es.Clear();
+  es.n = n * m;
   for (size_t i = 0; i < n; i++) {
     for(size_t j = 0; j < m; j++) {
       es.AddEdge(i * m + j, i * m + (j + 1) % m, (FLOAT) 1);

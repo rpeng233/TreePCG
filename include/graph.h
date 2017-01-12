@@ -39,7 +39,6 @@
 #ifndef INCLUDE_GRAPH_H_
 #define INCLUDE_GRAPH_H_
 
-#include <algorithm>
 #include <vector>
 #include "common.h"
 
@@ -253,7 +252,12 @@ struct Tree {
     }
   }
 
-  void setParent(size_t v, size_t p, FLOAT r) {
+  void SetParent(size_t v, size_t p, FLOAT r) {
+    size_t old_p = vertices[v].parent;
+    if (old_p != v) {
+      vertices[old_p].children_count--;
+    }
+
     vertices[v].parent = p;
     vertices[v].parent_resistance = r;
     vertices[p].children_count++;
@@ -316,6 +320,28 @@ struct Graph2 {
     }
   }
 };
+
+void cayley(size_t n,
+            const std::vector<size_t>& skips,
+            const std::vector<FLOAT>& resistances,
+            EdgeList& es);
+
+void line(size_t n,
+          const std::vector<FLOAT>& resistances,
+          EdgeList& es);
+
+void line(size_t n,
+          EdgeList& es);
+
+void cycle(size_t n,
+           const std::vector<FLOAT>& resistances,
+           EdgeList& es);
+
+void cycle(size_t n, EdgeList& es);
+
+void torus(size_t n, size_t m, EdgeList& es);
+
+void gnp(size_t n, double p, EdgeList& es);
 
 /*
 struct TreePlusEdges {

@@ -15,9 +15,6 @@ class PCGSolver {
   PCGSolver(const Preconditioner& p, const MatrixType& A_)
     : preconditioner(p), A(A_) { }
 
-  PCGSolver(Preconditioner&& p, MatrixType&& A_)
-    : preconditioner(std::move(p)), A(std::move(A_)) {}
-
   void solve(
       const std::vector<FLOAT>& b,
       std::vector<FLOAT>& x,
@@ -33,7 +30,7 @@ class PCGSolver {
     FLOAT alpha;
     FLOAT beta;
 
-    // size_t i = 0;
+    size_t i = 0;
     mv(-1, A, x, 1, b, r);                    // r = b - A * x
     FLOAT res = (r * r);
     preconditioner.solve(r, d);   // Solve P * d = r
@@ -44,6 +41,7 @@ class PCGSolver {
       axpy(alpha, d, x, x);                   // x = alpha * d + x
       mv(-1, A, x, 1, b, r);                  // r = b - A * x
       res = sqrt(r * r);
+      std::cout << i++ << ' ' << res << std::endl;
       if (res < tol) return;
       preconditioner.solve(r, s);  // Solve P * s = r
       delta_old = delta_new;
