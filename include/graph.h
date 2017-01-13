@@ -321,6 +321,22 @@ struct Graph2 {
   }
 };
 
+struct Graph3 {
+  size_t n;
+  std::vector<std::map<size_t, FLOAT> > neighbor_map;
+
+  Graph3(const EdgeList& es) {
+    n = es.n;
+    neighbor_map.resize(n);
+    for (std::vector<Edge>::const_iterator it = es.edges.begin();
+         it != es.edges.end();
+         ++it) {
+      neighbor_map[it->u][it->v] = it->resistance;
+      neighbor_map[it->v][it->u] = it->resistance;
+    }
+  }
+};
+
 void cayley(size_t n,
             const std::vector<size_t>& skips,
             const std::vector<FLOAT>& resistances,

@@ -40,7 +40,7 @@ class PCGSolver {
       alpha = delta_new / (d * q);
       axpy(alpha, d, x, x);                   // x = alpha * d + x
       mv(-1, A, x, 1, b, r);                  // r = b - A * x
-      res = sqrt(r * r);
+      res = MYSQRT(r * r);
       std::cout << i++ << ' ' << res << std::endl;
       if (res < tol) return;
       preconditioner.solve(r, s);  // Solve P * s = r

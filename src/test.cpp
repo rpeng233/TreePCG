@@ -6,8 +6,42 @@
 #include "identity_solver.h"
 #include "low_stretch_tree.h"
 #include "matrix.h"
+#include "min_degree_solver.h"
 #include "pcg_solver.h"
 #include "tree_solver.h"
+
+using std::cout;
+using std::endl;
+
+void min_degree(std::mt19937& rng) {
+  size_t k = 20;
+  size_t n = k * k;
+
+  EdgeList es;
+
+  torus(k, k, es);
+  Graph3 g(es);
+
+  std::vector<FLOAT> b(n);
+  std::vector<FLOAT> x(n);
+  std::uniform_real_distribution<> demand(-10, 10);
+  FLOAT sum = 0;
+  for (size_t i = 0; i < n - 1; i++) {
+    FLOAT tmp = demand(rng);
+    sum += tmp;
+    b[i] = tmp;
+  }
+  b[n - 1] = -sum;
+
+  MinDegreeSolver s(g);
+  s.solve(b, x);
+
+  std::vector<FLOAT> r(n);
+  mv(-1, es, x, 1, b, r);
+
+  std::cout << "min_degree\n";
+  std::cout << MYSQRT(r * r) << std::endl;
+}
 
 void tree_pcg(std::mt19937& rng) {
   size_t k = 100;
@@ -43,7 +77,7 @@ void tree_pcg(std::mt19937& rng) {
   mv(-1, es, x, 1, b, r);
 
   std::cout << "tree_pcg\n";
-  std::cout << r * r << std::endl;
+  std::cout << MYSQRT(r * r) << std::endl;
 }
 
 void bst(std::mt19937& rng) {
@@ -78,7 +112,7 @@ void bst(std::mt19937& rng) {
   mv(-1, tree, x, 1, b, r);
 
   std::cout << "bst\n";
-  std::cout << r * r << std::endl;
+  std::cout << MYSQRT(r * r) << std::endl;
 }
 
 void pcg(std::mt19937& rng) {
@@ -102,13 +136,14 @@ void pcg(std::mt19937& rng) {
   mv(-1, A, x, 1, b, r);
 
   std::cout << "pcg\n";
-  std::cout << r * r << std::endl;
+  std::cout << MYSQRT(r * r) << std::endl;
 }
 
 int main(void) {
   std::mt19937 rng(std::random_device{}());
 
-  // bst(rng);
-  // pcg(rng);
+  bst(rng);
+  pcg(rng);
   tree_pcg(rng);
+  min_degree(rng);
 }
