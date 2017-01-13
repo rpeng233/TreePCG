@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <numeric>
@@ -7,15 +8,14 @@
 using std::vector;
 
 class DegreeLess {
-  const std::vector<std::map<size_t, FLOAT> > *neighbor_map;
+  const std::vector<std::map<size_t, FLOAT> >& neighbor_map;
 public:
-  DegreeLess(const std::vector<std::map<size_t, FLOAT> > *neighbor_map) {
-    assert(neighbor_map != NULL);
-    this->neighbor_map = neighbor_map;
+  DegreeLess(const std::vector<std::map<size_t, FLOAT> >& neighbor_map_)
+  : neighbor_map(neighbor_map_) {
   }
 
   bool operator() (size_t u, size_t v) const {
-    return (*neighbor_map)[u].size() < (*neighbor_map)[v].size();
+    return neighbor_map[u].size() < neighbor_map[v].size();
   }
 };
 
@@ -54,10 +54,35 @@ void back_substitution(const vector<EliminatedVertex>& elims,
   }
 }
 
-MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
+static inline void BubbleDown(vector<size_t>& heap,
+                              size_t h_size,
+                              size_t i,
+                              DegreeLess& less) {
+  size_t l, r, max_child;
+  do {
+    l = i * 2 + 1;
+    r = l + 1;
+    if (l >= h_size) break;
+    if (r < h_size && less(heap[l], heap[r])) {
+      max_child = r;
+    } else {
+      max_child = l;
+    }
+    if (less(heap[i], heap[max_child])) {
+      std::swap(heap[i], heap[max_child]);
+      i = max_child;
+      l = i * 2 + 1;
+      r = l + 1;
+    } else {
+      break;
+    }
+  } while (true);
+}
+
+MinDegreeSolver::MinDegreeSolver(Graph3& graph, int lol) {
   n = graph.n;
   vector<size_t> vs(n);
-  DegreeLess compare(&graph.neighbor_map);
+  DegreeLess compare(graph.neighbor_map);
 
   for (size_t i = 0; i < n; i++) {
     vs[i] = i;
@@ -106,6 +131,71 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
         neighbor_map[v2][v1] = new_r;
       }
     }
+    for (IterType it = neighbor_map[u].begin();
+         it != neighbor_map[u].end();
+         ++it) {
+      neighbor_map[it->first].erase(u);
+    }
+  }
+}
+
+MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
+  n = graph.n;
+  vector<size_t> heap(n);
+  DegreeLess less(graph.neighbor_map);
+
+  for (size_t i = 0; i < n; i++) {
+    heap[i] = i;
+  }
+
+  std::make_heap(heap.begin(), heap.end(), less);
+
+  typedef std::map<size_t, FLOAT>::const_iterator IterType;
+  vector<std::map<size_t, FLOAT> >& neighbor_map = graph.neighbor_map;
+
+  elims.resize(n - 1);
+
+  for (size_t i = 0; i < n - 1; i++) {
+    size_t u = heap[0];
+    std::pop_heap(heap.begin(), heap.end() - i, less);
+    elims[i].v = u;
+    FLOAT degree = 0;
+    for (IterType it = neighbor_map[u].begin();
+         it != neighbor_map[u].end();
+         ++it) {
+      degree += 1 / it->second;
+      elims[i].neighbors.push_back(Arc(it->first, it->second));
+    }
+    elims[i].degree = degree;
+    for (IterType it1 = neighbor_map[u].begin();
+         it1 != neighbor_map[u].end();
+         ++it1) {
+      for (IterType it2 = it1;
+           it2 != neighbor_map[u].end();
+           ++it2) {
+        if (it1 == it2) continue;
+        size_t v1 = it1->first;
+        size_t v2 = it2->first;
+        const FLOAT& r1 = it1->second;
+        const FLOAT& r2 = it2->second;
+        std::map<size_t, FLOAT>::iterator r12 = neighbor_map[v1].find(v2);
+        FLOAT new_r;
+        if (r12 == neighbor_map[v1].end()) {
+          new_r = degree * r1 * r2;
+        } else {
+          const FLOAT& r = neighbor_map[v1][v2];
+          // assert(neighbor_map[v1][v2] == neighbor_map[v2][v1]);
+          new_r = 1 / (1 / r + 1 / (degree * r1 * r2));
+        }
+        neighbor_map[v1][v2] = new_r;
+        neighbor_map[v2][v1] = new_r;
+      }
+    }
+    // for (IterType it = neighbor_map[u].begin();
+    //      it != neighbor_map[u].end();
+    //      ++it) {
+    //   BubbleDown(heap, n - i - 1, it->first, less);
+    // }
     for (IterType it = neighbor_map[u].begin();
          it != neighbor_map[u].end();
          ++it) {

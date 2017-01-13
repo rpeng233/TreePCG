@@ -14,6 +14,7 @@ public:
 class MinDegreeSolver {
 public:
   MinDegreeSolver(Graph3& graph);
+  MinDegreeSolver(Graph3& graph, int lol);
   void solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x) const;
 
 private:

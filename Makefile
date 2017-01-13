@@ -1,8 +1,9 @@
 CXX = g++
 CXXFLAGS += -I./include
-CXXFLAGS += -Wall -pedantic
-# CXXFLAGS += -O3
-CXXFLAGS += -g
+# CXXFLAGS += -Wall -pedantic
+CXXFLAGS += -O3
+# CXXFLAGS += -g
+# CXXFLAGS += -pg
 
 
 all : bin/test bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph

@@ -14,7 +14,7 @@ using std::cout;
 using std::endl;
 
 void min_degree(std::mt19937& rng) {
-  size_t k = 20;
+  size_t k = 30;
   size_t n = k * k;
 
   EdgeList es;
@@ -33,7 +33,7 @@ void min_degree(std::mt19937& rng) {
   }
   b[n - 1] = -sum;
 
-  MinDegreeSolver s(g);
+  MinDegreeSolver s(g, 1);
   s.solve(b, x);
 
   std::vector<FLOAT> r(n);
@@ -142,8 +142,10 @@ void pcg(std::mt19937& rng) {
 int main(void) {
   std::mt19937 rng(std::random_device{}());
 
-  bst(rng);
-  pcg(rng);
-  tree_pcg(rng);
+  // bst(rng);
+  // pcg(rng);
+  // tree_pcg(rng);
   min_degree(rng);
+
+  return 0;
 }
