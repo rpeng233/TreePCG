@@ -11,15 +11,17 @@
 #include "tree_solver.h"
 
 using std::cout;
+using std::cerr;
 using std::endl;
 
 void min_degree(std::mt19937& rng) {
-  size_t k = 30;
+  size_t k = 100;
   size_t n = k * k;
 
   EdgeList es;
 
   torus(k, k, es);
+  // line(n, es);
   Graph3 g(es);
 
   std::vector<FLOAT> b(n);
@@ -33,8 +35,11 @@ void min_degree(std::mt19937& rng) {
   }
   b[n - 1] = -sum;
 
+  cerr << 1 << endl;
   MinDegreeSolver s(g, 1);
+  cerr << 2 << endl;
   s.solve(b, x);
+  cerr << 3 << endl;
 
   std::vector<FLOAT> r(n);
   mv(-1, es, x, 1, b, r);
