@@ -18,16 +18,18 @@ Tree DijkstraTree(const Graph2& graph, size_t root) {
 
   dist[root] = 0;
   queue.push(std::make_pair(0, root));
-  for (size_t i = 0; i < n; i++) {
+  size_t count = 0;
+  while (count < n) {
     size_t u = queue.top().second;
+    queue.pop();
     if (finished[u]) {
       continue;
     }
-    queue.pop();
     finished[u] = true;
+    count++;
     for (size_t i = graph.first_arc[u]; i < graph.first_arc[u + 1]; i++) {
-      const Arc& arc = graph.arcs[i];
-      double tmp = dist[u] + arc.resistance;
+      const ArcR& arc = graph.arcs[i];
+      double tmp = dist[u] + (double) arc.resistance;
       if (tmp < dist[arc.v]) {
         dist[arc.v] = tmp;
         tree.SetParent(arc.v, u, arc.resistance);

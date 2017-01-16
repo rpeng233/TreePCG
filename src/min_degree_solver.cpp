@@ -43,7 +43,7 @@ vector<FLOAT> eliminate_rhs(const vector<EliminatedVertex>& elims,
 
   for (size_t i = 0; i < elims.size(); i++) {
     rhs_elims[i] = rhs[elims[i].v];
-    for (vector<Arc>::const_iterator it = elims[i].neighbors.begin();
+    for (vector<ArcR>::const_iterator it = elims[i].neighbors.begin();
          it != elims[i].neighbors.end();
          ++it) {
       rhs[it->v] += rhs[elims[i].v] / (elims[i].degree * it->resistance);
@@ -61,7 +61,7 @@ void back_substitution(const vector<EliminatedVertex>& elims,
   for (size_t i = elims.size(); i > 0; i--) {
     const EliminatedVertex& e = elims[i - 1];
     x[e.v] = rhs_elims[i - 1];
-    for (vector<Arc>::const_iterator it = e.neighbors.begin();
+    for (vector<ArcR>::const_iterator it = e.neighbors.begin();
          it != e.neighbors.end();
          ++it) {
       x[e.v] += x[it->v] / it->resistance;
@@ -95,7 +95,7 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph, int brute_force) {
          it != neighbor_map[u].end();
          ++it) {
       degree += 1 / it->second;
-      elims[i].neighbors.push_back(Arc(it->first, it->second));
+      elims[i].neighbors.push_back(ArcR(it->first, it->second));
     }
     elims[i].degree = degree;
     for (IterType it1 = neighbor_map[u].begin();
@@ -149,7 +149,7 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
          it != neighbor_map[u].end();
          ++it) {
       degree += 1 / it->second;
-      elims[i].neighbors.push_back(Arc(it->first, it->second));
+      elims[i].neighbors.push_back(ArcR(it->first, it->second));
       neighbor_map[it->first].erase(u);
       heap.BubbleUp(it->first);
     }

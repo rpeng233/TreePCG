@@ -93,7 +93,7 @@ inline void mv(
 
 inline void mv(
     FLOAT alpha,
-    const EdgeList& es,
+    const EdgeListR& es,
     const std::vector<FLOAT>& x,
     FLOAT beta,
     const std::vector<FLOAT>& y,
@@ -108,12 +108,44 @@ inline void mv(
     result[i] = 0;
   }
 
-  const std::vector<Edge>& edges = es.edges;
+  const std::vector<EdgeR>& edges = es.edges;
   for (size_t i = 0; i < edges.size(); i++) {
     size_t u = edges[i].u;
     size_t v = edges[i].v;
     const FLOAT& r = edges[i].resistance;
     FLOAT current = (x[u] - x[v]) / r;
+    result[u] += current;
+    result[v] -= current;
+  }
+
+  for (size_t i = 0; i < n; i++) {
+    result[i] = alpha * result[i] +  beta * y[i];
+  }
+}
+
+inline void mv(
+    FLOAT alpha,
+    const EdgeListC& es,
+    const std::vector<FLOAT>& x,
+    FLOAT beta,
+    const std::vector<FLOAT>& y,
+    std::vector<FLOAT>& result
+) {
+  size_t n = es.n;
+  assert(n == x.size());
+  assert(n == y.size());
+  assert(n == result.size());
+
+  for (size_t i = 0; i < n; i++) {
+    result[i] = 0;
+  }
+
+  const std::vector<EdgeC>& edges = es.edges;
+  for (size_t i = 0; i < edges.size(); i++) {
+    size_t u = edges[i].u;
+    size_t v = edges[i].v;
+    const FLOAT& c = edges[i].conductance;
+    FLOAT current = (x[u] - x[v]) * c;
     result[u] += current;
     result[v] -= current;
   }
@@ -154,4 +186,5 @@ inline void mv(
   }
 }
 */
+
 #endif  // INCLUDE_LINEAR_ALGEBRA_H

@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -14,11 +15,23 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+template <class Distribution, class RandomEngine>
+class RNG {
+  Distribution& dist;
+  RandomEngine& rng;
+public:
+  RNG(Distribution& dist_, RandomEngine& rng_) : dist(dist_), rng(rng_) { }
+
+  typename Distribution::result_type operator()() {
+    return dist(rng);
+  }
+};
+
 void min_degree(std::mt19937& rng) {
-  size_t k = 100;
+  size_t k = 70;
   size_t n = k * k;
 
-  EdgeList es;
+  EdgeListR es;
 
   torus(k, k, es);
   // line(n, es);
@@ -48,22 +61,28 @@ void min_degree(std::mt19937& rng) {
   std::cout << MYSQRT(r * r) << std::endl;
 }
 
-void tree_pcg(std::mt19937& rng) {
-  size_t k = 100;
+void resistance_vs_conductance(std::mt19937& rng) {
+  size_t k = 300;
   size_t n = k * k;
 
-  EdgeList es;
+  EdgeListR es;
+  std::uniform_real_distribution<> unif_1_100(1, 10);
+  RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
+  torus(k, k, es, random_resistance);
 
-  torus(k, k, es);
-  Graph2 g(es);
-  Tree t = DijkstraTree(g, 0);
+  Tree t;
 
-  // for (size_t i = 0; i < t.n; i++) {
-  //   std::cout << i << ' ' << t.vertices[i].parent << std::endl;
-  // }
+  {
+    Graph2 g(es);
+    t = DijkstraTree(g, 0);
+  }
+
+
+  EdgeListC es2(es);
 
   TreeSolver preconditioner(t);
-  PCGSolver<EdgeList, TreeSolver> s(preconditioner, es);
+  PCGSolver<EdgeListR, TreeSolver> s(es, preconditioner);
+  PCGSolver<EdgeListC, TreeSolver> s2(es2, preconditioner);
 
   std::vector<FLOAT> b(n);
   std::vector<FLOAT> x(n);
@@ -76,19 +95,45 @@ void tree_pcg(std::mt19937& rng) {
   }
   b[n - 1] = -sum;
 
-  s.solve(b, x);
-
   std::vector<FLOAT> r(n);
-  mv(-1, es, x, 1, b, r);
 
-  std::cout << "tree_pcg\n";
-  std::cout << MYSQRT(r * r) << std::endl;
+  std::chrono::time_point<std::chrono::system_clock> start, end;
+  std::chrono::duration<double> duration;
+
+  std::cout << "resistance_vs_conductance\n";
+  for (size_t i = 0; i < 3; i++) {
+    for (auto&f : x) {
+      f = 0;
+    }
+    start = std::chrono::system_clock::now();
+    s.solve(b, x);
+    end = std::chrono::system_clock::now();
+    duration = end - start;
+    cout << "resistance: " << duration.count() << "s" << endl;
+
+    mv(-1, es, x, 1, b, r);
+
+    std::cout << MYSQRT(r * r) << std::endl;
+
+    for (auto&f : x) {
+      f = 0;
+    }
+    start = std::chrono::system_clock::now();
+    s2.solve(b, x);
+    end = std::chrono::system_clock::now();
+    duration = end - start;
+    cout << "conductance: " << duration.count() << "s" << endl;
+
+    mv(-1, es, x, 1, b, r);
+
+    std::cout << MYSQRT(r * r) << std::endl;
+  }
 }
 
 void bst(std::mt19937& rng) {
   size_t n = 65535;
   Tree tree(n);
-  std::uniform_real_distribution<> weight(1, 10);
+  std::uniform_real_distribution<> weight(1, 100);
 
   // a complete binary tree
   for (size_t i = 0; i * 2 + 2 < n; i++) {
@@ -132,7 +177,7 @@ void pcg(std::mt19937& rng) {
     b[i] = 1;
   }
 
-  PCGSolver<Matrix, IdentitySolver> s(IdentitySolver(), A);
+  PCGSolver<Matrix, IdentitySolver> s(A, IdentitySolver());
 
   s.solve(b, x);
 
@@ -149,8 +194,8 @@ int main(void) {
 
   // bst(rng);
   // pcg(rng);
-  // tree_pcg(rng);
-  min_degree(rng);
+  resistance_vs_conductance(rng);
+  // min_degree(rng);
 
   return 0;
 }

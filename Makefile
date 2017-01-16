@@ -9,7 +9,7 @@ CXXFLAGS += --std=c++11
 all : bin/test bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 
 bin/test : include/*.h
-bin/test : src/test.cpp obj/tree_solver.o obj/graph.o obj/min_degree_solver.o
+bin/test : src/test.cpp obj/tree_solver.o obj/min_degree_solver.o
 	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@
 
 obj/tree_solver.o : src/tree_solver.cpp include/tree_solver.h
@@ -17,9 +17,6 @@ obj/tree_solver.o : src/tree_solver.cpp include/tree_solver.h
 
 obj/min_degree_solver.o : include/min_degree_solver.h include/binary_heap.h
 obj/min_degree_solver.o : src/min_degree_solver.cpp
-	$(CXX) $(CXXFLAGS) $< -c -o $@
-
-obj/graph.o : src/graph.cpp include/graph.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 bin/gen_cayley : generators/gen_cayley.cpp include/*.h

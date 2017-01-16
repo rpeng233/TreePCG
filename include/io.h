@@ -200,7 +200,7 @@ namespace IO {
     Matrix result(graph.n, graph.n);
 
     for (int u = 0; u < graph.n; ++u) {
-      for (vector<Arc>::iterator it = graph.neighbor_list[u].begin();
+      for (vector<ArcR>::iterator it = graph.neighbor_list[u].begin();
            it != graph.neighbor_list[u].end(); ++it) {
         FLOAT weight = FLOAT(1.0) / it -> resistance;
 // off-diagonals
@@ -231,7 +231,7 @@ namespace IO {
         it != matrix.non_zero.end(); ++it) {
       if (it -> row != it -> column) {
         (result.neighbor_list[it -> row]).
-          push_back(Arc(it -> column, -FLOAT(1.0) / it -> value));
+          push_back(ArcR(it -> column, -FLOAT(1.0) / it -> value));
       }
     }
 
@@ -308,7 +308,7 @@ namespace IO {
     WriteNewLine(file_out, format);
 
     for (int u = 0; u < graph.n; ++u) {
-      for (vector<Arc>::iterator it = graph.neighbor_list[u].begin();
+      for (vector<ArcR>::iterator it = graph.neighbor_list[u].begin();
            it != graph.neighbor_list[u].end(); ++it) {
         if (format == ASCII || format == BINARY) {
           if (u < it -> v) {
