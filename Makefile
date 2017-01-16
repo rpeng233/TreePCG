@@ -2,8 +2,7 @@ CXX = g++
 CXXFLAGS += -I./include
 # CXXFLAGS += -Wall -pedantic
 CXXFLAGS += -O3
-CXXFLAGS += -g
-CXXFLAGS += --std=c++11
+# CXXFLAGS += -g
 
 
 all : bin/test bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
