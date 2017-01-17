@@ -2,6 +2,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include "aug_tree_solver.h"
 #include "common.h"
 #include "graph.h"
 #include "identity_solver.h"
@@ -15,7 +16,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-template <class Distribution, class RandomEngine>
+template <typename Distribution, typename RandomEngine>
 class RNG {
   Distribution& dist;
   RandomEngine& rng;
@@ -27,8 +28,61 @@ public:
   }
 };
 
+void aug_tree_pcg(std::mt19937& rng) {
+
+}
+
+void aug_tree(std::mt19937& rng) {
+  size_t k = 50;
+  size_t n = k * k;
+
+  EdgeListR es;
+
+  std::uniform_real_distribution<> unif_1_100(1, 100);
+  RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
+
+  torus(k, k, es, random_resistance);
+
+  TreePlusEdgesR t;
+
+  {
+    Graph2 g(es);
+    t = DijkstraTree<TreePlusEdgesR>(g, 0);
+  }
+
+  for (size_t i = 0; i < es.edges.size(); i++) {
+    const EdgeR& e = es.edges[i];
+    if (t.vertices[e.u].parent == e.v || t.vertices[e.v].parent == e.u) {
+      continue;
+    }
+    t.AddEdge(e.u, e.v, e.resistance);
+  }
+
+
+  AugTreeSolver s(t);
+
+  std::vector<FLOAT> b(n);
+  std::vector<FLOAT> x(n);
+  std::uniform_real_distribution<> demand(-10, 10);
+  FLOAT sum = 0;
+  for (size_t i = 0; i < n - 1; i++) {
+    FLOAT tmp = demand(rng);
+    sum += tmp;
+    b[i] = tmp;
+  }
+  b[n - 1] = -sum;
+
+  s.solve(b, x);
+
+  std::vector<FLOAT> r(n);
+  mv(-1, es, x, 1, b, r);
+
+  std::cout << "aug_tree\n";
+  std::cout << MYSQRT(r * r) << std::endl;
+}
+
 void min_degree(std::mt19937& rng) {
-  size_t k = 30;
+  size_t k = 100;
   size_t n = k * k;
 
   EdgeListR es;
@@ -77,11 +131,11 @@ void resistance_vs_conductance(std::mt19937& rng) {
   RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
   torus(k, k, es, random_resistance);
 
-  Tree t;
+  TreeR t;
 
   {
     Graph2 g(es);
-    t = DijkstraTree(g, 0);
+    t = DijkstraTree<TreeR>(g, 0);
   }
 
 
@@ -139,7 +193,7 @@ void resistance_vs_conductance(std::mt19937& rng) {
 
 void bst(std::mt19937& rng) {
   size_t n = 65535;
-  Tree tree(n);
+  TreeR tree(n);
   std::uniform_real_distribution<> weight(1, 100);
 
   // a complete binary tree
@@ -201,8 +255,9 @@ int main(void) {
 
   // bst(rng);
   // pcg(rng);
-  resistance_vs_conductance(rng);
+  // resistance_vs_conductance(rng);
   // min_degree(rng);
+  aug_tree(rng);
 
   return 0;
 }

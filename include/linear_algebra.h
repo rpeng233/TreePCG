@@ -63,7 +63,7 @@ inline void mv(
 
 inline void mv(
     FLOAT alpha,
-    Tree& tree,
+    TreeR& tree,
     const std::vector<FLOAT>& x,
     FLOAT beta,
     const std::vector<FLOAT>& y,
@@ -78,7 +78,7 @@ inline void mv(
     result[i] = 0;
   }
 
-  std::vector<TreeVertex>& vs = tree.vertices;
+  std::vector<TreeVertexR>& vs = tree.vertices;
   for (size_t i = 0; i < n; i++) {
     if (vs[i].parent == i) continue;
     FLOAT current = (x[i] - x[vs[i].parent]) / vs[i].parent_resistance;

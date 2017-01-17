@@ -39,6 +39,7 @@
 #ifndef INCLUDE_GRAPH_H_
 #define INCLUDE_GRAPH_H_
 
+#include <map>
 #include <vector>
 #include "common.h"
 
@@ -287,26 +288,26 @@ struct Graph {
   }
 };
 
-struct TreeVertex {
+struct TreeVertexR {
   size_t parent;
-  size_t children_count;
+  size_t degree; // TODO: right now the degree doesn't count the parent
   FLOAT parent_resistance;
   bool eliminated;
 
-  TreeVertex()
-  : parent(0), children_count(0), parent_resistance(0.0), eliminated(false)
+  TreeVertexR()
+  : parent(0), degree(0), parent_resistance(0.0), eliminated(false)
   { }
 };
 
-struct Tree {
+struct TreeR {
   size_t n;
-  std::vector<TreeVertex> vertices;
+  std::vector<TreeVertexR> vertices;
 
-  Tree() {
+  TreeR() {
     n = 0;
   }
 
-  Tree(size_t _n) {
+  TreeR(size_t _n) {
     n = _n;
     vertices.resize(n);
     for (size_t i = 0; i < n; i++) {
@@ -317,12 +318,55 @@ struct Tree {
   void SetParent(size_t v, size_t p, FLOAT r) {
     size_t old_p = vertices[v].parent;
     if (old_p != v) {
-      vertices[old_p].children_count--;
+      vertices[old_p].degree--;
     }
 
     vertices[v].parent = p;
     vertices[v].parent_resistance = r;
-    vertices[p].children_count++;
+    vertices[p].degree++;
+  }
+};
+
+struct TreePlusEdgesR {
+  size_t n;
+  std::vector<TreeVertexR> vertices;
+  std::vector<EdgeR> off_tree_edges;
+
+  TreePlusEdgesR() {
+    n = 0;
+  }
+
+  TreePlusEdgesR(size_t _n) {
+    n = _n;
+    vertices.resize(n);
+    for (size_t i = 0; i < n; i++) {
+      vertices[i].parent = i;
+    }
+  }
+
+  TreePlusEdgesR(const TreePlusEdgesR &o) {
+    n = o.n;
+    vertices = o.vertices;
+    off_tree_edges = o.off_tree_edges;
+  }
+
+  TreePlusEdgesR &operator =(const TreePlusEdgesR &o) {
+    n = o.n;
+    vertices = o.vertices;
+    off_tree_edges = o.off_tree_edges;
+    return (*this);
+  }
+
+  void SetParent(size_t v, size_t p, FLOAT r) {
+    vertices[v].parent = p;
+    vertices[v].parent_resistance = r;
+    vertices[p].degree++;
+  }
+
+  void AddEdge(size_t u, size_t v, FLOAT r) {
+    off_tree_edges.push_back(EdgeR(u, v, r));
+    vertices[u].degree++;
+    vertices[v].degree++;
   }
 };
 
@@ -443,6 +487,24 @@ struct Graph3 {
       neighbor_map[it->v][it->u] = it->resistance;
     }
   }
+
+  Graph3(const TreePlusEdgesR& tree) {
+    n = tree.n;
+    neighbor_map.resize(n);
+    for (size_t i = 0; i < tree.vertices.size(); i++) {
+      size_t p = tree.vertices[i].parent;
+      if (i == p) continue;
+      FLOAT r = tree.vertices[i].parent_resistance;
+      neighbor_map[i][p] = r;
+      neighbor_map[p][i] = r;
+    }
+    for (std::vector<EdgeR>::const_iterator it = tree.off_tree_edges.begin();
+         it != tree.off_tree_edges.end();
+         ++it) {
+      neighbor_map[it->u][it->v] = it->resistance;
+      neighbor_map[it->v][it->u] = it->resistance;
+    }
+  }
 };
 
 class One {
@@ -452,7 +514,7 @@ public:
   }
 };
 
-template <class EdgeListType, class WeightGen>
+template <typename EdgeListType, typename WeightGen>
 void line(size_t n, EdgeListType& es, WeightGen wgen=WeightGen()) {
   es.Clear();
   es.n = n;
@@ -461,23 +523,23 @@ void line(size_t n, EdgeListType& es, WeightGen wgen=WeightGen()) {
   }
 }
 
-template <class EdgeListType>
+template <typename EdgeListType>
 void line(size_t n, EdgeListType& es) {
   line(n, es, One());
 }
 
-template <class EdgeListType, class WeightGen>
+template <typename EdgeListType, typename WeightGen>
 void cycle(size_t n, EdgeListType& es, WeightGen wgen=WeightGen()) {
   line(n, es, wgen);
   es.AddEdge(0, n - 1, wgen());
 }
 
-template <class EdgeListType>
+template <typename EdgeListType>
 void cycle(size_t n, EdgeListType& es) {
   cycle(n, es, One());
 }
 
-template <class EdgeListType, class WeightGen>
+template <typename EdgeListType, typename WeightGen>
 void torus(size_t n, size_t m, EdgeListType& es, WeightGen wgen=WeightGen()) {
   es.Clear();
   es.n = n * m;
@@ -489,12 +551,12 @@ void torus(size_t n, size_t m, EdgeListType& es, WeightGen wgen=WeightGen()) {
   }
 }
 
-template <class EdgeListType>
+template <typename EdgeListType>
 void torus(size_t n, size_t m, EdgeListType& es) {
   torus(n, m, es, One());
 }
 
-template <class EdgeListType, class WeightGen>
+template <typename EdgeListType, typename WeightGen>
 void gnp(size_t n, double p, EdgeListType& es, WeightGen wgen=WeightGen()) {
   es.Clear();
   es.n = n;
@@ -507,7 +569,7 @@ void gnp(size_t n, double p, EdgeListType& es, WeightGen wgen=WeightGen()) {
   }
 }
 
-template <class EdgeListType>
+template <typename EdgeListType>
 void gnp(size_t n, double p, EdgeListType& es) {
   gnp(n, p, es, One());
 }
@@ -530,53 +592,5 @@ void cayley(size_t n,
 }
 
 void gnp(size_t n, double p, EdgeListR& es);
-
-/*
-struct TreePlusEdges {
-  size_t n;
-  // size_t root;
-  std::vector<TreeVertex> vertices;
-  std::vector<EdgeR> off_tree_edges;
-
-  TreePlusEdges() {
-    n = 0;
-    // root = 0;
-  }
-
-  TreePlusEdges(size_t _n) {
-    n = _n;
-    // root = 0;
-    vertices.resize(n);
-    for (size_t i = 0; i < n; i++) {
-      vertices[i].parent = i;
-    }
-  }
-
-  TreePlusEdges(const TreePlusEdges &o) {
-    n = o.n;
-    // root = o.root;
-    vertices = o.vertices;
-    off_tree_edges = o.off_tree_edges;
-  }
-
-  TreePlusEdges &operator =(const TreePlusEdges &o) {
-    n = o.n;
-    // root = o.root;
-    vertices = o.vertices;
-    off_tree_edges = o.off_tree_edges;
-    return (*this);
-  }
-
-  void setParent(size_t v, size_t p, FLOAT r) {
-    vertices[v].parent = p;
-    vertices[v].parent_resistance = r;
-    vertices[p].ref_count++;
-  }
-
-  void addEdge(size_t u, size_t v, FLOAT r) {
-    off_tree_edges.push_back(EdgeR(u, v, r));
-  }
-};
-*/
 
 #endif  // INCLUDE_GRAPH_H_

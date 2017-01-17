@@ -20,7 +20,7 @@ class ElimnatedLeaf {
 
 class TreeSolver {
  public:
-  TreeSolver(const Tree& tree);
+  TreeSolver(const TreeR& tree);
   void solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x) const;
 
  private:

@@ -6,7 +6,7 @@ using std::vector;
 using std::pair;
 
 static inline
-pair<size_t, vector<ElimnatedLeaf> > eliminate_leaves(vector<TreeVertex>& vs) {
+pair<size_t, vector<ElimnatedLeaf> > eliminate_leaves(vector<TreeVertexR>& vs) {
   vector<ElimnatedLeaf> elims;
   size_t root;
   size_t found_root = 0;
@@ -18,7 +18,7 @@ pair<size_t, vector<ElimnatedLeaf> > eliminate_leaves(vector<TreeVertex>& vs) {
       found_root++;
       continue;
     }
-    if (vs[i].children_count != 0 || vs[i].eliminated) {
+    if (vs[i].degree != 0 || vs[i].eliminated) {
       continue;
     }
     size_t cur = i;
@@ -27,10 +27,10 @@ pair<size_t, vector<ElimnatedLeaf> > eliminate_leaves(vector<TreeVertex>& vs) {
       assert(p != cur);
       assert(vs[p].eliminated == false);
       elims.push_back(ElimnatedLeaf(cur, p, vs[cur].parent_resistance));
-      vs[p].children_count--;
+      vs[p].degree--;
       vs[cur].eliminated = true;
       cur = p;
-    } while (vs[cur].children_count == 0 && vs[cur].parent != cur);
+    } while (vs[cur].degree == 0 && vs[cur].parent != cur);
   }
 
   assert(found_root == 1);
@@ -62,9 +62,9 @@ void back_substitution(const vector<ElimnatedLeaf>& elims,
   }
 }
 
-TreeSolver::TreeSolver(const Tree& tree) {
+TreeSolver::TreeSolver(const TreeR& tree) {
   n = tree.n;
-  vector<TreeVertex> vs(tree.vertices);
+  vector<TreeVertexR> vs(tree.vertices);
   pair<size_t, vector<ElimnatedLeaf> > p = eliminate_leaves(vs);
   root = p.first;
   elims = p.second;

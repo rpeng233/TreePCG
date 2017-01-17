@@ -7,10 +7,10 @@
 #include "common.h"
 #include "graph.h"
 
-inline
-Tree DijkstraTree(const Graph2& graph, size_t root) {
+template <typename TreeType>
+TreeType DijkstraTree(const Graph2& graph, size_t root) {
   size_t n = graph.n;
-  Tree tree(n);
+  TreeType tree(n);
 
   std::vector<bool> finished(n, false);
   std::vector<double> dist(n, std::numeric_limits<double>::max());
@@ -40,5 +40,7 @@ Tree DijkstraTree(const Graph2& graph, size_t root) {
 
   return tree;
 }
+
+void ComputeStretch(const TreePlusEdgesR& tree, std::vector<double>& stretch);
 
 #endif // INCLUDE_LOW_STRETCH_TREE_H__
