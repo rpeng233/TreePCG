@@ -15,6 +15,7 @@
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::vector;
 
 template <typename Distribution, typename RandomEngine>
 class RNG {
@@ -28,8 +29,131 @@ public:
   }
 };
 
-void aug_tree_pcg(std::mt19937& rng) {
+class StretchGreater {
+  const vector<double>& strs;
+public:
+  StretchGreater(const vector<double>& strs_) : strs(strs_) { }
 
+  bool operator() (size_t i, size_t j) const {
+    return strs[i] > strs[j];
+  }
+};
+
+void aug_tree_pcg(std::mt19937& rng) {
+  size_t k = 300;
+  size_t n = k * k;
+
+  EdgeListR es;
+
+  std::uniform_real_distribution<> unif_1_100(1, 100);
+  RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
+
+  torus(k, k, es, random_resistance);
+
+  TreeR t;
+
+  {
+    Graph2 g(es);
+    t = DijkstraTree<TreeR>(g, 0);
+  }
+
+  EdgeListR otes;
+  otes.n = n;
+
+  for (size_t i = 0; i < es.edges.size(); i++) {
+    const EdgeR& e = es.edges[i];
+    if (t.vertices[e.u].parent == e.v || t.vertices[e.v].parent == e.u) {
+      continue;
+    }
+    otes.AddEdge(e.u, e.v, e.resistance);
+  }
+
+  vector<double> strs(otes.edges.size());
+
+  ComputeStretch(t.vertices, otes.edges, strs);
+
+  StretchGreater less(strs);
+  vector<size_t> indices(otes.edges.size());
+
+  for (size_t i = 0; i < indices.size(); i++) {
+    indices[i] = i;
+  }
+
+  std::sort(indices.begin(), indices.end(), less);
+
+  EdgeListR sampled_es;
+  for (size_t i = 0; i < k; i++) {
+    sampled_es.edges.push_back(otes.edges[indices[i]]);
+  }
+
+  Graph3 g(t);
+  g.AddEdges(sampled_es);
+  MinDegreeSolver precon(g, 1);
+
+  PCGSolver<EdgeListR, MinDegreeSolver> s(es, precon);
+
+  std::vector<FLOAT> b(n);
+  std::vector<FLOAT> x(n);
+  std::uniform_real_distribution<> demand(-10, 10);
+  FLOAT sum = 0;
+  for (size_t i = 0; i < n - 1; i++) {
+    FLOAT tmp = demand(rng);
+    sum += tmp;
+    b[i] = tmp;
+  }
+  b[n - 1] = -sum;
+
+  s.solve(b, x);
+
+  std::vector<FLOAT> r(n);
+  mv(-1, es, x, 1, b, r);
+
+  std::cout << "aug_tree_pcg\n";
+  std::cout << MYSQRT(r * r) << std::endl;
+
+  TreeSolver ts(t);
+  PCGSolver<EdgeListR, TreeSolver> s2(es, ts);
+
+  for (auto& f : x) {
+    f = 0;
+  }
+
+  s2.solve(b, x);
+
+  mv(-1, es, x, 1, b, r);
+
+  std::cout << "aug_tree_pcg\n";
+  std::cout << MYSQRT(r * r) << std::endl;
+}
+void stretch(std::mt19937& rng) {
+  size_t k = 4;
+  size_t n = k * k;
+
+  EdgeListR es;
+
+  // std::uniform_real_distribution<> unif_1_100(1, 100);
+  // RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
+
+  torus(k, k, es);
+
+  TreeR t;
+
+  {
+    Graph2 g(es);
+    t = DijkstraTree<TreeR>(g, 0);
+  }
+
+  vector<double> strs(es.edges.size());
+  ComputeStretch(t.vertices, es.edges, strs);
+
+  for (size_t i = 0; i < t.vertices.size(); i++) {
+    cout << i << ' ' << t.vertices[i].parent << endl;
+  }
+
+  for (size_t i = 0; i < es.edges.size(); i++) {
+    EdgeR& e = es.edges[i];
+    cout << e.u << ' ' << e.v << ' ' << strs[i] << endl;
+  }
 }
 
 void aug_tree(std::mt19937& rng) {
@@ -257,7 +381,9 @@ int main(void) {
   // pcg(rng);
   // resistance_vs_conductance(rng);
   // min_degree(rng);
-  aug_tree(rng);
+  // aug_tree(rng);
+  aug_tree_pcg(rng);
+  // stretch(rng);
 
   return 0;
 }

@@ -41,6 +41,8 @@ TreeType DijkstraTree(const Graph2& graph, size_t root) {
   return tree;
 }
 
-void ComputeStretch(const TreePlusEdgesR& tree, std::vector<double>& stretch);
+void ComputeStretch(const std::vector<TreeVertexR>& vs,
+                    const std::vector<EdgeR>& es,
+                    std::vector<double>& stretch);
 
 #endif // INCLUDE_LOW_STRETCH_TREE_H__

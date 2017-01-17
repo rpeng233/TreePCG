@@ -20,6 +20,8 @@ public:
     if (parent != this) {
       parent = parent->find();
     }
+
+    return parent;
   }
 
   void Union(DisjointSetNode *y) {

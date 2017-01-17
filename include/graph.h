@@ -505,6 +505,26 @@ struct Graph3 {
       neighbor_map[it->v][it->u] = it->resistance;
     }
   }
+
+  Graph3(const TreeR& tree) {
+    n = tree.n;
+    neighbor_map.resize(n);
+    for (size_t i = 0; i < n; i++) {
+      size_t p = tree.vertices[i].parent;
+      if (i == p) continue;
+      const FLOAT& r = tree.vertices[i].parent_resistance;
+      neighbor_map[i][p] = r;
+      neighbor_map[p][i] = r;
+    }
+  }
+
+  void AddEdges(const EdgeListR& es) {
+    for (size_t i = 0; i < es.edges.size(); i++) {
+      const EdgeR& e = es.edges[i];
+      neighbor_map[e.u][e.v] = e.resistance;
+      neighbor_map[e.v][e.u] = e.resistance;
+    }
+  }
 };
 
 class One {
