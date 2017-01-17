@@ -452,7 +452,7 @@ public:
   }
 };
 
-template <class EdgeListType, class WeightGen=One>
+template <class EdgeListType, class WeightGen>
 void line(size_t n, EdgeListType& es, WeightGen wgen=WeightGen()) {
   es.Clear();
   es.n = n;
@@ -461,13 +461,23 @@ void line(size_t n, EdgeListType& es, WeightGen wgen=WeightGen()) {
   }
 }
 
-template <class EdgeListType, class WeightGen=One>
+template <class EdgeListType>
+void line(size_t n, EdgeListType& es) {
+  line(n, es, One());
+}
+
+template <class EdgeListType, class WeightGen>
 void cycle(size_t n, EdgeListType& es, WeightGen wgen=WeightGen()) {
   line(n, es, wgen);
   es.AddEdge(0, n - 1, wgen());
 }
 
-template <class EdgeListType, class WeightGen=One>
+template <class EdgeListType>
+void cycle(size_t n, EdgeListType& es) {
+  cycle(n, es, One());
+}
+
+template <class EdgeListType, class WeightGen>
 void torus(size_t n, size_t m, EdgeListType& es, WeightGen wgen=WeightGen()) {
   es.Clear();
   es.n = n * m;
@@ -479,7 +489,12 @@ void torus(size_t n, size_t m, EdgeListType& es, WeightGen wgen=WeightGen()) {
   }
 }
 
-template <class EdgeListType, class WeightGen=One>
+template <class EdgeListType>
+void torus(size_t n, size_t m, EdgeListType& es) {
+  torus(n, m, es, One());
+}
+
+template <class EdgeListType, class WeightGen>
 void gnp(size_t n, double p, EdgeListType& es, WeightGen wgen=WeightGen()) {
   es.Clear();
   es.n = n;
@@ -490,6 +505,11 @@ void gnp(size_t n, double p, EdgeListType& es, WeightGen wgen=WeightGen()) {
       }
     }
   }
+}
+
+template <class EdgeListType>
+void gnp(size_t n, double p, EdgeListType& es) {
+  gnp(n, p, es, One());
 }
 
 inline

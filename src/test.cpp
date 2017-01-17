@@ -28,12 +28,14 @@ public:
 };
 
 void min_degree(std::mt19937& rng) {
-  size_t k = 70;
+  size_t k = 30;
   size_t n = k * k;
 
   EdgeListR es;
+  std::uniform_real_distribution<> unif_1_100(1, 100);
+  RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
 
-  torus(k, k, es);
+  torus(k, k, es, random_resistance);
   // line(n, es);
   Graph3 g(es);
 
@@ -48,11 +50,16 @@ void min_degree(std::mt19937& rng) {
   }
   b[n - 1] = -sum;
 
-  cerr << 1 << endl;
+  std::chrono::time_point<std::chrono::system_clock> start, end;
+  std::chrono::duration<double> duration;
+
+  start = std::chrono::system_clock::now();
   MinDegreeSolver s(g, 1);
-  cerr << 2 << endl;
+  end = std::chrono::system_clock::now();
+  duration = end - start;
+  cout << duration.count() << "s" << endl;
+
   s.solve(b, x);
-  cerr << 3 << endl;
 
   std::vector<FLOAT> r(n);
   mv(-1, es, x, 1, b, r);
