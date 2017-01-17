@@ -379,10 +379,10 @@ int main(void) {
 
   // bst(rng);
   // pcg(rng);
-  // resistance_vs_conductance(rng);
+  resistance_vs_conductance(rng);
   // min_degree(rng);
   // aug_tree(rng);
-  aug_tree_pcg(rng);
+  // aug_tree_pcg(rng);
   // stretch(rng);
 
   return 0;
