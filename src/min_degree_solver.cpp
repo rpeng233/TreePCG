@@ -43,10 +43,11 @@ vector<FLOAT> eliminate_rhs(const vector<EliminatedVertex>& elims,
 
   for (size_t i = 0; i < elims.size(); i++) {
     rhs_elims[i] = rhs[elims[i].v];
-    for (vector<ArcR>::const_iterator it = elims[i].neighbors.begin();
+    FLOAT tmp = rhs[elims[i].v] / elims[i].degree;
+    for (vector<ArcC>::const_iterator it = elims[i].neighbors.begin();
          it != elims[i].neighbors.end();
          ++it) {
-      rhs[it->v] += rhs[elims[i].v] / (elims[i].degree * it->resistance);
+      rhs[it->v] += tmp * it->conductance;
     }
     rhs[elims[i].v] = 0;
   }
@@ -61,10 +62,10 @@ void back_substitution(const vector<EliminatedVertex>& elims,
   for (size_t i = elims.size(); i > 0; i--) {
     const EliminatedVertex& e = elims[i - 1];
     x[e.v] = rhs_elims[i - 1];
-    for (vector<ArcR>::const_iterator it = e.neighbors.begin();
+    for (vector<ArcC>::const_iterator it = e.neighbors.begin();
          it != e.neighbors.end();
          ++it) {
-      x[e.v] += x[it->v] / it->resistance;
+      x[e.v] += x[it->v] * it->conductance;
     }
     x[e.v] /= e.degree;
   }
@@ -94,8 +95,8 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph, int brute_force) {
     for (IterType it = neighbor_map[u].begin();
          it != neighbor_map[u].end();
          ++it) {
-      degree += 1 / it->second;
-      elims[i].neighbors.push_back(ArcR(it->first, it->second));
+      degree += it->second;
+      elims[i].neighbors.push_back(ArcC(it->first, it->second));
     }
     elims[i].degree = degree;
     for (IterType it1 = neighbor_map[u].begin();
@@ -107,19 +108,11 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph, int brute_force) {
         if (it1 == it2) continue;
         size_t v1 = it1->first;
         size_t v2 = it2->first;
-        const FLOAT& r1 = it1->second;
-        const FLOAT& r2 = it2->second;
-        std::map<size_t, FLOAT>::iterator r12 = neighbor_map[v1].find(v2);
-        FLOAT new_r;
-        if (r12 == neighbor_map[v1].end()) {
-          new_r = degree * r1 * r2;
-        } else {
-          const FLOAT& r = neighbor_map[v1][v2];
-          // assert(neighbor_map[v1][v2] == neighbor_map[v2][v1]);
-          new_r = 1 / (1 / r + 1 / (degree * r1 * r2));
-        }
-        neighbor_map[v1][v2] = new_r;
-        neighbor_map[v2][v1] = new_r;
+        const FLOAT& c1 = it1->second;
+        const FLOAT& c2 = it2->second;
+        FLOAT new_c = c1 * c2 / degree;
+        neighbor_map[v1][v2] += new_c;
+        neighbor_map[v2][v1] += new_c;
       }
     }
     for (IterType it = neighbor_map[u].begin();
@@ -148,8 +141,8 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
     for (IterType it = neighbor_map[u].begin();
          it != neighbor_map[u].end();
          ++it) {
-      degree += 1 / it->second;
-      elims[i].neighbors.push_back(ArcR(it->first, it->second));
+      degree += it->second;
+      elims[i].neighbors.push_back(ArcC(it->first, it->second));
       neighbor_map[it->first].erase(u);
       heap.BubbleUp(it->first);
     }
@@ -163,23 +156,13 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
         if (it1 == it2) continue;
         size_t v1 = it1->first;
         size_t v2 = it2->first;
-        const FLOAT& r1 = it1->second;
-        const FLOAT& r2 = it2->second;
-        std::map<size_t, FLOAT>::iterator r12 = neighbor_map[v1].find(v2);
-        FLOAT new_r;
-        if (r12 == neighbor_map[v1].end()) {
-          new_r = degree * r1 * r2;
-          neighbor_map[v1][v2] = new_r;
-          heap.BubbleDown(v1);
-          neighbor_map[v2][v1] = new_r;
-          heap.BubbleDown(v2);
-        } else {
-          const FLOAT& r = neighbor_map[v1][v2];
-          // assert(neighbor_map[v1][v2] == neighbor_map[v2][v1]);
-          new_r = 1 / (1 / r + 1 / (degree * r1 * r2));
-          neighbor_map[v1][v2] = new_r;
-          neighbor_map[v2][v1] = new_r;
-        }
+        const FLOAT& c1 = it1->second;
+        const FLOAT& c2 = it2->second;
+        FLOAT new_c = c1 * c2 / degree;
+        neighbor_map[v1][v2] += new_c;
+        heap.BubbleDown(v1);
+        neighbor_map[v2][v1] += new_c;
+        heap.BubbleDown(v2);
       }
     }
   }

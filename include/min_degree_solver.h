@@ -8,7 +8,7 @@ class EliminatedVertex {
 public:
   size_t v;
   FLOAT degree;
-  std::vector<ArcR> neighbors;
+  std::vector<ArcC> neighbors;
 };
 
 class MinDegreeSolver {

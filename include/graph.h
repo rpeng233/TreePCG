@@ -185,6 +185,30 @@ inline bool CompareByResistance(const ArcR &a1, const ArcR &a2) {
   return a1.resistance < a2.resistance;
 }
 
+struct ArcC {
+  size_t v;
+  FLOAT conductance;
+
+  ArcC() {
+    v = 0;
+    conductance = 0;
+  }
+
+  ArcC(int _v, FLOAT conductance_) {
+    v = _v;
+    conductance = conductance_;
+  }
+
+
+  bool operator <(const ArcC &o) const {
+    if (this->v != o.v) {
+      return this->v < o.v;
+    }
+
+    return this->conductance < o.conductance;
+  }
+};
+
 struct Vertex {
   std::vector<ArcR> nghbrs;
 
@@ -390,6 +414,14 @@ struct EdgeListR {
     n = 0;
     edges.clear();
   }
+
+  EdgeR& operator[](const size_t i) {
+    return edges[i];
+  }
+
+  const EdgeR& operator[](const size_t i) const {
+    return edges[i];
+  }
 };
 
 struct EdgeListC {
@@ -409,6 +441,14 @@ struct EdgeListC {
   void Clear() {
     n = 0;
     edges.clear();
+  }
+
+  EdgeC& operator[](const size_t i) {
+    return edges[i];
+  }
+
+  const EdgeC& operator[](const size_t i) const {
+    return edges[i];
   }
 };
 
@@ -477,14 +517,21 @@ struct Graph3 {
   size_t n;
   std::vector<std::map<size_t, FLOAT> > neighbor_map;
 
+  void AddEdgeR(size_t u, size_t v, const FLOAT& r) {
+    neighbor_map[u][v] += 1 / r;
+    neighbor_map[v][u] += 1 / r;
+  }
+
+  void AddEdgeR(const EdgeR& e) {
+    neighbor_map[e.u][e.v] += 1 / e.resistance;
+    neighbor_map[e.v][e.u] += 1 / e.resistance;
+  }
+
   Graph3(const EdgeListR& es) {
     n = es.n;
     neighbor_map.resize(n);
-    for (std::vector<EdgeR>::const_iterator it = es.edges.begin();
-         it != es.edges.end();
-         ++it) {
-      neighbor_map[it->u][it->v] = it->resistance;
-      neighbor_map[it->v][it->u] = it->resistance;
+    for (size_t i = 0; i < es.edges.size(); i++) {
+      AddEdgeR(es[i]);
     }
   }
 
@@ -494,15 +541,10 @@ struct Graph3 {
     for (size_t i = 0; i < tree.vertices.size(); i++) {
       size_t p = tree.vertices[i].parent;
       if (i == p) continue;
-      FLOAT r = tree.vertices[i].parent_resistance;
-      neighbor_map[i][p] = r;
-      neighbor_map[p][i] = r;
+      AddEdgeR(i, p, tree.vertices[i].parent_resistance);
     }
-    for (std::vector<EdgeR>::const_iterator it = tree.off_tree_edges.begin();
-         it != tree.off_tree_edges.end();
-         ++it) {
-      neighbor_map[it->u][it->v] = it->resistance;
-      neighbor_map[it->v][it->u] = it->resistance;
+    for (size_t i = 0; i < tree.off_tree_edges.size(); i++) {
+      AddEdgeR(tree.off_tree_edges[i]);
     }
   }
 
@@ -513,18 +555,10 @@ struct Graph3 {
       size_t p = tree.vertices[i].parent;
       if (i == p) continue;
       const FLOAT& r = tree.vertices[i].parent_resistance;
-      neighbor_map[i][p] = r;
-      neighbor_map[p][i] = r;
+      AddEdgeR(i, p, r);
     }
   }
 
-  void AddEdges(const EdgeListR& es) {
-    for (size_t i = 0; i < es.edges.size(); i++) {
-      const EdgeR& e = es.edges[i];
-      neighbor_map[e.u][e.v] = e.resistance;
-      neighbor_map[e.v][e.u] = e.resistance;
-    }
-  }
 };
 
 class One {

@@ -17,6 +17,28 @@ using std::cerr;
 using std::endl;
 using std::vector;
 
+class Timer {
+  std::chrono::time_point<std::chrono::steady_clock> start;
+  std::string msg;
+
+public:
+  Timer() {
+    msg = "Timer uninitialized";
+    start = std::chrono::steady_clock::now();
+  }
+
+  void tic(const std::string& m) {
+    msg = m;
+    start = std::chrono::steady_clock::now();
+  }
+
+  void toc() {
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    cout << msg << ": " << duration.count() << "s" << endl;
+  }
+};
+
 template <typename Distribution, typename RandomEngine>
 class RNG {
   Distribution& dist;
@@ -40,7 +62,9 @@ public:
 };
 
 void aug_tree_pcg(std::mt19937& rng) {
-  size_t k = 300;
+  Timer timer;
+
+  size_t k = 500;
   size_t n = k * k;
 
   EdgeListR es;
@@ -54,7 +78,9 @@ void aug_tree_pcg(std::mt19937& rng) {
 
   {
     Graph2 g(es);
+    timer.tic("dijkstra");
     t = DijkstraTree<TreeR>(g, 0);
+    timer.toc();
   }
 
   EdgeListR otes;
@@ -69,7 +95,9 @@ void aug_tree_pcg(std::mt19937& rng) {
   }
 
   vector<double> strs(otes.edges.size());
+  Graph3 g(t);
 
+  timer.tic("computing stretch and adding edges");
   ComputeStretch(t.vertices, otes.edges, strs);
 
   StretchGreater less(strs);
@@ -81,50 +109,56 @@ void aug_tree_pcg(std::mt19937& rng) {
 
   std::sort(indices.begin(), indices.end(), less);
 
-  EdgeListR sampled_es;
-  for (size_t i = 0; i < k; i++) {
-    sampled_es.edges.push_back(otes.edges[indices[i]]);
+  for (size_t i = 0; i < 3 * k; i++) {
+    g.AddEdgeR(otes.edges[indices[i]]);
   }
+  timer.toc();
 
-  Graph3 g(t);
-  g.AddEdges(sampled_es);
-  MinDegreeSolver precon(g, 1);
+  timer.tic("eliminating aug tree");
+  MinDegreeSolver precon(g);
+  timer.toc();
 
   PCGSolver<EdgeListR, MinDegreeSolver> s(es, precon);
 
+  EdgeListC es2(es);
   std::vector<FLOAT> b(n);
   std::vector<FLOAT> x(n);
-  std::uniform_real_distribution<> demand(-10, 10);
+  std::uniform_real_distribution<> unif(0, 100);
   FLOAT sum = 0;
-  for (size_t i = 0; i < n - 1; i++) {
-    FLOAT tmp = demand(rng);
-    sum += tmp;
-    b[i] = tmp;
+  for (auto& f : x) {
+    f = unif(rng);
   }
-  b[n - 1] = -sum;
-
-  s.solve(b, x);
-
-  std::vector<FLOAT> r(n);
-  mv(-1, es, x, 1, b, r);
-
-  std::cout << "aug_tree_pcg\n";
-  std::cout << MYSQRT(r * r) << std::endl;
-
-  TreeSolver ts(t);
-  PCGSolver<EdgeListR, TreeSolver> s2(es, ts);
+  mv(-1, es, x, 0, b, b);
 
   for (auto& f : x) {
     f = 0;
   }
 
+  timer.tic("aug tree pcg");
+  s.solve(b, x);
+  timer.toc();
+
+  std::vector<FLOAT> r(n);
+  mv(-1, es, x, 1, b, r);
+
+  std::cout << MYSQRT(r * r) << std::endl;
+
+  TreeSolver ts(t);
+  PCGSolver<EdgeListC, TreeSolver> s2(es2, ts);
+
+  for (auto& f : x) {
+    f = 0;
+  }
+
+  timer.tic("tree pcg");
   s2.solve(b, x);
+  timer.toc();
 
   mv(-1, es, x, 1, b, r);
 
-  std::cout << "aug_tree_pcg\n";
   std::cout << MYSQRT(r * r) << std::endl;
 }
+
 void stretch(std::mt19937& rng) {
   size_t k = 4;
   size_t n = k * k;
@@ -379,10 +413,10 @@ int main(void) {
 
   // bst(rng);
   // pcg(rng);
-  resistance_vs_conductance(rng);
+  // resistance_vs_conductance(rng);
   // min_degree(rng);
   // aug_tree(rng);
-  // aug_tree_pcg(rng);
+  aug_tree_pcg(rng);
   // stretch(rng);
 
   return 0;
