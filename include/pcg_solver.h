@@ -30,6 +30,8 @@ class PCGSolver {
     FLOAT alpha;
     FLOAT beta;
 
+    FLOAT bnorm = MYSQRT(b * b);
+
     size_t i = 0;
     mv(-1, A, x, 1, b, r);                    // r = b - A * x
     FLOAT res = (r * r);
@@ -43,7 +45,7 @@ class PCGSolver {
       res = MYSQRT(r * r);
       // std::cout << i++ << ' ' << res << std::endl;
       i++;
-      if (res < tol) {
+      if (res / bnorm < tol) {
         std::cerr << i << std::endl;
         return;
       }

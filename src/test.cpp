@@ -27,7 +27,7 @@ public:
     start = std::chrono::steady_clock::now();
   }
 
-  void tic(const std::string& m) {
+  void tic(const std::string& m="") {
     msg = m;
     start = std::chrono::steady_clock::now();
   }
@@ -35,9 +35,11 @@ public:
   void toc() {
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> duration = end - start;
-    cout << msg << ": " << duration.count() << "s" << endl;
+    cout << msg << duration.count() << "s" << endl;
   }
 };
+
+Timer timer;
 
 template <typename Distribution, typename RandomEngine>
 class RNG {
@@ -61,30 +63,20 @@ public:
   }
 };
 
-void aug_tree_pcg(std::mt19937& rng) {
-  Timer timer;
-
-  size_t k = 500;
-  size_t n = k * k;
-
-  EdgeListR es;
-
-  std::uniform_real_distribution<> unif_1_100(1, 100);
-  RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
-
-  torus(k, k, es, random_resistance);
-
+void aug_tree_pcg(const EdgeListR& es, const vector<FLOAT>& b, size_t k) {
+  cout << "===== aug-tree PCG =====\n";
   TreeR t;
 
+  EdgeListR recc;
+  recursive_c(k, k, recc);
+
   {
-    Graph2 g(es);
-    timer.tic("dijkstra");
+    Graph2 g(recc);
     t = DijkstraTree<TreeR>(g, 0);
-    timer.toc();
   }
 
   EdgeListR otes;
-  otes.n = n;
+  otes.n = es.n;
 
   for (size_t i = 0; i < es.edges.size(); i++) {
     const EdgeR& e = es.edges[i];
@@ -97,7 +89,7 @@ void aug_tree_pcg(std::mt19937& rng) {
   vector<double> strs(otes.edges.size());
   Graph3 g(t);
 
-  timer.tic("computing stretch and adding edges");
+  timer.tic("computing stretch and adding edges: ");
   ComputeStretch(t.vertices, otes.edges, strs);
 
   StretchGreater less(strs);
@@ -109,54 +101,30 @@ void aug_tree_pcg(std::mt19937& rng) {
 
   std::sort(indices.begin(), indices.end(), less);
 
-  for (size_t i = 0; i < 3 * k; i++) {
+  for (size_t i = 0; i < 5 * k; i++) {
     g.AddEdgeR(otes.edges[indices[i]]);
   }
   timer.toc();
 
-  timer.tic("eliminating aug tree");
+  timer.tic("eliminating aug tree: ");
   MinDegreeSolver precon(g);
   timer.toc();
 
-  PCGSolver<EdgeListR, MinDegreeSolver> s(es, precon);
-
   EdgeListC es2(es);
-  std::vector<FLOAT> b(n);
-  std::vector<FLOAT> x(n);
-  std::uniform_real_distribution<> unif(0, 100);
-  FLOAT sum = 0;
-  for (auto& f : x) {
-    f = unif(rng);
-  }
-  mv(-1, es, x, 0, b, b);
+  PCGSolver<EdgeListC, MinDegreeSolver> s(es2, precon);
 
-  for (auto& f : x) {
-    f = 0;
-  }
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
 
-  timer.tic("aug tree pcg");
+  timer.tic("aug tree pcg: ");
   s.solve(b, x);
   timer.toc();
 
-  std::vector<FLOAT> r(n);
   mv(-1, es, x, 1, b, r);
 
-  std::cout << MYSQRT(r * r) << std::endl;
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 
-  TreeSolver ts(t);
-  PCGSolver<EdgeListC, TreeSolver> s2(es2, ts);
-
-  for (auto& f : x) {
-    f = 0;
-  }
-
-  timer.tic("tree pcg");
-  s2.solve(b, x);
-  timer.toc();
-
-  mv(-1, es, x, 1, b, r);
-
-  std::cout << MYSQRT(r * r) << std::endl;
+  return;
 }
 
 void stretch(std::mt19937& rng) {
@@ -190,6 +158,7 @@ void stretch(std::mt19937& rng) {
   }
 }
 
+/*
 void aug_tree(std::mt19937& rng) {
   size_t k = 50;
   size_t n = k * k;
@@ -238,118 +207,61 @@ void aug_tree(std::mt19937& rng) {
   std::cout << "aug_tree\n";
   std::cout << MYSQRT(r * r) << std::endl;
 }
+*/
 
-void min_degree(std::mt19937& rng) {
-  size_t k = 100;
-  size_t n = k * k;
-
-  EdgeListR es;
-  std::uniform_real_distribution<> unif_1_100(1, 100);
-  RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
-
-  torus(k, k, es, random_resistance);
-  // line(n, es);
+void min_degree(const EdgeListR& es, const vector<FLOAT>& b) {
+  cout << "===== min degree =====\n";
   Graph3 g(es);
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
 
-  std::vector<FLOAT> b(n);
-  std::vector<FLOAT> x(n);
-  std::uniform_real_distribution<> demand(-10, 10);
-  FLOAT sum = 0;
-  for (size_t i = 0; i < n - 1; i++) {
-    FLOAT tmp = demand(rng);
-    sum += tmp;
-    b[i] = tmp;
-  }
-  b[n - 1] = -sum;
-
-  std::chrono::time_point<std::chrono::system_clock> start, end;
-  std::chrono::duration<double> duration;
-
-  start = std::chrono::system_clock::now();
+  timer.tic("factorizing: ");
   MinDegreeSolver s(g, 1);
-  end = std::chrono::system_clock::now();
-  duration = end - start;
-  cout << duration.count() << "s" << endl;
+  timer.toc();
 
+  timer.tic("solving: ");
   s.solve(b, x);
+  timer.toc();
 
-  std::vector<FLOAT> r(n);
   mv(-1, es, x, 1, b, r);
-
-  std::cout << "min_degree\n";
-  std::cout << MYSQRT(r * r) << std::endl;
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 }
 
-void resistance_vs_conductance(std::mt19937& rng) {
-  size_t k = 300;
-  size_t n = k * k;
-
-  EdgeListR es;
-  std::uniform_real_distribution<> unif_1_100(1, 10);
-  RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
-  torus(k, k, es, random_resistance);
-
-  TreeR t;
-
-  {
-    Graph2 g(es);
-    t = DijkstraTree<TreeR>(g, 0);
-  }
-
+void resistance_vs_conductance(const EdgeListR& es, const vector<FLOAT>& b) {
+  cout << "===== resistance vs conductance =====\n";
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
 
   EdgeListC es2(es);
 
-  TreeSolver preconditioner(t);
-  PCGSolver<EdgeListR, TreeSolver> s(es, preconditioner);
-  PCGSolver<EdgeListC, TreeSolver> s2(es2, preconditioner);
+  PCGSolver<EdgeListR, IdentitySolver> s(es, IdentitySolver());
+  PCGSolver<EdgeListC, IdentitySolver> s2(es2, IdentitySolver());
 
-  std::vector<FLOAT> b(n);
-  std::vector<FLOAT> x(n);
-  std::uniform_real_distribution<> demand(-10, 10);
-  FLOAT sum = 0;
-  for (size_t i = 0; i < n - 1; i++) {
-    FLOAT tmp = demand(rng);
-    sum += tmp;
-    b[i] = tmp;
-  }
-  b[n - 1] = -sum;
-
-  std::vector<FLOAT> r(n);
-
-  std::chrono::time_point<std::chrono::system_clock> start, end;
-  std::chrono::duration<double> duration;
-
-  std::cout << "resistance_vs_conductance\n";
-  for (size_t i = 0; i < 3; i++) {
+  for (size_t i = 0; i < 2; i++) {
     for (auto&f : x) {
       f = 0;
     }
-    start = std::chrono::system_clock::now();
+    timer.tic("resistance: ");
     s.solve(b, x);
-    end = std::chrono::system_clock::now();
-    duration = end - start;
-    cout << "resistance: " << duration.count() << "s" << endl;
+    timer.toc();
 
     mv(-1, es, x, 1, b, r);
-
-    std::cout << MYSQRT(r * r) << std::endl;
+    cout << MYSQRT(r * r) / MYSQRT(b * b) << endl;
 
     for (auto&f : x) {
       f = 0;
     }
-    start = std::chrono::system_clock::now();
+    timer.tic("conductance: ");
     s2.solve(b, x);
-    end = std::chrono::system_clock::now();
-    duration = end - start;
-    cout << "conductance: " << duration.count() << "s" << endl;
+    timer.toc();
 
     mv(-1, es, x, 1, b, r);
-
-    std::cout << MYSQRT(r * r) << std::endl;
+    cout << MYSQRT(r * r) / MYSQRT(b * b) << endl;
   }
 }
 
 void bst(std::mt19937& rng) {
+  cout << "===== Solving random complete BST =====\n";
   size_t n = 65535;
   TreeR tree(n);
   std::uniform_real_distribution<> weight(1, 100);
@@ -384,40 +296,56 @@ void bst(std::mt19937& rng) {
   std::cout << MYSQRT(r * r) << std::endl;
 }
 
-void pcg(std::mt19937& rng) {
-  size_t n = 5;
-  Matrix A(n, n);
-  std::vector<FLOAT> b(n);
-  std::vector<FLOAT> x(n, 0);
+void pcg(const EdgeListR& es, const vector<FLOAT>& b) {
+  cout << "===== PCG =====\n";
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
 
-  std::uniform_real_distribution<> weight(1, 10);
-  for (size_t i = 0; i < n; i++) {
-    A.addNonZero(i, i, weight(rng));
-    b[i] = 1;
-  }
+  PCGSolver<EdgeListR, IdentitySolver> s(es, IdentitySolver());
 
-  PCGSolver<Matrix, IdentitySolver> s(A, IdentitySolver());
-
+  timer.tic();
   s.solve(b, x);
+  timer.toc();
 
-  std::vector<FLOAT> r(n);
+  mv(-1, es, x, 1, b, r);
 
-  mv(-1, A, x, 1, b, r);
-
-  std::cout << "pcg\n";
-  std::cout << MYSQRT(r * r) << std::endl;
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 }
 
 int main(void) {
+  size_t k = 500;
+  size_t n = k * k;
+
+  EdgeListR unweighted_torus;
+  EdgeListR weighted_torus;
+
   std::mt19937 rng(std::random_device{}());
+  std::uniform_real_distribution<> uniform(1, 100);
+  RNG<std::uniform_real_distribution<>, std::mt19937>
+    random_resistance(uniform, rng);
+
+  torus(k, k, unweighted_torus);
+  torus(k, k, weighted_torus, random_resistance);
+
+  std::vector<FLOAT> unweighted_b(n);
+  std::vector<FLOAT> weighted_b(n);
+  std::vector<FLOAT> x(n);
+
+  for (auto& f : x) {
+    f = uniform(rng);
+  }
+  mv(1, weighted_torus, x, 0, x, weighted_b);
+
+  for (auto& f : x) {
+    f = uniform(rng);
+  }
+  mv(1, unweighted_torus, x, 0, x, unweighted_b);
 
   // bst(rng);
-  // pcg(rng);
-  // resistance_vs_conductance(rng);
-  // min_degree(rng);
-  // aug_tree(rng);
-  aug_tree_pcg(rng);
-  // stretch(rng);
+  // pcg(unweighted_torus, unweighted_b);
+  // resistance_vs_conductance(weighted_torus, weighted_b);
+  // min_degree(weighted_torus, weighted_b);
+  aug_tree_pcg(unweighted_torus, unweighted_b, k);
 
   return 0;
 }

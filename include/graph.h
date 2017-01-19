@@ -645,6 +645,43 @@ void cayley(size_t n,
   }
 }
 
-void gnp(size_t n, double p, EdgeListR& es);
+template <typename EdgeListType>
+void recursive_c_helper(EdgeListType& es,
+                        size_t N, size_t i, size_t j, size_t n, size_t m) {
+  if (n == 0 && m == 0) return;
+
+  if (m == 0) {
+    size_t ii = i + n / 2 + 1;
+    recursive_c_helper(es, N, i, j, n / 2, m);
+    recursive_c_helper(es, N, ii, j, n - n / 2 - 1, m);
+    es.AddEdge((ii - 1) * N + j, ii * N + j, 1);
+    return;
+  }
+
+  if (n == 0) {
+    size_t jj = j + m / 2 + 1;
+    recursive_c_helper(es, N, i, j, n, m / 2);
+    recursive_c_helper(es, N, i, jj, n, m - m / 2 - 1);
+    es.AddEdge(i * N + jj - 1, i * N + jj, 1);
+    return;
+  }
+
+  size_t ii = i + n / 2 + 1;
+  size_t jj = j + m / 2 + 1;
+  recursive_c_helper(es, N, i, j, n / 2, m / 2);
+  recursive_c_helper(es, N, ii, j, n - n / 2 - 1, m / 2);
+  recursive_c_helper(es, N, i, jj, n / 2, m - m / 2 - 1);
+  recursive_c_helper(es, N, ii, jj, n - n / 2 - 1, m - m / 2 - 1);
+  es.AddEdge((ii - 1) * N + (jj - 1), (ii - 1) * N + jj, 1);
+  es.AddEdge((ii - 1) * N + (jj - 1), ii * N + jj - 1, 1);
+  es.AddEdge(ii * N + jj, ii * N + jj - 1, 1);
+}
+
+template <typename EdgeListType>
+void recursive_c(size_t n, size_t m, EdgeListType& es) {
+  es.Clear();
+  es.n = n * m;
+  recursive_c_helper(es, n, 0, 0, n - 1, m - 1);
+}
 
 #endif  // INCLUDE_GRAPH_H_
