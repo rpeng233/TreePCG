@@ -7,8 +7,8 @@
 class EliminatedVertex {
 public:
   size_t v;
+  size_t first_arc;
   FLOAT degree;
-  std::vector<ArcC> neighbors;
 };
 
 class MinDegreeSolver {
@@ -24,6 +24,12 @@ public:
 private:
   size_t n;
   std::vector<EliminatedVertex> elims;
+  std::vector<ArcC> elim_arcs;
+
+  void eliminate_rhs(const std::vector<FLOAT>& rhs_,
+                     std::vector<FLOAT>& rhs_elims) const;
+  void back_substitution(const std::vector<FLOAT>& rhs_elims,
+                         std::vector<FLOAT>& x) const;
 };
 
 #endif // INCLUDE_MIN_DEGREE_SOLVER_H_

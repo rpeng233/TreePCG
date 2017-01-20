@@ -35,37 +35,28 @@ public:
   }
 };
 
-static inline
-vector<FLOAT> eliminate_rhs(const vector<EliminatedVertex>& elims,
-                            const vector<FLOAT>& rhs_) {
+void MinDegreeSolver::eliminate_rhs(const vector<FLOAT>& rhs_,
+                                    vector<FLOAT>& rhs_elims) const {
   vector<FLOAT> rhs(rhs_);
-  vector<FLOAT> rhs_elims(elims.size());
 
-  for (size_t i = 0; i < elims.size(); i++) {
+  for (size_t i = 0; i < elims.size() - 1; i++) {
     rhs_elims[i] = rhs[elims[i].v];
     FLOAT tmp = rhs[elims[i].v] / elims[i].degree;
-    for (vector<ArcC>::const_iterator it = elims[i].neighbors.begin();
-         it != elims[i].neighbors.end();
-         ++it) {
-      rhs[it->v] += tmp * it->conductance;
+    for (size_t j = elims[i].first_arc; j < elims[i + 1].first_arc; j++) {
+      rhs[elim_arcs[j].v] += tmp * elim_arcs[j].conductance;
     }
     rhs[elims[i].v] = 0;
   }
-
-  return rhs_elims;
 }
 
-static inline
-void back_substitution(const vector<EliminatedVertex>& elims,
-                       const vector<FLOAT>& rhs_elims,
-                       vector<FLOAT>& x) {
-  for (size_t i = elims.size(); i > 0; i--) {
+inline
+void MinDegreeSolver::back_substitution(const vector<FLOAT>& rhs_elims,
+                                        vector<FLOAT>& x) const {
+  for (size_t i = elims.size() - 1; i > 0; i--) {
     const EliminatedVertex& e = elims[i - 1];
     x[e.v] = rhs_elims[i - 1];
-    for (vector<ArcC>::const_iterator it = e.neighbors.begin();
-         it != e.neighbors.end();
-         ++it) {
-      x[e.v] += x[it->v] * it->conductance;
+    for (size_t j = e.first_arc; j < elims[i].first_arc; j++) {
+      x[e.v] += x[elim_arcs[j].v] * elim_arcs[j].conductance;
     }
     x[e.v] /= e.degree;
   }
@@ -83,7 +74,7 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph, int brute_force) {
   typedef std::map<size_t, FLOAT>::const_iterator IterType;
 
   vector<std::map<size_t, FLOAT> >& neighbor_map = graph.neighbor_map;
-  elims.resize(n - 1);
+  elims.resize(n);
 
   for (size_t i = 0; i < n - 1; i++) {
     std::vector<size_t>::iterator min_it =
@@ -92,11 +83,12 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph, int brute_force) {
     elims[i].v = u;
     *min_it = vs[n - 1 - i];
     FLOAT degree = 0;
+    elims[i].first_arc = elim_arcs.size();
     for (IterType it = neighbor_map[u].begin();
          it != neighbor_map[u].end();
          ++it) {
       degree += it->second;
-      elims[i].neighbors.push_back(ArcC(it->first, it->second));
+      elim_arcs.push_back(ArcC(it->first, it->second));
     }
     elims[i].degree = degree;
     for (IterType it1 = neighbor_map[u].begin();
@@ -121,6 +113,7 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph, int brute_force) {
       neighbor_map[it->first].erase(u);
     }
   }
+  elims[n - 1].first_arc = elim_arcs.size();
 }
 
 MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
@@ -131,18 +124,19 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
   typedef std::map<size_t, FLOAT>::const_iterator IterType;
   vector<std::map<size_t, FLOAT> >& neighbor_map = graph.neighbor_map;
 
-  elims.resize(n - 1);
+  elims.resize(n);
 
   for (size_t i = 0; i < n - 1; i++) {
     size_t u = heap.Top();
     heap.Pop();
     elims[i].v = u;
     FLOAT degree = 0;
+    elims[i].first_arc = elim_arcs.size();
     for (IterType it = neighbor_map[u].begin();
          it != neighbor_map[u].end();
          ++it) {
       degree += it->second;
-      elims[i].neighbors.push_back(ArcC(it->first, it->second));
+      elim_arcs.push_back(ArcC(it->first, it->second));
       neighbor_map[it->first].erase(u);
       heap.BubbleUp(it->first);
     }
@@ -166,14 +160,16 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
       }
     }
   }
+  elims[n - 1].first_arc = elim_arcs.size();
 }
 
 void MinDegreeSolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
   assert(b.size() == x.size());
   assert(b.size() == n);
 
-  vector<FLOAT> rhs_elims = eliminate_rhs(elims, b);
-  back_substitution(elims, rhs_elims, x);
+  vector<FLOAT> rhs_elims(elims.size() - 1);
+  eliminate_rhs(b, rhs_elims);
+  back_substitution(rhs_elims, x);
 
   FLOAT sum = 0;
   for (size_t i = 0; i < n; i++) {
