@@ -36,5 +36,5 @@ bin/graph_to_matrix: generators/graph_to_matrix.cpp include/*h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean :
-	rm -f bin/*
-	rm -f obj/*
+	rm -rf bin/*
+	rm -rf obj/*
