@@ -35,6 +35,7 @@ public:
   }
 };
 
+inline
 void MinDegreeSolver::eliminate_rhs(const vector<FLOAT>& rhs_,
                                     vector<FLOAT>& rhs_elims) const {
   vector<FLOAT> rhs(rhs_);
@@ -171,12 +172,12 @@ void MinDegreeSolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
   eliminate_rhs(b, rhs_elims);
   back_substitution(rhs_elims, x);
 
-  FLOAT sum = 0;
-  for (size_t i = 0; i < n; i++) {
-    sum += x[i];
-  }
-  sum /= n;
-  for (size_t i = 0; i < n; i++) {
-    x[i] -= sum;
-  }
+  // FLOAT sum = 0;
+  // for (size_t i = 0; i < n; i++) {
+  //   sum += x[i];
+  // }
+  // sum /= n;
+  // for (size_t i = 0; i < n; i++) {
+  //   x[i] -= sum;
+  // }
 }

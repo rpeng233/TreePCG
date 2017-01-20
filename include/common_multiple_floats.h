@@ -73,14 +73,14 @@ extern "C" {
     }
   #endif
 #endif
- 
+
 // inline FLOAT Sqr(FLOAT x) {
 //   return x * x;
 // }
-// 
+//
 // #define formatf(len, prec, value) setw(len) << setprecision(prec) << fixed << value
 // #define formate(len, prec, value) setw(len) << setprecision(prec) << scientific << value
 // #define formatd(len, value) setw(len) << fixed << value
 // #define formats(len, value) setw(len) << value
-// 
+//
 #endif

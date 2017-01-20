@@ -88,3 +88,4 @@ void ComputeStretch(const vector<TreeVertexR>& vs,
 
   LCA(lca_tree, es, stretch, root);
 }
+

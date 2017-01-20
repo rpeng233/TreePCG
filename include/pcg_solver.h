@@ -22,9 +22,9 @@ class PCGSolver {
       int maxit = -1) const {
     size_t n = A.n;
     vector<FLOAT> r(n);
-    vector<FLOAT> q(n);
-    vector<FLOAT> d(n, 0);
-    vector<FLOAT> s(n, 0);
+    // vector<FLOAT> q(n);
+    vector<FLOAT> d(n);
+    vector<FLOAT> s(n);
     FLOAT delta_old;
     FLOAT delta_new;
     FLOAT alpha;
@@ -38,8 +38,8 @@ class PCGSolver {
     preconditioner.solve(r, d);               // Solve P * d = r
     delta_new = r * d;
     for (;;) {
-      mv(1, A, d, 0, q, q);                   // q = A * d
-      alpha = delta_new / (d * q);
+      mv(1, A, d, 0, r, r);                   // q = A * d
+      alpha = delta_new / (d * r);
       axpy(alpha, d, x, x);                   // x = alpha * d + x
       mv(-1, A, x, 1, b, r);                  // r = b - A * x
       res = MYSQRT(r * r);
