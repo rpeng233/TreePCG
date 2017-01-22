@@ -61,20 +61,15 @@ struct EdgeR {
     resistance = _resistance;
   }
 
-  EdgeR(const EdgeR &o) {
-    u = o.u;
-    v = o.v;
-    resistance = o.resistance;
-  }
-
-  EdgeR &operator = (const EdgeR &o) {
-    u = o.u;
-    v = o.v;
-    resistance = o.resistance;
-    return (*this);
-  }
-
   EdgeR& operator=(const EdgeC& e);
+
+  FLOAT Resistance() const {
+    return resistance;
+  }
+
+  FLOAT Conductance() const {
+    return 1 / resistance;
+  }
 
   bool operator <(const EdgeR &o) const {
     if (this->u != o.u) {
@@ -105,20 +100,16 @@ struct EdgeC {
     conductance = _conductance;
   }
 
-  EdgeC(const EdgeC &o) {
-    u = o.u;
-    v = o.v;
-    conductance = o.conductance;
-  }
-
-  EdgeC &operator = (const EdgeC &o) {
-    u = o.u;
-    v = o.v;
-    conductance = o.conductance;
-    return (*this);
-  }
-
   EdgeC& operator=(const EdgeR& e);
+
+
+  FLOAT Resistance() {
+    return 1 / conductance;
+  }
+
+  FLOAT Conductance() {
+    return conductance;
+  }
 
   bool operator <(const EdgeC &o) const {
     if (this->u != o.u) {
@@ -161,15 +152,13 @@ struct ArcR {
     resistance = _resistance;
   }
 
-  ArcR(const ArcR &o) {
-    v = o.v;
-    resistance = o.resistance;
+  ArcR& operator=(const EdgeR& e) {
+    resistance = e.resistance;
+    return *this;
   }
 
-  ArcR &operator = (const ArcR &o) {
-    v = o.v;
-    resistance = o.resistance;
-    return (*this);
+  FLOAT Resistance() const {
+    return resistance;
   }
 
   bool operator <(const ArcR &o) const {
@@ -180,10 +169,6 @@ struct ArcR {
     return this->resistance < o.resistance;
   }
 };
-
-inline bool CompareByResistance(const ArcR &a1, const ArcR &a2) {
-  return a1.resistance < a2.resistance;
-}
 
 struct ArcC {
   size_t v;
@@ -199,7 +184,6 @@ struct ArcC {
     conductance = conductance_;
   }
 
-
   bool operator <(const ArcC &o) const {
     if (this->v != o.v) {
       return this->v < o.v;
@@ -209,6 +193,7 @@ struct ArcC {
   }
 };
 
+/*
 struct Vertex {
   std::vector<ArcR> nghbrs;
 
@@ -241,6 +226,7 @@ struct Vertex {
     nghbrs.resize(new_degree);
   }
 };
+*/
 
 struct Graph {
   int n;
@@ -394,6 +380,60 @@ struct TreePlusEdgesR {
   }
 };
 
+template <typename EdgeT>
+struct EdgeList {
+  size_t n;
+  std::vector<EdgeT> edges;
+
+  EdgeList() {
+    n = 0;
+  }
+
+  template <typename E2>
+  EdgeList(const EdgeList<E2>& es) {
+    n = es.n;
+    edges.resize(es.edges.size());
+
+    for (size_t i = 0; i < edges.size(); i++) {
+      edges[i] = es.edges[i];
+    }
+  }
+
+  size_t Size() {
+    return edges.size();
+  }
+
+  void AddEdge(size_t u, size_t v, FLOAT weight) {
+    edges.push_back(EdgeT(u, v, weight));
+  }
+
+  void AddEdge(const EdgeT& e) {
+    edges.push_back(e);
+  }
+
+  void Clear() {
+    n = 0;
+    edges.clear();
+  }
+
+  void Reserve(size_t n) {
+    edges.reserve(n);
+  }
+
+  void Resize(size_t n) {
+    edges.resize(n);
+  }
+
+  EdgeT& operator[](const size_t i) {
+    return edges[i];
+  }
+
+  const EdgeT& operator[](const size_t i) const {
+    return edges[i];
+  }
+};
+
+/*
 struct EdgeListC;
 
 struct EdgeListR {
@@ -405,6 +445,10 @@ struct EdgeListR {
   }
 
   EdgeListR(const EdgeListC& es);
+
+  size_t size() {
+    return edges.size();
+  }
 
   void AddEdge(size_t u, size_t v, FLOAT resistance) {
     edges.push_back(EdgeR(u, v, resistance));
@@ -433,6 +477,10 @@ struct EdgeListC {
   }
 
   EdgeListC(const EdgeListR& es);
+
+  size_t size() {
+    return edges.size();
+  }
 
   void AddEdge(size_t u, size_t v, FLOAT conductance) {
     edges.push_back(EdgeC(u, v, conductance));
@@ -469,13 +517,20 @@ inline EdgeListC::EdgeListC(const EdgeListR& es) {
     edges[i] = es.edges[i];
   }
 }
+*/
 
+template <typename ArcT>
 struct Graph2 {
   size_t n;
-  std::vector<ArcR> arcs;
+  std::vector<ArcT> arcs;
   std::vector<size_t> first_arc;
 
-  Graph2(const EdgeListR& es) {
+  Graph2() {
+    n = 0;
+  }
+
+  template <typename EdgeT>
+  void BuildGraph(const EdgeList<EdgeT>& es) {
     n = es.n;
     size_t m = es.edges.size();
 
@@ -483,7 +538,7 @@ struct Graph2 {
     first_arc.resize(n + 1);
     std::vector<size_t> degrees(n);
 
-    for (std::vector<EdgeR>::const_iterator it = es.edges.begin();
+    for (typename std::vector<EdgeT>::const_iterator it = es.edges.begin();
          it != es.edges.end();
          ++it) {
       degrees[it->u]++;
@@ -497,19 +552,24 @@ struct Graph2 {
     first_arc[n] = m * 2;
 
     size_t tmp_index;
-    for (std::vector<EdgeR>::const_iterator it = es.edges.begin();
+    for (typename std::vector<EdgeT>::const_iterator it = es.edges.begin();
          it != es.edges.end();
          ++it) {
       degrees[it->u]--;
       tmp_index = first_arc[it->u] + degrees[it->u];
       arcs[tmp_index].v = it->v;
-      arcs[tmp_index].resistance = it->resistance;
+      arcs[tmp_index] = *it;
 
       degrees[it->v]--;
       tmp_index = first_arc[it->v] + degrees[it->v];
       arcs[tmp_index].v = it->u;
-      arcs[tmp_index].resistance = it->resistance;
+      arcs[tmp_index] = *it;
     }
+  }
+
+  template <typename EdgeT>
+  Graph2(const EdgeList<EdgeT>& es) {
+    BuildGraph(es);
   }
 };
 
@@ -527,7 +587,7 @@ struct Graph3 {
     neighbor_map[e.v][e.u] += 1 / e.resistance;
   }
 
-  Graph3(const EdgeListR& es) {
+  Graph3(const EdgeList<EdgeR>& es) {
     n = es.n;
     neighbor_map.resize(n);
     for (size_t i = 0; i < es.edges.size(); i++) {
@@ -561,8 +621,7 @@ struct Graph3 {
 
 };
 
-class One {
-public:
+struct One {
   FLOAT operator() () const {
     return FLOAT(1);
   }
@@ -594,20 +653,24 @@ void cycle(size_t n, EdgeListType& es) {
 }
 
 template <typename EdgeListType, typename WeightGen>
-void torus(size_t n, size_t m, EdgeListType& es, WeightGen wgen=WeightGen()) {
+void grid2(size_t n, size_t m, EdgeListType& es, WeightGen wgen=WeightGen()) {
   es.Clear();
   es.n = n * m;
   for (size_t i = 0; i < n; i++) {
     for(size_t j = 0; j < m; j++) {
-      es.AddEdge(i * m + j, i * m + (j + 1) % m, wgen());
-      es.AddEdge(i * m + j, ((i + 1) % n) * m + j, wgen());
+      if (j < m - 1) {
+        es.AddEdge(i * m + j, i * m + j + 1, wgen());
+      }
+      if (i < n - 1) {
+        es.AddEdge(i * m + j, (i + 1) * m + j, wgen());
+      }
     }
   }
 }
 
 template <typename EdgeListType>
-void torus(size_t n, size_t m, EdgeListType& es) {
-  torus(n, m, es, One());
+void grid2(size_t n, size_t m, EdgeListType& es) {
+  grid2(n, m, es, One());
 }
 
 template <typename EdgeListType, typename WeightGen>
@@ -632,7 +695,7 @@ inline
 void cayley(size_t n,
             const std::vector<size_t>& skips,
             const std::vector<FLOAT>& resistances,
-            EdgeListR& es) {
+            EdgeList<EdgeR>& es) {
   es.Clear();
   es.n = n;
   assert(skips.size() == resistances.size());

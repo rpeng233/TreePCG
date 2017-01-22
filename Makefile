@@ -11,6 +11,7 @@ all : bin/test bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 
 bin/test : include/*.h
 bin/test : obj/tree_solver.o obj/min_degree_solver.o obj/low_stretch_tree.o
+bin/test : obj/akpw.o
 bin/test : src/test.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@
 
@@ -25,6 +26,9 @@ obj/min_degree_solver.o : src/min_degree_solver.cpp
 obj/low_stretch_tree.o : include/graph.h include/disjoint_set.h
 obj/low_stretch_tree.o : src/low_stretch_tree.cpp include/low_stretch_tree.h
 	$(CXX) $(CXXFLAGS) $< -c -o $@
+
+obj/akpw.o : src/akpw.cpp
+	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
 bin/gen_cayley : generators/gen_cayley.cpp include/*.h
 	$(CXX) $(CXXFLAGS) $< -o $@

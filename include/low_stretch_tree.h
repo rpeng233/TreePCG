@@ -4,11 +4,12 @@
 #include <limits>
 #include <queue>
 #include <vector>
+#include "binary_heap.h"
 #include "common.h"
 #include "graph.h"
 
-template <typename TreeType>
-TreeType DijkstraTree(const Graph2& graph, size_t root) {
+template <typename TreeType, typename ArcT>
+TreeType DijkstraTree(const Graph2<ArcT>& graph, size_t root) {
   size_t n = graph.n;
   TreeType tree(n);
 
@@ -29,10 +30,10 @@ TreeType DijkstraTree(const Graph2& graph, size_t root) {
     count++;
     for (size_t i = graph.first_arc[u]; i < graph.first_arc[u + 1]; i++) {
       const ArcR& arc = graph.arcs[i];
-      double tmp = dist[u] + (double) arc.resistance;
+      double tmp = dist[u] + (double) arc.Resistance();
       if (tmp < dist[arc.v]) {
         dist[arc.v] = tmp;
-        tree.SetParent(arc.v, u, arc.resistance);
+        tree.SetParent(arc.v, u, arc.Resistance());
         queue.push(std::make_pair(-tmp, arc.v));
       }
     }

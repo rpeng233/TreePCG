@@ -120,7 +120,7 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph, int brute_force) {
 MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
   n = graph.n;
   DegreeGreater less(graph.neighbor_map);
-  BinaryHeap<DegreeGreater> heap(n, less);
+  BinaryHeap<DegreeGreater> heap(n, &less);
 
   typedef std::map<size_t, FLOAT>::const_iterator IterType;
   vector<std::map<size_t, FLOAT> >& neighbor_map = graph.neighbor_map;

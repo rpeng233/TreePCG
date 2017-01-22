@@ -1,7 +1,10 @@
 #include <chrono>
+#include <fstream>
 #include <iostream>
+#include <limits>
 #include <random>
 #include <vector>
+#include "akpw.h"
 #include "aug_tree_solver.h"
 #include "common.h"
 #include "graph.h"
@@ -63,19 +66,74 @@ public:
   }
 };
 
-void aug_tree_pcg(const EdgeListR& es, const vector<FLOAT>& b, size_t k) {
+void akpw(const EdgeList<EdgeR>& es) {
+  EdgeList<EdgeR> tree;
+  AKPW(es, tree);
+
+  for (const auto& e : tree.edges) {
+    cout << e.u << ' ' << e.v << ' ' << e.resistance << '\n';
+  }
+}
+
+/*
+void dijkstra(const EdgeList<EdgeR>& es) {
+  struct DV {
+  public:
+    double distance;
+    size_t parent;
+
+    void initialize(size_t i) {
+      parent = i;
+      distance = std::numeric_limits<double>::max();
+    }
+
+    void SetPrev(size_t u) {
+      parent = u;
+    }
+  };
+
+  struct CMP {
+    vector<DV>& vs;
+
+    CMP(vector<DV>& vs_) : vs(vs_) { }
+
+    bool operator() (size_t u, size_t v) const {
+      return vs[u].distance > vs[v].distance;
+    }
+  };
+
+  Graph2 g(es);
+  vector<DV> vs(es.n);
+  for (size_t i = 0; i < vs.size(); i++) {
+    vs[i].initialize(i);
+  }
+  vs[10].distance = 0;
+  CMP less(vs);
+  BinaryHeap<CMP> queue(es.n, &less);
+
+  Dijkstra(g, queue, vs);
+
+  for (size_t i = 0; i < vs.size(); i++) {
+    cout << i << ' ' << vs[i].parent << ' ' << vs[i].distance << '\n';
+  }
+}
+*/
+
+void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   cout << "===== aug-tree PCG =====\n";
   TreeR t;
 
-  EdgeListR recc;
-  recursive_c(k, k, recc);
-
+  timer.tic("finding low stretch spanning tree: ");
   {
-    Graph2 g(recc);
-    t = DijkstraTree<TreeR>(g, 0);
+    EdgeList<EdgeR> tree_es;
+    // recursive_c(k, k, tree_es);
+    AKPW(es, tree_es);
+    Graph2<ArcR> g(tree_es);
+    t = DijkstraTree<TreeR>(g, es.n / 2);
   }
+  timer.toc();
 
-  EdgeListR otes;
+  EdgeList<EdgeR> otes;
   otes.n = es.n;
 
   for (size_t i = 0; i < es.edges.size(); i++) {
@@ -92,26 +150,38 @@ void aug_tree_pcg(const EdgeListR& es, const vector<FLOAT>& b, size_t k) {
   timer.tic("computing stretch and adding edges: ");
   ComputeStretch(t.vertices, otes.edges, strs);
 
-  StretchGreater less(strs);
-  vector<size_t> indices(otes.edges.size());
-
-  for (size_t i = 0; i < indices.size(); i++) {
-    indices[i] = i;
+  size_t count = 0;
+  FLOAT total_stretch = std::accumulate(strs.begin(), strs.end(), 0);
+  std::mt19937 rng(std::random_device{}());
+  std::uniform_real_distribution<> unif01(0, 1);
+  for (size_t i = 0; i < strs.size(); i++) {
+    FLOAT p = 5 * k * strs[i] / total_stretch;
+    if (unif01(rng) < p) {
+      // otes.edges[i].resistance *= 5 * k * strs[i] / total_stretch;
+      count++;
+      g.AddEdgeR(otes.edges[i]);
+    }
   }
+  // cout << "Added " << count << " edges\n";
+  // cout << k << '\n';
 
-  std::sort(indices.begin(), indices.end(), less);
-
-  for (size_t i = 0; i < 5 * k; i++) {
-    g.AddEdgeR(otes.edges[indices[i]]);
-  }
+  // StretchGreater less(strs);
+  // vector<size_t> indices(otes.edges.size());
+  // for (size_t i = 0; i < indices.size(); i++) {
+  //   indices[i] = i;
+  // }
+  // std::sort(indices.begin(), indices.end(), less);
+  // for (size_t i = 0; i < 5 * k; i++) {
+  //   g.AddEdgeR(otes.edges[indices[i]]);
+  // }
   timer.toc();
 
   timer.tic("eliminating aug tree: ");
   MinDegreeSolver precon(g);
   timer.toc();
 
-  EdgeListC es2(es);
-  PCGSolver<EdgeListC, MinDegreeSolver> s(es2, precon);
+  EdgeList<EdgeC> es2(es);
+  PCGSolver<EdgeList<EdgeC>, MinDegreeSolver> s(es2, precon);
 
   std::vector<FLOAT> x(es.n);
   std::vector<FLOAT> r(es.n);
@@ -124,6 +194,27 @@ void aug_tree_pcg(const EdgeListR& es, const vector<FLOAT>& b, size_t k) {
 
   std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 
+  /*
+  std::ofstream esf("es.txt");
+  esf << es2.n << '\n';
+  for (const auto& e : es2.edges) {
+    esf << e.u << ' ' << e.v << ' ' << std::setprecision(17) << e.conductance << '\n';
+  }
+  esf.close();
+
+  std::ofstream bf("b.txt");
+  for (const auto& f : b) {
+    bf << std::setprecision(17) << f << '\n';
+  }
+  bf.close();
+
+  std::ofstream xf("x.txt");
+  for (const auto& f : x) {
+    xf << std::setprecision(17) << f << '\n';
+  }
+  xf.close();
+  */
+
   return;
 }
 
@@ -131,17 +222,17 @@ void stretch(std::mt19937& rng) {
   size_t k = 4;
   size_t n = k * k;
 
-  EdgeListR es;
+  EdgeList<EdgeR> es;
 
   // std::uniform_real_distribution<> unif_1_100(1, 100);
   // RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
 
-  torus(k, k, es);
+  grid2(k, k, es);
 
   TreeR t;
 
   {
-    Graph2 g(es);
+    Graph2<ArcR> g(es);
     t = DijkstraTree<TreeR>(g, 0);
   }
 
@@ -163,12 +254,12 @@ void aug_tree(std::mt19937& rng) {
   size_t k = 50;
   size_t n = k * k;
 
-  EdgeListR es;
+  EdgeList<EdgeR> es;
 
   std::uniform_real_distribution<> unif_1_100(1, 100);
   RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
 
-  torus(k, k, es, random_resistance);
+  grid2(k, k, es, random_resistance);
 
   TreePlusEdgesR t;
 
@@ -209,7 +300,7 @@ void aug_tree(std::mt19937& rng) {
 }
 */
 
-void min_degree(const EdgeListR& es, const vector<FLOAT>& b) {
+void min_degree(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   cout << "===== min degree =====\n";
   Graph3 g(es);
   std::vector<FLOAT> x(es.n);
@@ -227,15 +318,15 @@ void min_degree(const EdgeListR& es, const vector<FLOAT>& b) {
   std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 }
 
-void resistance_vs_conductance(const EdgeListR& es, const vector<FLOAT>& b) {
+void resistance_vs_conductance(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   cout << "===== resistance vs conductance =====\n";
   std::vector<FLOAT> x(es.n);
   std::vector<FLOAT> r(es.n);
 
-  EdgeListC es2(es);
+  EdgeList<EdgeC> es2(es);
 
-  PCGSolver<EdgeListR, IdentitySolver> s(es, IdentitySolver());
-  PCGSolver<EdgeListC, IdentitySolver> s2(es2, IdentitySolver());
+  PCGSolver<EdgeList<EdgeR>, IdentitySolver> s(es, IdentitySolver());
+  PCGSolver<EdgeList<EdgeC>, IdentitySolver> s2(es2, IdentitySolver());
 
   for (size_t i = 0; i < 2; i++) {
     for (auto&f : x) {
@@ -296,12 +387,12 @@ void bst(std::mt19937& rng) {
   std::cout << MYSQRT(r * r) << std::endl;
 }
 
-void pcg(const EdgeListR& es, const vector<FLOAT>& b) {
+void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   cout << "===== PCG =====\n";
   std::vector<FLOAT> x(es.n);
   std::vector<FLOAT> r(es.n);
 
-  PCGSolver<EdgeListR, IdentitySolver> s(es, IdentitySolver());
+  PCGSolver<EdgeList<EdgeR>, IdentitySolver> s(es, IdentitySolver());
 
   timer.tic();
   s.solve(b, x);
@@ -313,19 +404,19 @@ void pcg(const EdgeListR& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 500;
+  size_t k = 1000;
   size_t n = k * k;
 
-  EdgeListR unweighted_torus;
-  EdgeListR weighted_torus;
+  EdgeList<EdgeR> unweighted_grid;
+  EdgeList<EdgeR> weighted_grid;
 
   std::mt19937 rng(std::random_device{}());
   std::uniform_real_distribution<> uniform(1, 100);
   RNG<std::uniform_real_distribution<>, std::mt19937>
     random_resistance(uniform, rng);
 
-  torus(k, k, unweighted_torus);
-  torus(k, k, weighted_torus, random_resistance);
+  grid2(k, k, unweighted_grid);
+  grid2(k, k, weighted_grid, random_resistance);
 
   std::vector<FLOAT> unweighted_b(n);
   std::vector<FLOAT> weighted_b(n);
@@ -334,18 +425,19 @@ int main(void) {
   for (auto& f : x) {
     f = uniform(rng);
   }
-  mv(1, weighted_torus, x, 0, x, weighted_b);
+  mv(1, weighted_grid, x, 0, x, weighted_b);
 
   for (auto& f : x) {
     f = uniform(rng);
   }
-  mv(1, unweighted_torus, x, 0, x, unweighted_b);
+  mv(1, unweighted_grid, x, 0, x, unweighted_b);
 
   // bst(rng);
-  // pcg(unweighted_torus, unweighted_b);
-  // resistance_vs_conductance(weighted_torus, weighted_b);
-  // min_degree(weighted_torus, weighted_b);
-  aug_tree_pcg(unweighted_torus, unweighted_b, k);
+  // pcg(unweighted_grid, unweighted_b);
+  // resistance_vs_conductance(weighted_grid, weighted_b);
+  // min_degree(weighted_grid, weighted_b);
+  aug_tree_pcg(unweighted_grid, unweighted_b, k);
+  // akpw(unweighted_grid);
 
   return 0;
 }

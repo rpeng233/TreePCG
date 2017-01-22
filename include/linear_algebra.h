@@ -93,7 +93,7 @@ inline void mv(
 
 inline void mv(
     FLOAT alpha,
-    const EdgeListR& es,
+    const EdgeList<EdgeR>& es,
     const std::vector<FLOAT>& x,
     FLOAT beta,
     const std::vector<FLOAT>& y,
@@ -125,7 +125,7 @@ inline void mv(
 
 inline void mv(
     FLOAT alpha,
-    const EdgeListC& es,
+    const EdgeList<EdgeC>& es,
     const std::vector<FLOAT>& x,
     FLOAT beta,
     const std::vector<FLOAT>& y,
