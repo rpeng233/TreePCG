@@ -102,7 +102,7 @@ void dijkstra(const EdgeList<EdgeR>& es) {
     }
   };
 
-  Graph2 g(es);
+  AdjacencyArray g(es);
   vector<DV> vs(es.n);
   for (size_t i = 0; i < vs.size(); i++) {
     vs[i].initialize(i);
@@ -121,6 +121,7 @@ void dijkstra(const EdgeList<EdgeR>& es) {
 
 void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   cout << "===== aug-tree PCG =====\n";
+  cout << "n = " << es.n << ", m = " << es.Size() << endl;
   TreeR t;
 
   timer.tic("finding low stretch spanning tree: ");
@@ -128,56 +129,57 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
     EdgeList<EdgeR> tree_es;
     // recursive_c(k, k, tree_es);
     AKPW(es, tree_es);
-    Graph2<ArcR> g(tree_es);
+    AdjacencyArray<ArcR> g(tree_es);
     t = DijkstraTree<TreeR>(g, es.n / 2);
   }
   timer.toc();
 
-  EdgeList<EdgeR> otes;
-  otes.n = es.n;
+  EdgeList<EdgeR> off_tree_es;
+  off_tree_es.n = es.n;
 
   for (size_t i = 0; i < es.edges.size(); i++) {
     const EdgeR& e = es.edges[i];
     if (t.vertices[e.u].parent == e.v || t.vertices[e.v].parent == e.u) {
       continue;
     }
-    otes.AddEdge(e.u, e.v, e.resistance);
+    off_tree_es.AddEdge(e.u, e.v, e.resistance);
   }
 
-  vector<double> strs(otes.edges.size());
-  Graph3 g(t);
+  vector<double> strs(off_tree_es.edges.size());
 
   timer.tic("computing stretch and adding edges: ");
-  ComputeStretch(t.vertices, otes.edges, strs);
+  ComputeStretch(t.vertices, off_tree_es.edges, strs);
 
+  AdjacencyMap aug_tree(t);
   size_t count = 0;
   FLOAT total_stretch = std::accumulate(strs.begin(), strs.end(), 0);
   std::mt19937 rng(std::random_device{}());
   std::uniform_real_distribution<> unif01(0, 1);
+
   for (size_t i = 0; i < strs.size(); i++) {
-    FLOAT p = 5 * k * strs[i] / total_stretch;
+    FLOAT p = 5 * k * strs[i] / total_stretch; // add 5k edges in expectation
     if (unif01(rng) < p) {
-      // otes.edges[i].resistance *= 5 * k * strs[i] / total_stretch;
+      // off_tree_es.edges[i].resistance *= 5 * k * strs[i] / total_stretch;
       count++;
-      g.AddEdgeR(otes.edges[i]);
+      aug_tree.AddEdgeR(off_tree_es.edges[i]);
     }
   }
   // cout << "Added " << count << " edges\n";
   // cout << k << '\n';
 
   // StretchGreater less(strs);
-  // vector<size_t> indices(otes.edges.size());
+  // vector<size_t> indices(off_tree_es.edges.size());
   // for (size_t i = 0; i < indices.size(); i++) {
   //   indices[i] = i;
   // }
   // std::sort(indices.begin(), indices.end(), less);
   // for (size_t i = 0; i < 5 * k; i++) {
-  //   g.AddEdgeR(otes.edges[indices[i]]);
+  //   aug_tree.AddEdgeR(off_tree_es.edges[indices[i]]);
   // }
   timer.toc();
 
-  timer.tic("eliminating aug tree: ");
-  MinDegreeSolver precon(g);
+  timer.tic("factorizing aug tree: ");
+  MinDegreeSolver precon(aug_tree);
   timer.toc();
 
   EdgeList<EdgeC> es2(es);
@@ -232,7 +234,7 @@ void stretch(std::mt19937& rng) {
   TreeR t;
 
   {
-    Graph2<ArcR> g(es);
+    AdjacencyArray<ArcR> g(es);
     t = DijkstraTree<TreeR>(g, 0);
   }
 
@@ -264,7 +266,7 @@ void aug_tree(std::mt19937& rng) {
   TreePlusEdgesR t;
 
   {
-    Graph2 g(es);
+    AdjacencyArray g(es);
     t = DijkstraTree<TreePlusEdgesR>(g, 0);
   }
 
@@ -302,7 +304,7 @@ void aug_tree(std::mt19937& rng) {
 
 void min_degree(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   cout << "===== min degree =====\n";
-  Graph3 g(es);
+  AdjacencyMap g(es);
   std::vector<FLOAT> x(es.n);
   std::vector<FLOAT> r(es.n);
 

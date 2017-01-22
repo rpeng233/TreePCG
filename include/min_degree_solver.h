@@ -17,8 +17,8 @@ public:
     n = 0;
   }
 
-  MinDegreeSolver(Graph3& graph);
-  MinDegreeSolver(Graph3& graph, int brute_force);
+  MinDegreeSolver(AdjacencyMap& graph);
+  MinDegreeSolver(AdjacencyMap& graph, int brute_force);
   void solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x) const;
 
 private:

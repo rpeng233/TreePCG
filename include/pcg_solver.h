@@ -46,7 +46,11 @@ class PCGSolver {
       // std::cout << i++ << ' ' << res << std::endl;
       i++;
       if (res / bnorm < tol) {
-        std::cerr << i << std::endl;
+        std::cerr << "PCG stopped after "
+                  << i
+                  << " iterations with relative error "
+                  << res / bnorm
+                  << std::endl;
         return;
       }
       preconditioner.solve(r, s);             // Solve P * s = r

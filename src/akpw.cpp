@@ -54,7 +54,7 @@ struct Arc {
   }
 };
 
-void Dijkstra(const Graph2<Arc>& graph,
+void Dijkstra(const AdjacencyArray<Arc>& graph,
               BinaryHeap<DistanceGreater>& queue,
               std::vector<DijkstraVtx>& vs) {
   while (queue.size != 0) {
@@ -88,7 +88,7 @@ void AKPW(const EdgeList<EdgeR>& es_, EdgeList<EdgeR>& tree) {
   vector<DijkstraVtx> vs(n);
   DistanceGreater cmp(vs);
   BinaryHeap<DistanceGreater> queue(0, &cmp);
-  Graph2<Arc> g;
+  AdjacencyArray<Arc> g;
 
   std::mt19937 rng(std::random_device{}());
   std::exponential_distribution<> exponential(0.5);

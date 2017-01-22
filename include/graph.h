@@ -55,10 +55,10 @@ struct EdgeR {
     resistance = 0;
   }
 
-  EdgeR(size_t _u, size_t _v, FLOAT _resistance) {
-    u = _u;
-    v = _v;
-    resistance = _resistance;
+  EdgeR(size_t u_, size_t v_, FLOAT resistance_) {
+    u = u_;
+    v = v_;
+    resistance = resistance_;
   }
 
   EdgeR& operator=(const EdgeC& e);
@@ -94,14 +94,13 @@ struct EdgeC {
     conductance = 0;
   }
 
-  EdgeC(size_t _u, size_t _v, FLOAT _conductance) {
-    u = _u;
-    v = _v;
-    conductance = _conductance;
+  EdgeC(size_t u_, size_t v_, FLOAT conductance_) {
+    u = u_;
+    v = v_;
+    conductance = conductance_;
   }
 
   EdgeC& operator=(const EdgeR& e);
-
 
   FLOAT Resistance() {
     return 1 / conductance;
@@ -147,9 +146,9 @@ struct ArcR {
     resistance = 0;
   }
 
-  ArcR(int _v, FLOAT _resistance) {
-    v = _v;
-    resistance = _resistance;
+  ArcR(int v_, FLOAT resistance_) {
+    v = v_;
+    resistance = resistance_;
   }
 
   ArcR& operator=(const EdgeR& e) {
@@ -179,8 +178,8 @@ struct ArcC {
     conductance = 0;
   }
 
-  ArcC(int _v, FLOAT conductance_) {
-    v = _v;
+  ArcC(int v_, FLOAT conductance_) {
+    v = v_;
     conductance = conductance_;
   }
 
@@ -237,8 +236,8 @@ struct Graph {
     neighbor_list = NULL;
   }
 
-  Graph(int _n) {
-    n = _n;
+  Graph(int n_) {
+    n = n_;
     neighbor_list = new std::vector<ArcR>[n];
   }
 
@@ -317,8 +316,8 @@ struct TreeR {
     n = 0;
   }
 
-  TreeR(size_t _n) {
-    n = _n;
+  TreeR(size_t n_) {
+    n = n_;
     vertices.resize(n);
     for (size_t i = 0; i < n; i++) {
       vertices[i].parent = i;
@@ -337,6 +336,7 @@ struct TreeR {
   }
 };
 
+/*
 struct TreePlusEdgesR {
   size_t n;
   std::vector<TreeVertexR> vertices;
@@ -346,8 +346,8 @@ struct TreePlusEdgesR {
     n = 0;
   }
 
-  TreePlusEdgesR(size_t _n) {
-    n = _n;
+  TreePlusEdgesR(size_t n_) {
+    n = n_;
     vertices.resize(n);
     for (size_t i = 0; i < n; i++) {
       vertices[i].parent = i;
@@ -379,6 +379,7 @@ struct TreePlusEdgesR {
     vertices[v].degree++;
   }
 };
+*/
 
 template <typename EdgeT>
 struct EdgeList {
@@ -399,7 +400,7 @@ struct EdgeList {
     }
   }
 
-  size_t Size() {
+  size_t Size() const {
     return edges.size();
   }
 
@@ -520,12 +521,12 @@ inline EdgeListC::EdgeListC(const EdgeListR& es) {
 */
 
 template <typename ArcT>
-struct Graph2 {
+struct AdjacencyArray {
   size_t n;
   std::vector<ArcT> arcs;
   std::vector<size_t> first_arc;
 
-  Graph2() {
+  AdjacencyArray() {
     n = 0;
   }
 
@@ -568,12 +569,12 @@ struct Graph2 {
   }
 
   template <typename EdgeT>
-  Graph2(const EdgeList<EdgeT>& es) {
+  AdjacencyArray(const EdgeList<EdgeT>& es) {
     BuildGraph(es);
   }
 };
 
-struct Graph3 {
+struct AdjacencyMap {
   size_t n;
   std::vector<std::map<size_t, FLOAT> > neighbor_map;
 
@@ -587,7 +588,7 @@ struct Graph3 {
     neighbor_map[e.v][e.u] += 1 / e.resistance;
   }
 
-  Graph3(const EdgeList<EdgeR>& es) {
+  AdjacencyMap(const EdgeList<EdgeR>& es) {
     n = es.n;
     neighbor_map.resize(n);
     for (size_t i = 0; i < es.edges.size(); i++) {
@@ -595,7 +596,8 @@ struct Graph3 {
     }
   }
 
-  Graph3(const TreePlusEdgesR& tree) {
+  /*
+  AdjacencyMap(const TreePlusEdgesR& tree) {
     n = tree.n;
     neighbor_map.resize(n);
     for (size_t i = 0; i < tree.vertices.size(); i++) {
@@ -607,8 +609,9 @@ struct Graph3 {
       AddEdgeR(tree.off_tree_edges[i]);
     }
   }
+  */
 
-  Graph3(const TreeR& tree) {
+  AdjacencyMap(const TreeR& tree) {
     n = tree.n;
     neighbor_map.resize(n);
     for (size_t i = 0; i < n; i++) {

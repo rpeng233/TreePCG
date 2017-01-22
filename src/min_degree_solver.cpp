@@ -63,7 +63,7 @@ void MinDegreeSolver::back_substitution(const vector<FLOAT>& rhs_elims,
   }
 }
 
-MinDegreeSolver::MinDegreeSolver(Graph3& graph, int brute_force) {
+MinDegreeSolver::MinDegreeSolver(AdjacencyMap& graph, int brute_force) {
   n = graph.n;
   vector<size_t> vs(n);
   DegreeLess compare(graph.neighbor_map);
@@ -117,7 +117,7 @@ MinDegreeSolver::MinDegreeSolver(Graph3& graph, int brute_force) {
   elims[n - 1].first_arc = elim_arcs.size();
 }
 
-MinDegreeSolver::MinDegreeSolver(Graph3& graph) {
+MinDegreeSolver::MinDegreeSolver(AdjacencyMap& graph) {
   n = graph.n;
   DegreeGreater less(graph.neighbor_map);
   BinaryHeap<DegreeGreater> heap(n, &less);

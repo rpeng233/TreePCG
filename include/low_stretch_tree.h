@@ -9,7 +9,7 @@
 #include "graph.h"
 
 template <typename TreeType, typename ArcT>
-TreeType DijkstraTree(const Graph2<ArcT>& graph, size_t root) {
+TreeType DijkstraTree(const AdjacencyArray<ArcT>& graph, size_t root) {
   size_t n = graph.n;
   TreeType tree(n);
 

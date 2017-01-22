@@ -8,10 +8,12 @@ private:
   MinDegreeSolver solver;
 
 public:
+  /*
   AugTreeSolver(const TreePlusEdgesR& tree) {
-    Graph3 g(tree);
+    AdjacencyMap g(tree);
     solver = MinDegreeSolver(g, 1);
   }
+  */
   void solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x) const {
     solver.solve(b, x);
   }
