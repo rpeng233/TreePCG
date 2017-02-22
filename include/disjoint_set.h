@@ -16,17 +16,17 @@ public:
     rank = 0;
   }
 
-  DisjointSetNode *find() {
+  DisjointSetNode *Find() {
     if (parent != this) {
-      parent = parent->find();
+      parent = parent->Find();
     }
 
     return parent;
   }
 
   void Union(DisjointSetNode *y) {
-    DisjointSetNode *x_root = this->find();
-    DisjointSetNode *y_root = y->find();
+    DisjointSetNode *x_root = this->Find();
+    DisjointSetNode *y_root = y->Find();
 
     if (x_root == y_root) return;
 

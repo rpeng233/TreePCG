@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -142,7 +143,7 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
     if (t.vertices[e.u].parent == e.v || t.vertices[e.v].parent == e.u) {
       continue;
     }
-    off_tree_es.AddEdge(e.u, e.v, e.resistance);
+    off_tree_es.AddEdge(EdgeR(e.u, e.v, e.resistance));
   }
 
   vector<double> strs(off_tree_es.edges.size());
@@ -406,11 +407,19 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 1000;
+  size_t k = 500;
   size_t n = k * k;
 
   EdgeList<EdgeR> unweighted_grid;
   EdgeList<EdgeR> weighted_grid;
+
+  struct {
+    bool operator() (const EdgeR& e1, const EdgeR& e2) const {
+      return e1.resistance < e2.resistance;
+    }
+  } less;
+
+  std::sort(weighted_grid.edges.begin(), weighted_grid.edges.end(), less);
 
   std::mt19937 rng(std::random_device{}());
   std::uniform_real_distribution<> uniform(1, 100);
@@ -438,7 +447,7 @@ int main(void) {
   // pcg(unweighted_grid, unweighted_b);
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
-  aug_tree_pcg(unweighted_grid, unweighted_b, k);
+  aug_tree_pcg(weighted_grid, weighted_b, k);
   // akpw(unweighted_grid);
 
   return 0;

@@ -39,7 +39,7 @@ static void LCA(vector<LCAVertex>& tree,
     LCA(tree, es, strs, *it);
     u.ds_node.Union(&v.ds_node);
     LCAVertex *tmp = (LCAVertex *) (
-        (char *) u.ds_node.find() - offsetof(LCAVertex, ds_node)
+        (char *) u.ds_node.Find() - offsetof(LCAVertex, ds_node)
     );
     tmp->ancestor = id;
   }
@@ -50,7 +50,7 @@ static void LCA(vector<LCAVertex>& tree,
     LCAVertex& v = tree[es[*it].u ^ es[*it].v ^ id];
     if (v.finished) {
       LCAVertex *p = (LCAVertex *) (
-          (char *) v.ds_node.find() - offsetof(LCAVertex, ds_node)
+          (char *) v.ds_node.Find() - offsetof(LCAVertex, ds_node)
       );
       double d = tree[p->ancestor].dist;
       assert(v.dist >= d);
