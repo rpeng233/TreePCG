@@ -10,13 +10,11 @@ using std::vector;
 
 struct DijkstraVtx {
   PairingNode pairing_node;
-  // size_t parent;
   size_t center;
   size_t parent_edge_id;
   double distance;
 
   void Initialize(size_t i) {
-    // parent = center = i;
     center = i;
     distance = std::numeric_limits<double>::infinity();
   }
@@ -82,7 +80,6 @@ void Dijkstra(const AdjacencyArray<Arc>& graph,
         continue;
       }
       vs[a.v].distance = new_distance;
-      // vs[a.v].parent = u;
       vs[a.v].parent_edge_id = a.original_id;
       vs[a.v].center = vs[u].center;
       queue.BubbleUp(a.v);
@@ -105,7 +102,6 @@ void Dijkstra(const AdjacencyArray<Arc>& graph,
         continue;
       }
       vs[a.v].distance = new_distance;
-      // vs[a.v].parent = u;
       vs[a.v].parent_edge_id = a.original_id;
       vs[a.v].center = vs[u].center;
       queue.Decrease_key(vs[a.v]);
@@ -198,8 +194,8 @@ size_t inline Find(vector<size_t>& centers, size_t u) {
 }
 
 void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
-  size_t n = es.n;
-  size_t m = es.Size();
+  const size_t n = es.n;
+  const size_t m = es.Size();
   size_t count = 0;
 
   if (m == 0) return;
@@ -219,7 +215,7 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
   AdjacencyArray<Arc> g;
 
   std::mt19937 rng(std::random_device{}());
-  std::exponential_distribution<> exponential(0.5);
+  std::exponential_distribution<> exponential(0.01);
 
   es2.Reserve(m);
   es2.n = n;
@@ -233,9 +229,8 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
   }
 
   FLOAT bucket = es[0].resistance;
-  FLOAT bucket_factor = 10;
+  FLOAT bucket_factor = 2;
   size_t idx = 0;
-  m = 0;
 
   for (;;) {
     bucket *= bucket_factor;
@@ -246,7 +241,7 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
       idx++;
     }
 
-    if (es2.Size() == 0) break;
+    if (es2.Size() == 0 && idx == es.Size()) break;
 
     // for (size_t i = 0; i < es2.Size(); i++) {
     //   std::cout << es2[i].u << ' ' << es2[i].v << ' ' << es2[i].original_id << '\n';
@@ -267,7 +262,6 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
         vs[u].distance = exponential(rng);
         queue.Insert(vs[u]);
       } else {
-        // assert(u != vs[u].parent);
         tree.AddEdge(es[vs[u].parent_edge_id]);
         count++;
         // std::cout << "yeah\n";
@@ -275,7 +269,7 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
       }
     }
 
-    if (tmp.size() <= 1) break;
+    if (tmp.size() <= 1 && idx == es.Size()) break;
 
     for (size_t i = 0; i < remaining.size(); i++) {
       const size_t u = remaining[i];

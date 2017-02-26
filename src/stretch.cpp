@@ -1,7 +1,7 @@
 #include <cstddef>
 #include "disjoint_set.h"
 #include "graph.h"
-#include "low_stretch_tree.h"
+#include "stretch.h"
 
 using std::vector;
 using std::cout;

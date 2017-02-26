@@ -1,24 +1,23 @@
-#ifndef INCLUDE_MIN_DEGREE_SOLVER_H_
-#define INCLUDE_MIN_DEGREE_SOLVER_H_
+#ifndef INCLUDE_CHOLESKY_SOLVER_H_
+#define INCLUDE_CHOLESKY_SOLVER_H_
 
 #include "common.h"
 #include "graph.h"
 
-class EliminatedVertex {
-public:
+struct EliminatedVertex {
   size_t v;
   size_t first_arc;
   FLOAT degree;
 };
 
-class MinDegreeSolver {
+class CholeskySolver {
 public:
-  MinDegreeSolver() {
+  CholeskySolver() {
     n = 0;
   }
 
-  MinDegreeSolver(AdjacencyMap& graph);
-  MinDegreeSolver(AdjacencyMap& graph, int brute_force);
+  CholeskySolver(AdjacencyMap& graph);
+  CholeskySolver(AdjacencyMap& graph, int brute_force);
   void solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x) const;
 
 private:
@@ -26,10 +25,10 @@ private:
   std::vector<EliminatedVertex> elims;
   std::vector<ArcC> elim_arcs;
 
-  void eliminate_rhs(const std::vector<FLOAT>& rhs_,
-                     std::vector<FLOAT>& rhs_elims) const;
+  void forward_substitution(const std::vector<FLOAT>& rhs_,
+                            std::vector<FLOAT>& rhs_elims) const;
   void back_substitution(const std::vector<FLOAT>& rhs_elims,
                          std::vector<FLOAT>& x) const;
 };
 
-#endif // INCLUDE_MIN_DEGREE_SOLVER_H_
+#endif // INCLUDE_CHOLESKY_SOLVER_H_

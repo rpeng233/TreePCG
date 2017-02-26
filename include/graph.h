@@ -61,6 +61,12 @@ struct EdgeR {
     resistance = resistance_;
   }
 
+  EdgeR& operator=(const EdgeR& e) {
+    u = e.u;
+    v = e.v;
+    resistance = e.resistance;
+  }
+
   EdgeR& operator=(const EdgeC& e);
 
   FLOAT Resistance() const {

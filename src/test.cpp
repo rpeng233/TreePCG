@@ -6,14 +6,13 @@
 #include <random>
 #include <vector>
 #include "akpw.h"
-#include "aug_tree_solver.h"
+#include "cholesky_solver.h"
 #include "common.h"
 #include "graph.h"
 #include "identity_solver.h"
-#include "low_stretch_tree.h"
 #include "matrix.h"
-#include "min_degree_solver.h"
 #include "pcg_solver.h"
+#include "stretch.h"
 #include "tree_solver.h"
 
 using std::cout;
@@ -180,11 +179,11 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   timer.toc();
 
   timer.tic("factorizing aug tree: ");
-  MinDegreeSolver precon(aug_tree);
+  CholeskySolver precon(aug_tree);
   timer.toc();
 
   EdgeList<EdgeC> es2(es);
-  PCGSolver<EdgeList<EdgeC>, MinDegreeSolver> s(es2, precon);
+  PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
 
   std::vector<FLOAT> x(es.n);
   std::vector<FLOAT> r(es.n);
@@ -310,7 +309,7 @@ void min_degree(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   std::vector<FLOAT> r(es.n);
 
   timer.tic("factorizing: ");
-  MinDegreeSolver s(g, 1);
+  CholeskySolver s(g, 1);
   timer.toc();
 
   timer.tic("solving: ");
@@ -328,8 +327,9 @@ void resistance_vs_conductance(const EdgeList<EdgeR>& es, const vector<FLOAT>& b
 
   EdgeList<EdgeC> es2(es);
 
-  PCGSolver<EdgeList<EdgeR>, IdentitySolver> s(es, IdentitySolver());
-  PCGSolver<EdgeList<EdgeC>, IdentitySolver> s2(es2, IdentitySolver());
+  auto id = IdentitySolver();
+  PCGSolver<EdgeList<EdgeR>, IdentitySolver> s(&es, &id);
+  PCGSolver<EdgeList<EdgeC>, IdentitySolver> s2(&es2, &id);
 
   for (size_t i = 0; i < 2; i++) {
     for (auto&f : x) {
@@ -395,7 +395,8 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   std::vector<FLOAT> x(es.n);
   std::vector<FLOAT> r(es.n);
 
-  PCGSolver<EdgeList<EdgeR>, IdentitySolver> s(es, IdentitySolver());
+  auto id = IdentitySolver();
+  PCGSolver<EdgeList<EdgeR>, IdentitySolver> s(&es, &id);
 
   timer.tic();
   s.solve(b, x);

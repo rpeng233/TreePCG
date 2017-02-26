@@ -39,8 +39,8 @@ pair<size_t, vector<ElimnatedLeaf> > eliminate_leaves(vector<TreeVertexR>& vs) {
 }
 
 static inline
-vector<FLOAT> eliminate_rhs(const vector<ElimnatedLeaf>& elims,
-                            const vector<FLOAT>& rhs_) {
+vector<FLOAT> forward_substitution(const vector<ElimnatedLeaf>& elims,
+                                   const vector<FLOAT>& rhs_) {
   vector<FLOAT> rhs(rhs_);
   vector<FLOAT> rhs_elims(elims.size());
 
@@ -75,7 +75,7 @@ void TreeSolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
   assert(b.size() == x.size());
   assert(b.size() == n);
 
-  vector<FLOAT> rhs_elims = eliminate_rhs(elims, b);
+  vector<FLOAT> rhs_elims = forward_substitution(elims, b);
   x[root] = 0;
   back_substitution(elims, rhs_elims, x);
 

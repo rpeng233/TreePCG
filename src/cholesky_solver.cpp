@@ -4,7 +4,7 @@
 #include <numeric>
 #include <vector>
 #include "binary_heap.h"
-#include "min_degree_solver.h"
+#include "cholesky_solver.h"
 
 using std::vector;
 using std::cerr;
@@ -35,35 +35,7 @@ public:
   }
 };
 
-inline
-void MinDegreeSolver::eliminate_rhs(const vector<FLOAT>& rhs_,
-                                    vector<FLOAT>& rhs_elims) const {
-  vector<FLOAT> rhs(rhs_);
-
-  for (size_t i = 0; i < elims.size() - 1; i++) {
-    rhs_elims[i] = rhs[elims[i].v];
-    FLOAT tmp = rhs[elims[i].v] / elims[i].degree;
-    for (size_t j = elims[i].first_arc; j < elims[i + 1].first_arc; j++) {
-      rhs[elim_arcs[j].v] += tmp * elim_arcs[j].conductance;
-    }
-    rhs[elims[i].v] = 0;
-  }
-}
-
-inline
-void MinDegreeSolver::back_substitution(const vector<FLOAT>& rhs_elims,
-                                        vector<FLOAT>& x) const {
-  for (size_t i = elims.size() - 1; i > 0; i--) {
-    const EliminatedVertex& e = elims[i - 1];
-    x[e.v] = rhs_elims[i - 1];
-    for (size_t j = e.first_arc; j < elims[i].first_arc; j++) {
-      x[e.v] += x[elim_arcs[j].v] * elim_arcs[j].conductance;
-    }
-    x[e.v] /= e.degree;
-  }
-}
-
-MinDegreeSolver::MinDegreeSolver(AdjacencyMap& graph, int brute_force) {
+CholeskySolver::CholeskySolver(AdjacencyMap& graph, int brute_force) {
   n = graph.n;
   vector<size_t> vs(n);
   DegreeLess compare(graph.neighbor_map);
@@ -117,7 +89,7 @@ MinDegreeSolver::MinDegreeSolver(AdjacencyMap& graph, int brute_force) {
   elims[n - 1].first_arc = elim_arcs.size();
 }
 
-MinDegreeSolver::MinDegreeSolver(AdjacencyMap& graph) {
+CholeskySolver::CholeskySolver(AdjacencyMap& graph) {
   n = graph.n;
   DegreeGreater less(graph.neighbor_map);
   BinaryHeap<DegreeGreater> heap(n, &less);
@@ -162,15 +134,49 @@ MinDegreeSolver::MinDegreeSolver(AdjacencyMap& graph) {
     }
   }
   elims[n - 1].first_arc = elim_arcs.size();
+
+  // for (size_t i = 0; i < n - 1; i++) {
+  //   for (size_t j = elims[i].first_arc; j < elims[i + 1].first_arc; j++) {
+  //     elim_arcs[j].conductance /= elims[i].degree;
+  //   }
+  // }
 }
 
-void MinDegreeSolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
+inline
+void CholeskySolver::forward_substitution(const vector<FLOAT>& b_,
+                                          vector<FLOAT>& y) const {
+  vector<FLOAT> b(b_);
+
+  for (size_t i = 0; i < elims.size() - 1; i++) {
+    y[i] = b[elims[i].v];
+    FLOAT tmp = b[elims[i].v] / elims[i].degree;
+    for (size_t j = elims[i].first_arc; j < elims[i + 1].first_arc; j++) {
+      b[elim_arcs[j].v] += tmp * elim_arcs[j].conductance;
+    }
+    b[elims[i].v] = 0;
+  }
+}
+
+inline
+void CholeskySolver::back_substitution(const vector<FLOAT>& y,
+                                       vector<FLOAT>& x) const {
+  for (size_t i = elims.size() - 1; i > 0; i--) {
+    const EliminatedVertex& e = elims[i - 1];
+    x[e.v] = y[i - 1];
+    for (size_t j = e.first_arc; j < elims[i].first_arc; j++) {
+      x[e.v] += x[elim_arcs[j].v] * elim_arcs[j].conductance;
+    }
+    x[e.v] /= e.degree;
+  }
+}
+
+void CholeskySolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
   assert(b.size() == x.size());
   assert(b.size() == n);
 
-  vector<FLOAT> rhs_elims(elims.size() - 1);
-  eliminate_rhs(b, rhs_elims);
-  back_substitution(rhs_elims, x);
+  vector<FLOAT> y(elims.size() - 1);
+  forward_substitution(b, y);
+  back_substitution(y, x);
 
   // FLOAT sum = 0;
   // for (size_t i = 0; i < n; i++) {
