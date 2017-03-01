@@ -60,15 +60,16 @@ static void LCA(vector<LCAVertex>& tree,
   }
 }
 
-void ComputeStretch(const vector<TreeVertexR>& vs,
-                    const vector<EdgeR>& es,
+void ComputeStretch(const TreeR& tree,
+                    const EdgeListR& es,
                     vector<double>& stretch) {
+  const vector<TreeVertexR>& vs = tree.vertices;
   vector<LCAVertex> lca_tree(vs.size());
   size_t root;
   size_t found_root = 0;
 
   stretch.clear();
-  stretch.resize(es.size(), -1);
+  stretch.resize(es.Size(), -1);
 
   for (size_t i = 0; i < vs.size(); i++) {
     if (vs[i].parent != i) {
@@ -81,11 +82,11 @@ void ComputeStretch(const vector<TreeVertexR>& vs,
   }
   assert(found_root == 1);
 
-  for (size_t i = 0; i < es.size(); i++) {
+  for (size_t i = 0; i < es.Size(); i++) {
     lca_tree[es[i].u].incident_edges.push_back(i);
     lca_tree[es[i].v].incident_edges.push_back(i);
   }
 
-  LCA(lca_tree, es, stretch, root);
+  LCA(lca_tree, es.edges, stretch, root);
 }
 

@@ -40,6 +40,7 @@
 #define INCLUDE_GRAPH_H_
 
 #include <map>
+#include <queue>
 #include <vector>
 #include "common.h"
 
@@ -74,7 +75,15 @@ struct EdgeR {
   }
 
   FLOAT Conductance() const {
-    return 1 / resistance;
+    return 1.0 / resistance;
+  }
+
+  void SetResistance(FLOAT r) {
+    resistance = r;
+  }
+
+  void SetConductance(FLOAT c) {
+    resistance = 1.0 / c;
   }
 
   bool operator <(const EdgeR &o) const {
@@ -108,12 +117,20 @@ struct EdgeC {
 
   EdgeC& operator=(const EdgeR& e);
 
-  FLOAT Resistance() {
-    return 1 / conductance;
+  FLOAT Resistance() const {
+    return 1.0 / conductance;
   }
 
-  FLOAT Conductance() {
+  FLOAT Conductance() const {
     return conductance;
+  }
+
+  void SetResistance(FLOAT r) {
+    conductance = 1.0 / r;
+  }
+
+  void SetConductance(FLOAT c) {
+    conductance = c;
   }
 
   bool operator <(const EdgeC &o) const {
@@ -142,250 +159,6 @@ inline EdgeC& EdgeC::operator=(const EdgeR& e) {
   conductance = 1 / e.resistance;
   return *this;
 }
-
-struct ArcR {
-  size_t v;
-  FLOAT resistance;
-
-  ArcR() {
-    v = 0;
-    resistance = 0;
-  }
-
-  ArcR(int v_, FLOAT resistance_) {
-    v = v_;
-    resistance = resistance_;
-  }
-
-  ArcR& operator=(const EdgeR& e) {
-    resistance = e.resistance;
-    return *this;
-  }
-
-  FLOAT Resistance() const {
-    return resistance;
-  }
-
-  bool operator <(const ArcR &o) const {
-    if (this->v != o.v) {
-      return this->v < o.v;
-    }
-
-    return this->resistance < o.resistance;
-  }
-};
-
-struct ArcC {
-  size_t v;
-  FLOAT conductance;
-
-  ArcC() {
-    v = 0;
-    conductance = 0;
-  }
-
-  ArcC(int v_, FLOAT conductance_) {
-    v = v_;
-    conductance = conductance_;
-  }
-
-  bool operator <(const ArcC &o) const {
-    if (this->v != o.v) {
-      return this->v < o.v;
-    }
-
-    return this->conductance < o.conductance;
-  }
-};
-
-/*
-struct Vertex {
-  std::vector<ArcR> nghbrs;
-
-  void AddArc(size_t v, FLOAT resistance) {
-    nghbrs.push_back(ArcR(v, resistance));
-  }
-
-  void SortAndCombine() {
-    if (nghbrs.empty()) return;
-    sort(nghbrs.begin(), nghbrs.end());
-    size_t new_degree = 0;
-    size_t last_nghbr = nghbrs[0].v;
-    FLOAT conductance = 0;
-
-    for(std::vector<ArcR>::iterator ii = nghbrs.begin();
-         ii != nghbrs.end(); ++ii) {
-      if (ii -> v == last_nghbr) {
-        conductance += 1 / ii -> resistance;
-      } else {
-        nghbrs[new_degree].v = last_nghbr;
-        nghbrs[new_degree].resistance = 1 / conductance;
-        new_degree++;
-        last_nghbr = ii -> v;
-        conductance = 1 / ii -> resistance;
-      }
-    }
-    nghbrs[new_degree].v = last_nghbr;
-    nghbrs[new_degree].resistance = 1 / conductance;
-    new_degree++;
-    nghbrs.resize(new_degree);
-  }
-};
-*/
-
-struct Graph {
-  int n;
-  std::vector<ArcR> *neighbor_list;
-
-  Graph() {
-    n = 0;
-    neighbor_list = NULL;
-  }
-
-  Graph(int n_) {
-    n = n_;
-    neighbor_list = new std::vector<ArcR>[n];
-  }
-
-  Graph(const Graph &o) {
-    n = o.n;
-    neighbor_list = o.neighbor_list;
-  }
-
-  Graph &operator =(const Graph & o) {
-    n = o.n;
-    neighbor_list = o.neighbor_list;
-    return (*this);
-  }
-
-  void AddEdge(int u, int v, FLOAT resistance) {
-    neighbor_list[u].push_back(ArcR(v, resistance));
-    neighbor_list[v].push_back(ArcR(u, resistance));
-  }
-
-  void AddEdge(EdgeR e) {
-    AddEdge(e.u, e.v, e.resistance);
-  }
-
-  void SortAndCombine() const {
-    for (int u = 0; u < n; ++u) {
-      int new_degree = 0;
-      sort(neighbor_list[u].begin(), neighbor_list[u].end());
-
-      int last_vertex = -1;
-      FLOAT last_weight = 0;
-
-      for (std::vector<ArcR>::iterator it = neighbor_list[u].begin();
-          it != neighbor_list[u].end(); ++it) {
-        if (it -> v != last_vertex) {
-          if (last_vertex >= 0) {
-            neighbor_list[u][new_degree] =
-              ArcR(last_vertex, FLOAT(1) / last_weight);
-            new_degree++;
-          }
-          last_vertex = it -> v;
-        }
-        last_weight += FLOAT(1) / it -> resistance;
-      }
-
-      if (last_vertex >= 0) {
-        neighbor_list[u][new_degree] =
-          ArcR(last_vertex, FLOAT(1) / last_weight);
-        new_degree++;
-      }
-      neighbor_list[u].resize(new_degree);
-    }
-  }
-
-
-  void FreeMemory() const {
-    delete neighbor_list;
-  }
-};
-
-struct TreeVertexR {
-  size_t parent;
-  size_t degree; // TODO: right now the degree doesn't count the parent
-  FLOAT parent_resistance;
-  bool eliminated;
-
-  TreeVertexR()
-  : parent(0), degree(0), parent_resistance(0.0), eliminated(false)
-  { }
-};
-
-struct TreeR {
-  size_t n;
-  std::vector<TreeVertexR> vertices;
-
-  TreeR() {
-    n = 0;
-  }
-
-  TreeR(size_t n_) {
-    n = n_;
-    vertices.resize(n);
-    for (size_t i = 0; i < n; i++) {
-      vertices[i].parent = i;
-    }
-  }
-
-  void SetParent(size_t v, size_t p, FLOAT r) {
-    size_t old_p = vertices[v].parent;
-    if (old_p != v) {
-      vertices[old_p].degree--;
-    }
-
-    vertices[v].parent = p;
-    vertices[v].parent_resistance = r;
-    vertices[p].degree++;
-  }
-};
-
-/*
-struct TreePlusEdgesR {
-  size_t n;
-  std::vector<TreeVertexR> vertices;
-  std::vector<EdgeR> off_tree_edges;
-
-  TreePlusEdgesR() {
-    n = 0;
-  }
-
-  TreePlusEdgesR(size_t n_) {
-    n = n_;
-    vertices.resize(n);
-    for (size_t i = 0; i < n; i++) {
-      vertices[i].parent = i;
-    }
-  }
-
-  TreePlusEdgesR(const TreePlusEdgesR &o) {
-    n = o.n;
-    vertices = o.vertices;
-    off_tree_edges = o.off_tree_edges;
-  }
-
-  TreePlusEdgesR &operator =(const TreePlusEdgesR &o) {
-    n = o.n;
-    vertices = o.vertices;
-    off_tree_edges = o.off_tree_edges;
-    return (*this);
-  }
-
-  void SetParent(size_t v, size_t p, FLOAT r) {
-    vertices[v].parent = p;
-    vertices[v].parent_resistance = r;
-    vertices[p].degree++;
-  }
-
-  void AddEdge(size_t u, size_t v, FLOAT r) {
-    off_tree_edges.push_back(EdgeR(u, v, r));
-    vertices[u].degree++;
-    vertices[v].degree++;
-  }
-};
-*/
 
 template <typename EdgeT>
 struct EdgeList {
@@ -431,6 +204,11 @@ struct EdgeList {
     edges.resize(n);
   }
 
+  void Free() {
+    n = 0;
+    edges = std::vector<EdgeT>();
+  }
+
   EdgeT& operator[](const size_t i) {
     return edges[i];
   }
@@ -440,91 +218,161 @@ struct EdgeList {
   }
 };
 
-/*
-struct EdgeListC;
+typedef EdgeList<EdgeC> EdgeListC;
+typedef EdgeList<EdgeR> EdgeListR;
 
-struct EdgeListR {
-  size_t n;
-  std::vector<EdgeR> edges;
+struct ArcR {
+  size_t v;
+  FLOAT resistance;
 
-  EdgeListR() {
-    n = 0;
+  ArcR() {
+    v = 0;
+    resistance = 0;
   }
 
-  EdgeListR(const EdgeListC& es);
-
-  size_t size() {
-    return edges.size();
+  ArcR(int v_, FLOAT resistance_) {
+    v = v_;
+    resistance = resistance_;
   }
 
-  void AddEdge(size_t u, size_t v, FLOAT resistance) {
-    edges.push_back(EdgeR(u, v, resistance));
+  ArcR& operator=(const EdgeR& e) {
+    resistance = e.resistance;
+    return *this;
   }
 
-  void Clear() {
-    n = 0;
-    edges.clear();
+  FLOAT Resistance() const {
+    return resistance;
   }
 
-  EdgeR& operator[](const size_t i) {
-    return edges[i];
+  FLOAT Conductance() const {
+    return 1.0 / resistance;
   }
 
-  const EdgeR& operator[](const size_t i) const {
-    return edges[i];
-  }
-};
-
-struct EdgeListC {
-  size_t n;
-  std::vector<EdgeC> edges;
-
-  EdgeListC() {
-    n = 0;
+  void SetResistance(FLOAT r) {
+    resistance = r;
   }
 
-  EdgeListC(const EdgeListR& es);
-
-  size_t size() {
-    return edges.size();
+  void SetConductance(FLOAT c) {
+    resistance = 1.0 / c;
   }
 
-  void AddEdge(size_t u, size_t v, FLOAT conductance) {
-    edges.push_back(EdgeC(u, v, conductance));
-  }
+  bool operator <(const ArcR &o) const {
+    if (this->v != o.v) {
+      return this->v < o.v;
+    }
 
-  void Clear() {
-    n = 0;
-    edges.clear();
-  }
-
-  EdgeC& operator[](const size_t i) {
-    return edges[i];
-  }
-
-  const EdgeC& operator[](const size_t i) const {
-    return edges[i];
+    return this->resistance < o.resistance;
   }
 };
 
-inline EdgeListR::EdgeListR(const EdgeListC& es) {
-  n = es.n;
-  edges.resize(es.edges.size());
+struct ArcC {
+  size_t v;
+  FLOAT conductance;
 
-  for (size_t i = 0; i < edges.size(); i++) {
-    edges[i] = es.edges[i];
+  ArcC() {
+    v = 0;
+    conductance = 0;
   }
-}
 
-inline EdgeListC::EdgeListC(const EdgeListR& es) {
-  n = es.n;
-  edges.resize(es.edges.size());
-
-  for (size_t i = 0; i < edges.size(); i++) {
-    edges[i] = es.edges[i];
+  ArcC(int v_, FLOAT conductance_) {
+    v = v_;
+    conductance = conductance_;
   }
-}
-*/
+
+  FLOAT Resistance() const {
+    return 1.0 / conductance;
+  }
+
+  FLOAT Conductance() const {
+    return conductance;
+  }
+
+  void SetResistance(FLOAT r) {
+    conductance = 1.0 /r;
+  }
+
+  void SetConductance(FLOAT c) {
+    conductance = 1.0 / c;
+  }
+
+  bool operator <(const ArcC &o) const {
+    if (this->v != o.v) {
+      return this->v < o.v;
+    }
+
+    return this->conductance < o.conductance;
+  }
+};
+
+struct TreeVertexR {
+  size_t parent;
+  FLOAT parent_resistance;
+
+  FLOAT ParentResistance() const {
+    return parent_resistance;
+  }
+
+  FLOAT ParentConductance() const {
+    return 1.0 / parent_resistance;
+  }
+
+  void SetParentR(size_t p, FLOAT r) {
+    parent = p;
+    parent_resistance = r;
+  }
+
+  void SetParentC(size_t p, FLOAT c) {
+    parent = p;
+    parent_resistance = 1.0 / c;
+  }
+};
+
+template <typename VertexT>
+struct Tree {
+  size_t n;
+  std::vector<VertexT> vertices;
+
+  Tree() {
+    n = 0;
+  }
+
+  Tree(size_t n_) {
+    n = n_;
+    vertices.resize(n);
+
+    for (size_t i = 0; i < n; i++) {
+      vertices[i].parent = i;
+    }
+  }
+
+  void Resize(size_t n_) {
+    n = n_;
+    vertices.clear();
+    vertices.resize(n);
+
+    for (size_t i = 0; i < n; i++) {
+      vertices[i].parent = i;
+    }
+  }
+
+  void SetParentR(size_t v, size_t p, FLOAT r) {
+    vertices[v].SetParentR(p, r);
+  }
+
+  void SetParentC(size_t v, size_t p, FLOAT c) {
+    vertices[v].SetParentC(p, c);
+  }
+
+  VertexT& operator[](const size_t i) {
+    return vertices[i];
+  }
+
+  const VertexT& operator[](const size_t i) const {
+    return vertices[i];
+  }
+};
+
+typedef Tree<TreeVertexR> TreeR;
 
 template <typename ArcT>
 struct AdjacencyArray {
@@ -534,6 +382,11 @@ struct AdjacencyArray {
 
   AdjacencyArray() {
     n = 0;
+  }
+
+  template <typename EdgeT>
+  AdjacencyArray(const EdgeList<EdgeT>& es) {
+    BuildGraph(es);
   }
 
   template <typename EdgeT>
@@ -574,9 +427,10 @@ struct AdjacencyArray {
     }
   }
 
-  template <typename EdgeT>
-  AdjacencyArray(const EdgeList<EdgeT>& es) {
-    BuildGraph(es);
+  void FreeMemory() {
+    n = 0;
+    arcs = std::vector<ArcT>();
+    first_arc = std::vector<size_t>();
   }
 };
 
@@ -602,33 +456,52 @@ struct AdjacencyMap {
     }
   }
 
-  /*
-  AdjacencyMap(const TreePlusEdgesR& tree) {
-    n = tree.n;
-    neighbor_map.resize(n);
-    for (size_t i = 0; i < tree.vertices.size(); i++) {
-      size_t p = tree.vertices[i].parent;
-      if (i == p) continue;
-      AddEdgeR(i, p, tree.vertices[i].parent_resistance);
-    }
-    for (size_t i = 0; i < tree.off_tree_edges.size(); i++) {
-      AddEdgeR(tree.off_tree_edges[i]);
-    }
-  }
-  */
-
-  AdjacencyMap(const TreeR& tree) {
+  template <typename VertexType>
+  AdjacencyMap(const Tree<VertexType>& tree) {
     n = tree.n;
     neighbor_map.resize(n);
     for (size_t i = 0; i < n; i++) {
       size_t p = tree.vertices[i].parent;
       if (i == p) continue;
-      const FLOAT& r = tree.vertices[i].parent_resistance;
+      const FLOAT& r = tree.vertices[i].ParentResistance();
       AddEdgeR(i, p, r);
     }
   }
 
 };
+
+template <typename TreeType, typename ArcT>
+void DijkstraTree(const AdjacencyArray<ArcT>& graph, size_t root, TreeType& tree) {
+  size_t n = graph.n;
+
+  tree.Resize(n);
+
+  std::vector<bool> finished(n, false);
+  std::vector<double> dist(n, std::numeric_limits<double>::max());
+  std::priority_queue<std::pair<double, size_t> > queue;
+
+  dist[root] = 0;
+  queue.push(std::make_pair(0, root));
+  size_t count = 0;
+  while (count < n) {
+    size_t u = queue.top().second;
+    queue.pop();
+    if (finished[u]) {
+      continue;
+    }
+    finished[u] = true;
+    count++;
+    for (size_t i = graph.first_arc[u]; i < graph.first_arc[u + 1]; i++) {
+      const ArcR& arc = graph.arcs[i];
+      double tmp = dist[u] + (double) arc.Resistance();
+      if (tmp < dist[arc.v]) {
+        dist[arc.v] = tmp;
+        tree.SetParentR(arc.v, u, arc.Resistance());
+        queue.push(std::make_pair(-tmp, arc.v));
+      }
+    }
+  }
+}
 
 struct One {
   FLOAT operator() () const {
@@ -755,5 +628,75 @@ void recursive_c(size_t n, size_t m, EdgeListType& es) {
   es.n = n * m;
   recursive_c_helper(es, n, 0, 0, n - 1, m - 1);
 }
+
+struct Graph {
+  int n;
+  std::vector<ArcR> *neighbor_list;
+
+  Graph() {
+    n = 0;
+    neighbor_list = NULL;
+  }
+
+  Graph(int n_) {
+    n = n_;
+    neighbor_list = new std::vector<ArcR>[n];
+  }
+
+  Graph(const Graph &o) {
+    n = o.n;
+    neighbor_list = o.neighbor_list;
+  }
+
+  Graph &operator =(const Graph & o) {
+    n = o.n;
+    neighbor_list = o.neighbor_list;
+    return (*this);
+  }
+
+  void AddEdge(int u, int v, FLOAT resistance) {
+    neighbor_list[u].push_back(ArcR(v, resistance));
+    neighbor_list[v].push_back(ArcR(u, resistance));
+  }
+
+  void AddEdge(EdgeR e) {
+    AddEdge(e.u, e.v, e.resistance);
+  }
+
+  void SortAndCombine() const {
+    for (int u = 0; u < n; ++u) {
+      int new_degree = 0;
+      sort(neighbor_list[u].begin(), neighbor_list[u].end());
+
+      int last_vertex = -1;
+      FLOAT last_weight = 0;
+
+      for (std::vector<ArcR>::iterator it = neighbor_list[u].begin();
+          it != neighbor_list[u].end(); ++it) {
+        if (it -> v != last_vertex) {
+          if (last_vertex >= 0) {
+            neighbor_list[u][new_degree] =
+              ArcR(last_vertex, FLOAT(1) / last_weight);
+            new_degree++;
+          }
+          last_vertex = it -> v;
+        }
+        last_weight += FLOAT(1) / it -> resistance;
+      }
+
+      if (last_vertex >= 0) {
+        neighbor_list[u][new_degree] =
+          ArcR(last_vertex, FLOAT(1) / last_weight);
+        new_degree++;
+      }
+      neighbor_list[u].resize(new_degree);
+    }
+  }
+
+
+  void FreeMemory() const {
+    delete neighbor_list;
+  }
+};
 
 #endif  // INCLUDE_GRAPH_H_

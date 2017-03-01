@@ -6,7 +6,7 @@ using std::vector;
 using std::pair;
 
 static inline
-pair<size_t, vector<ElimnatedLeaf> > eliminate_leaves(vector<TreeVertexR>& vs) {
+pair<size_t, vector<ElimnatedLeaf> > eliminate_leaves(vector<TreeSolverVertex>& vs) {
   vector<ElimnatedLeaf> elims;
   size_t root;
   size_t found_root = 0;
@@ -39,45 +39,44 @@ pair<size_t, vector<ElimnatedLeaf> > eliminate_leaves(vector<TreeVertexR>& vs) {
 }
 
 static inline
-vector<FLOAT> forward_substitution(const vector<ElimnatedLeaf>& elims,
-                                   const vector<FLOAT>& rhs_) {
-  vector<FLOAT> rhs(rhs_);
-  vector<FLOAT> rhs_elims(elims.size());
+void ForwardSubstitution(const vector<ElimnatedLeaf>& elims,
+                         const vector<FLOAT>& b_,
+                         vector<FLOAT> &y) {
+  vector<FLOAT> b(b_);
 
   for (size_t i = 0; i < elims.size(); i++) {
-    rhs_elims[i] = rhs[elims[i].v];
-    rhs[elims[i].parent] += rhs[elims[i].v];
+    y[i] = b[elims[i].v];
+    b[elims[i].parent] += b[elims[i].v];
   }
-
-  return rhs_elims;
 }
 
 static inline
-void back_substitution(const vector<ElimnatedLeaf>& elims,
-                       const vector<FLOAT>& rhs_elims,
-                       vector<FLOAT>& x) {
+void BackSubstitution(const vector<ElimnatedLeaf>& elims,
+                      const vector<FLOAT>& y,
+                      vector<FLOAT>& x) {
   for (size_t i = elims.size(); i > 0; i--) {
     const ElimnatedLeaf& e = elims[i - 1];
-    x[e.v] = rhs_elims[i - 1] * e.resistance + x[e.parent];
+    x[e.v] = y[i - 1] * e.resistance + x[e.parent];
   }
 }
 
-TreeSolver::TreeSolver(const TreeR& tree) {
+TreeSolver::TreeSolver(const Tree<TreeSolverVertex>& tree) {
   n = tree.n;
-  vector<TreeVertexR> vs(tree.vertices);
+  vector<TreeSolverVertex> vs(tree.vertices);
   pair<size_t, vector<ElimnatedLeaf> > p = eliminate_leaves(vs);
   root = p.first;
   elims = p.second;
   assert(elims.size() == tree.n - 1);
 }
 
-void TreeSolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
+void TreeSolver::Solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
   assert(b.size() == x.size());
   assert(b.size() == n);
 
-  vector<FLOAT> rhs_elims = forward_substitution(elims, b);
+  vector<FLOAT> y(n);
+  ForwardSubstitution(elims, b, y);
   x[root] = 0;
-  back_substitution(elims, rhs_elims, x);
+  BackSubstitution(elims, y, x);
 
   FLOAT sum = 0;
   for (size_t i = 0; i < n; i++) {

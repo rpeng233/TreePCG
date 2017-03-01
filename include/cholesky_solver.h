@@ -16,19 +16,23 @@ public:
     n = 0;
   }
 
-  CholeskySolver(AdjacencyMap& graph);
-  CholeskySolver(AdjacencyMap& graph, int brute_force);
-  void solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x) const;
+  void Factorize(AdjacencyMap& graph);
+  void Solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x) const;
+
+  CholeskySolver(AdjacencyMap& graph) {
+    Factorize(graph);
+  }
+  // CholeskySolver(AdjacencyMap& graph, int brute_force);
 
 private:
   size_t n;
   std::vector<EliminatedVertex> elims;
   std::vector<ArcC> elim_arcs;
 
-  void forward_substitution(const std::vector<FLOAT>& rhs_,
-                            std::vector<FLOAT>& rhs_elims) const;
-  void back_substitution(const std::vector<FLOAT>& rhs_elims,
-                         std::vector<FLOAT>& x) const;
+  void ForwardSubstitution(const std::vector<FLOAT>& rhs_,
+                           std::vector<FLOAT>& y) const;
+  void BackSubstitution(const std::vector<FLOAT>& rhs_elims,
+                        std::vector<FLOAT>& x) const;
 };
 
-#endif // INCLUDE_CHOLESKY_SOLVER_H_
+#endif  // INCLUDE_CHOLESKY_SOLVER_H_

@@ -61,9 +61,10 @@ inline void mv(
   }
 }
 
+template <typename VertexT>
 inline void mv(
     FLOAT alpha,
-    TreeR& tree,
+    Tree<VertexT>& tree,
     const std::vector<FLOAT>& x,
     FLOAT beta,
     const std::vector<FLOAT>& y,
@@ -78,10 +79,10 @@ inline void mv(
     result[i] = 0;
   }
 
-  std::vector<TreeVertexR>& vs = tree.vertices;
+  std::vector<VertexT>& vs = tree.vertices;
   for (size_t i = 0; i < n; i++) {
     if (vs[i].parent == i) continue;
-    FLOAT current = (x[i] - x[vs[i].parent]) / vs[i].parent_resistance;
+    FLOAT current = (x[i] - x[vs[i].parent]) * vs[i].ParentConductance();
     result[i] += current;
     result[vs[i].parent] -= current;
   }

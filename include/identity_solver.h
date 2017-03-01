@@ -7,7 +7,7 @@
 
 class IdentitySolver {
  public:
-  void solve(
+  void Solve(
       const std::vector<FLOAT>& b,
       std::vector<FLOAT>& x,
       FLOAT tol = 1e-6,

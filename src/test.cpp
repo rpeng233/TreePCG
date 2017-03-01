@@ -122,16 +122,14 @@ void dijkstra(const EdgeList<EdgeR>& es) {
 void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   cout << "===== aug-tree PCG =====\n";
   cout << "n = " << es.n << ", m = " << es.Size() << endl;
-  TreeR t;
+  Tree<TreeVertexR> t;
 
   timer.tic("finding low stretch spanning tree: ");
-  {
     EdgeList<EdgeR> tree_es;
     // recursive_c(k, k, tree_es);
     AKPW(es, tree_es);
     AdjacencyArray<ArcR> g(tree_es);
-    t = DijkstraTree<TreeR>(g, es.n / 2);
-  }
+    DijkstraTree<Tree<TreeVertexR>>(g, es.n / 2, t);
   timer.toc();
 
   EdgeList<EdgeR> off_tree_es;
@@ -148,7 +146,7 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   vector<double> strs(off_tree_es.edges.size());
 
   timer.tic("computing stretch and adding edges: ");
-  ComputeStretch(t.vertices, off_tree_es.edges, strs);
+  ComputeStretch(t, off_tree_es, strs);
 
   AdjacencyMap aug_tree(t);
   size_t count = 0;
@@ -189,7 +187,7 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   std::vector<FLOAT> r(es.n);
 
   timer.tic("aug tree pcg: ");
-  s.solve(b, x);
+  s.Solve(b, x);
   timer.toc();
 
   mv(-1, es, x, 1, b, r);
@@ -231,15 +229,15 @@ void stretch(std::mt19937& rng) {
 
   grid2(k, k, es);
 
-  TreeR t;
+  Tree<TreeVertexR> t;
 
   {
     AdjacencyArray<ArcR> g(es);
-    t = DijkstraTree<TreeR>(g, 0);
+    DijkstraTree<Tree<TreeVertexR>>(g, 0, t);
   }
 
   vector<double> strs(es.edges.size());
-  ComputeStretch(t.vertices, es.edges, strs);
+  ComputeStretch(t, es, strs);
 
   for (size_t i = 0; i < t.vertices.size(); i++) {
     cout << i << ' ' << t.vertices[i].parent << endl;
@@ -292,7 +290,7 @@ void aug_tree(std::mt19937& rng) {
   }
   b[n - 1] = -sum;
 
-  s.solve(b, x);
+  s.Solve(b, x);
 
   std::vector<FLOAT> r(n);
   mv(-1, es, x, 1, b, r);
@@ -309,11 +307,11 @@ void min_degree(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   std::vector<FLOAT> r(es.n);
 
   timer.tic("factorizing: ");
-  CholeskySolver s(g, 1);
+  CholeskySolver s(g);
   timer.toc();
 
   timer.tic("solving: ");
-  s.solve(b, x);
+  s.Solve(b, x);
   timer.toc();
 
   mv(-1, es, x, 1, b, r);
@@ -336,7 +334,7 @@ void resistance_vs_conductance(const EdgeList<EdgeR>& es, const vector<FLOAT>& b
       f = 0;
     }
     timer.tic("resistance: ");
-    s.solve(b, x);
+    s.Solve(b, x);
     timer.toc();
 
     mv(-1, es, x, 1, b, r);
@@ -346,7 +344,7 @@ void resistance_vs_conductance(const EdgeList<EdgeR>& es, const vector<FLOAT>& b
       f = 0;
     }
     timer.tic("conductance: ");
-    s2.solve(b, x);
+    s2.Solve(b, x);
     timer.toc();
 
     mv(-1, es, x, 1, b, r);
@@ -357,13 +355,13 @@ void resistance_vs_conductance(const EdgeList<EdgeR>& es, const vector<FLOAT>& b
 void bst(std::mt19937& rng) {
   cout << "===== Solving random complete BST =====\n";
   size_t n = 65535;
-  TreeR tree(n);
+  Tree<TreeSolverVertex> tree(n);
   std::uniform_real_distribution<> weight(1, 100);
 
   // a complete binary tree
   for (size_t i = 0; i * 2 + 2 < n; i++) {
-    tree.SetParent(i * 2 + 1, i, weight(rng));
-    tree.SetParent(i * 2 + 2, i, weight(rng));
+    tree.SetParentR(i * 2 + 1, i, weight(rng));
+    tree.SetParentR(i * 2 + 2, i, weight(rng));
   }
 
   std::vector<FLOAT> b(n);
@@ -380,7 +378,7 @@ void bst(std::mt19937& rng) {
   b[n - 1] = -sum;
 
   TreeSolver s(tree);
-  s.solve(b, x);
+  s.Solve(b, x);
 
   // r = b - A * x
   std::vector<FLOAT> r(n);
@@ -399,7 +397,7 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   PCGSolver<EdgeList<EdgeR>, IdentitySolver> s(&es, &id);
 
   timer.tic();
-  s.solve(b, x);
+  s.Solve(b, x);
   timer.toc();
 
   mv(-1, es, x, 1, b, r);

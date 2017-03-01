@@ -35,6 +35,7 @@ public:
   }
 };
 
+/*
 CholeskySolver::CholeskySolver(AdjacencyMap& graph, int brute_force) {
   n = graph.n;
   vector<size_t> vs(n);
@@ -88,8 +89,9 @@ CholeskySolver::CholeskySolver(AdjacencyMap& graph, int brute_force) {
   }
   elims[n - 1].first_arc = elim_arcs.size();
 }
+*/
 
-CholeskySolver::CholeskySolver(AdjacencyMap& graph) {
+void CholeskySolver::Factorize(AdjacencyMap& graph) {
   n = graph.n;
   DegreeGreater less(graph.neighbor_map);
   BinaryHeap<DegreeGreater> heap(n, &less);
@@ -143,7 +145,7 @@ CholeskySolver::CholeskySolver(AdjacencyMap& graph) {
 }
 
 inline
-void CholeskySolver::forward_substitution(const vector<FLOAT>& b_,
+void CholeskySolver::ForwardSubstitution(const vector<FLOAT>& b_,
                                           vector<FLOAT>& y) const {
   vector<FLOAT> b(b_);
 
@@ -158,7 +160,7 @@ void CholeskySolver::forward_substitution(const vector<FLOAT>& b_,
 }
 
 inline
-void CholeskySolver::back_substitution(const vector<FLOAT>& y,
+void CholeskySolver::BackSubstitution(const vector<FLOAT>& y,
                                        vector<FLOAT>& x) const {
   for (size_t i = elims.size() - 1; i > 0; i--) {
     const EliminatedVertex& e = elims[i - 1];
@@ -170,13 +172,13 @@ void CholeskySolver::back_substitution(const vector<FLOAT>& y,
   }
 }
 
-void CholeskySolver::solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
+void CholeskySolver::Solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
   assert(b.size() == x.size());
   assert(b.size() == n);
 
   vector<FLOAT> y(elims.size() - 1);
-  forward_substitution(b, y);
-  back_substitution(y, x);
+  ForwardSubstitution(b, y);
+  BackSubstitution(y, x);
 
   // FLOAT sum = 0;
   // for (size_t i = 0; i < n; i++) {
