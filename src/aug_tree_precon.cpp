@@ -4,9 +4,9 @@
 #include "aug_tree_precon.h"
 #include "stretch.h"
 
-void aug_tree_precon(const EdgeListR& es,
-                     CholeskySolver& precon,
-                     size_t k) {
+void AugTreePrecon(const EdgeListR& es,
+                   CholeskySolver& precon,
+                   size_t k) {
   EdgeList<EdgeR> tree_es;
   EdgeList<EdgeR> off_tree_es;
   TreeR tree;
@@ -41,6 +41,6 @@ void aug_tree_precon(const EdgeListR& es,
     }
   }
 
-  precon.Factorize(aug_tree);
+  Cholesky(aug_tree, precon.cholesky_factor);
 }
 

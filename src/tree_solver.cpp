@@ -42,11 +42,12 @@ static inline
 void ForwardSubstitution(const vector<ElimnatedLeaf>& elims,
                          const vector<FLOAT>& b_,
                          vector<FLOAT> &y) {
-  vector<FLOAT> b(b_);
+  // vector<FLOAT> b(b_);
+  y = b_;
 
   for (size_t i = 0; i < elims.size(); i++) {
-    y[i] = b[elims[i].v];
-    b[elims[i].parent] += b[elims[i].v];
+    // y[i] = b[elims[i].v];
+    y[elims[i].parent] += y[elims[i].v];
   }
 }
 
@@ -56,7 +57,7 @@ void BackSubstitution(const vector<ElimnatedLeaf>& elims,
                       vector<FLOAT>& x) {
   for (size_t i = elims.size(); i > 0; i--) {
     const ElimnatedLeaf& e = elims[i - 1];
-    x[e.v] = y[i - 1] * e.resistance + x[e.parent];
+    x[e.v] = y[e.v] * e.resistance + x[e.parent];
   }
 }
 

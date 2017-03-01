@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -7,12 +8,13 @@
 #include <vector>
 #include "akpw.h"
 #include "aug_tree_precon.h"
-#include "cholesky_solver.h"
+#include "cholesky.h"
 #include "common.h"
 #include "graph.h"
 #include "identity_solver.h"
 #include "matrix.h"
 #include "pcg_solver.h"
+#include "sparse_cholesky.h"
 #include "stretch.h"
 #include "tree_solver.h"
 
@@ -23,23 +25,21 @@ using std::vector;
 
 class Timer {
   std::chrono::time_point<std::chrono::steady_clock> start;
-  std::string msg;
 
 public:
   Timer() {
-    msg = "Timer uninitialized";
     start = std::chrono::steady_clock::now();
   }
 
-  void tic(const std::string& m="") {
-    msg = m;
+  void tic(const std::string& msg="") {
+    cout << msg;
     start = std::chrono::steady_clock::now();
   }
 
   void toc() {
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> duration = end - start;
-    cout << msg << duration.count() << "s" << endl;
+    cout << "Finished in " << duration.count() << "s" << endl;
   }
 };
 
@@ -125,7 +125,7 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   cout << "n = " << es.n << ", m = " << es.Size() << endl;
   Tree<TreeVertexR> t;
 
-  timer.tic("finding low stretch spanning tree: ");
+  timer.tic("Finding low stretch spanning tree... ");
     EdgeList<EdgeR> tree_es;
     // recursive_c(k, k, tree_es);
     AKPW(es, tree_es);
@@ -146,7 +146,7 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
 
   vector<double> strs(off_tree_es.edges.size());
 
-  timer.tic("computing stretch and adding edges: ");
+  timer.tic("Computing stretch and adding edges... ");
   ComputeStretch(t, off_tree_es, strs);
 
   AdjacencyMap aug_tree(t);
@@ -177,7 +177,7 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   // }
   timer.toc();
 
-  timer.tic("factorizing aug tree: ");
+  timer.tic("Factorizing aug tree... ");
   CholeskySolver precon(aug_tree);
   timer.toc();
 
@@ -187,7 +187,7 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   std::vector<FLOAT> x(es.n);
   std::vector<FLOAT> r(es.n);
 
-  timer.tic("aug tree pcg: ");
+  timer.tic("Aug tree pcg... ");
   s.Solve(b, x);
   timer.toc();
 
@@ -224,8 +224,8 @@ void aug_tree_pcg2(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) 
   cout << "n = " << es.n << ", m = " << es.Size() << endl;
   CholeskySolver precon;
 
-  timer.tic("Constructing preconditioner: ");
-  aug_tree_precon(es, precon, 5 * k);
+  timer.tic("Constructing preconditioner... ");
+  AugTreePrecon(es, precon, 5 * k);
   timer.toc();
 
   EdgeList<EdgeC> es2(es);
@@ -234,7 +234,7 @@ void aug_tree_pcg2(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) 
   std::vector<FLOAT> x(es.n);
   std::vector<FLOAT> r(es.n);
 
-  timer.tic("aug tree pcg: ");
+  timer.tic("Aug tree pcg... ");
   s.Solve(b, x);
   timer.toc();
 
@@ -242,26 +242,32 @@ void aug_tree_pcg2(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) 
 
   std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 
-  /*
-  std::ofstream esf("es.txt");
-  esf << es2.n << '\n';
-  for (const auto& e : es2.edges) {
-    esf << e.u << ' ' << e.v << ' ' << std::setprecision(17) << e.conductance << '\n';
-  }
-  esf.close();
+  return;
+}
 
-  std::ofstream bf("b.txt");
-  for (const auto& f : b) {
-    bf << std::setprecision(17) << f << '\n';
-  }
-  bf.close();
+void sparse_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
+  cout << "===== sparse cholesky PCG =====\n";
+  cout << "n = " << es.n << ", m = " << es.Size() << endl;
+  CholeskySolver precon;
 
-  std::ofstream xf("x.txt");
-  for (const auto& f : x) {
-    xf << std::setprecision(17) << f << '\n';
-  }
-  xf.close();
-  */
+  AdjacencyMap g(es);
+  timer.tic("Constructing preconditioner... ");
+  SparseCholesky(g, log(es.n), precon.cholesky_factor);
+  timer.toc();
+
+  EdgeList<EdgeC> es2(es);
+  PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
+
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
+
+  timer.tic("PCG... ");
+  s.Solve(b, x);
+  timer.toc();
+
+  mv(-1, es, x, 1, b, r);
+
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 
   return;
 }
@@ -296,57 +302,6 @@ void stretch(std::mt19937& rng) {
     cout << e.u << ' ' << e.v << ' ' << strs[i] << endl;
   }
 }
-
-/*
-void aug_tree(std::mt19937& rng) {
-  size_t k = 50;
-  size_t n = k * k;
-
-  EdgeList<EdgeR> es;
-
-  std::uniform_real_distribution<> unif_1_100(1, 100);
-  RNG<std::uniform_real_distribution<>, std::mt19937> random_resistance(unif_1_100, rng);
-
-  grid2(k, k, es, random_resistance);
-
-  TreePlusEdgesR t;
-
-  {
-    AdjacencyArray g(es);
-    t = DijkstraTree<TreePlusEdgesR>(g, 0);
-  }
-
-  for (size_t i = 0; i < es.edges.size(); i++) {
-    const EdgeR& e = es.edges[i];
-    if (t.vertices[e.u].parent == e.v || t.vertices[e.v].parent == e.u) {
-      continue;
-    }
-    t.AddEdge(e.u, e.v, e.resistance);
-  }
-
-
-  AugTreeSolver s(t);
-
-  std::vector<FLOAT> b(n);
-  std::vector<FLOAT> x(n);
-  std::uniform_real_distribution<> demand(-10, 10);
-  FLOAT sum = 0;
-  for (size_t i = 0; i < n - 1; i++) {
-    FLOAT tmp = demand(rng);
-    sum += tmp;
-    b[i] = tmp;
-  }
-  b[n - 1] = -sum;
-
-  s.Solve(b, x);
-
-  std::vector<FLOAT> r(n);
-  mv(-1, es, x, 1, b, r);
-
-  std::cout << "aug_tree\n";
-  std::cout << MYSQRT(r * r) << std::endl;
-}
-*/
 
 void min_degree(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   cout << "===== min degree =====\n";
@@ -454,7 +409,7 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 500;
+  size_t k = 200;
   size_t n = k * k;
 
   EdgeList<EdgeR> unweighted_grid;
@@ -496,6 +451,7 @@ int main(void) {
   // min_degree(weighted_grid, weighted_b);
   // aug_tree_pcg(weighted_grid, weighted_b, k);
   aug_tree_pcg2(weighted_grid, weighted_b, k);
+  sparse_cholesky(weighted_grid, weighted_b);
   // akpw(unweighted_grid);
 
   return 0;
