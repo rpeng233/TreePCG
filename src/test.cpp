@@ -6,6 +6,7 @@
 #include <random>
 #include <vector>
 #include "akpw.h"
+#include "aug_tree_precon.h"
 #include "cholesky_solver.h"
 #include "common.h"
 #include "graph.h"
@@ -178,6 +179,53 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
 
   timer.tic("factorizing aug tree: ");
   CholeskySolver precon(aug_tree);
+  timer.toc();
+
+  EdgeList<EdgeC> es2(es);
+  PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
+
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
+
+  timer.tic("aug tree pcg: ");
+  s.Solve(b, x);
+  timer.toc();
+
+  mv(-1, es, x, 1, b, r);
+
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
+
+  /*
+  std::ofstream esf("es.txt");
+  esf << es2.n << '\n';
+  for (const auto& e : es2.edges) {
+    esf << e.u << ' ' << e.v << ' ' << std::setprecision(17) << e.conductance << '\n';
+  }
+  esf.close();
+
+  std::ofstream bf("b.txt");
+  for (const auto& f : b) {
+    bf << std::setprecision(17) << f << '\n';
+  }
+  bf.close();
+
+  std::ofstream xf("x.txt");
+  for (const auto& f : x) {
+    xf << std::setprecision(17) << f << '\n';
+  }
+  xf.close();
+  */
+
+  return;
+}
+
+void aug_tree_pcg2(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
+  cout << "===== aug-tree PCG =====\n";
+  cout << "n = " << es.n << ", m = " << es.Size() << endl;
+  CholeskySolver precon;
+
+  timer.tic("Constructing preconditioner: ");
+  aug_tree_precon(es, precon, 5 * k);
   timer.toc();
 
   EdgeList<EdgeC> es2(es);
@@ -446,7 +494,8 @@ int main(void) {
   // pcg(unweighted_grid, unweighted_b);
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
-  aug_tree_pcg(weighted_grid, weighted_b, k);
+  // aug_tree_pcg(weighted_grid, weighted_b, k);
+  aug_tree_pcg2(weighted_grid, weighted_b, k);
   // akpw(unweighted_grid);
 
   return 0;
