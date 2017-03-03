@@ -1,5 +1,7 @@
-CXX = g++
-CXXFLAGS += -I./include
+CXX = icc
+CXXFLAGS += -I./include -I/home/shen/suiteSparse/include
+CXXFLAGS += -L/home/shen/suiteSparse/lib
+CXXFLAGS += -lcholmod -lamd -lcolamd -lcamd -lccolamd -lmetis
 CXXFLAGS += -Wall -pedantic
 CXXFLAGS += -O3
 # CXXFLAGS += -g

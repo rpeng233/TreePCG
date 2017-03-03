@@ -70,7 +70,7 @@ TreeSolver::TreeSolver(const Tree<TreeSolverVertex>& tree) {
   assert(elims.size() == tree.n - 1);
 }
 
-void TreeSolver::Solve(const vector<FLOAT>& b, vector<FLOAT>& x) const {
+void TreeSolver::Solve(const vector<FLOAT>& b, vector<FLOAT>& x) {
   assert(b.size() == x.size());
   assert(b.size() == n);
 

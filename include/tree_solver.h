@@ -62,7 +62,7 @@ inline void Tree<TreeSolverVertex>::SetParentR(size_t v, size_t p, FLOAT r) {
 class TreeSolver {
  public:
   TreeSolver(const Tree<TreeSolverVertex>& tree);
-  void Solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x) const;
+  void Solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x);
 
  private:
   size_t n;

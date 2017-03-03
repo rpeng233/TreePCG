@@ -16,14 +16,14 @@
 template <typename MatrixType, typename Preconditioner>
 class PCGSolver {
  public:
-  PCGSolver(const MatrixType *A_, const Preconditioner *p)
+  PCGSolver(const MatrixType *A_, Preconditioner *p)
     : A(A_), preconditioner(p) { }
 
   void Solve(
       const std::vector<FLOAT>& b,
       std::vector<FLOAT>& x,
       FLOAT tol = 1e-6,
-      int maxit = -1) const {
+      int maxit = -1) {
     size_t n = A->n;
     vector<FLOAT> r(n);
     // vector<FLOAT> q(n);
@@ -69,7 +69,7 @@ class PCGSolver {
 
  private:
   const MatrixType *A;
-  const Preconditioner *preconditioner;
+  Preconditioner *preconditioner;
 };
 
 #endif  // INCLUDE_PCG_SOLVER_H_

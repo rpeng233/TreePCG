@@ -1,5 +1,5 @@
-#ifndef INCLUDE_CHOLESKY_SOLVER_H_
-#define INCLUDE_CHOLESKY_SOLVER_H_
+#ifndef INCLUDE_CHOLESKY_H_
+#define INCLUDE_CHOLESKY_H_
 
 #include "common.h"
 #include "graph.h"
