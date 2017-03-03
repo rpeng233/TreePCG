@@ -11,7 +11,7 @@ class IdentitySolver {
       const std::vector<FLOAT>& b,
       std::vector<FLOAT>& x,
       FLOAT tol = 1e-6,
-      int maxit = -1) const {
+      int maxit = -1) {
     // x = b;
     for (size_t i = 0; i < x.size(); i++) {
       x[i] = b[i];

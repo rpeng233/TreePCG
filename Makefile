@@ -1,11 +1,10 @@
-CXX = g++
-CC = gcc
+CXX = icc
 CXXFLAGS += -I./include
+CXXFLAGS += -lcholmod -lamd -lcolamd -lcamd -lccolamd -lmetis
 CXXFLAGS += -Wall -pedantic
 CXXFLAGS += -O3
 CXXFLAGS += -pg
 # CXXFLAGS += -ffast-math
-
 
 all : bin/test # bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 

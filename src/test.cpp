@@ -9,6 +9,8 @@
 #include "akpw.h"
 #include "aug_tree_precon.h"
 #include "cholesky.h"
+#include "cholmod.h"
+#include "cholmod_solver.h"
 #include "common.h"
 #include "graph.h"
 #include "identity_solver.h"
@@ -260,6 +262,27 @@ void min_degree(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 }
 
+void cholmod(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
+  cout << "===== cholmod =====\n";
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
+
+  cholmod_common common;
+  cholmod_start(&common);
+  common.supernodal = CHOLMOD_SIMPLICIAL;
+
+  timer.tic("factorizing: ");
+  CholmodSolver s(es, &common);
+  timer.toc();
+
+  timer.tic("solving: ");
+  s.Solve(b, x);
+  timer.toc();
+
+  mv(-1, es, x, 1, b, r);
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
+}
+
 void resistance_vs_conductance(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   cout << "===== resistance vs conductance =====\n";
   std::vector<FLOAT> x(es.n);
@@ -391,8 +414,9 @@ int main(void) {
   // pcg(unweighted_grid, unweighted_b);
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
-  // aug_tree_pcg(unweighted_grid, unweighted_b, k);
-  sparse_cholesky(weighted_grid, weighted_b);
+  // aug_tree_pcg(weighted_grid, weighted_b, k);
+  cholmod(weighted_grid, weighted_b);
+  // sparse_cholesky(weighted_grid, weighted_b);
   // incomplete_cholesky(weighted_grid, weighted_b);
   // akpw(weighted_grid);
 
