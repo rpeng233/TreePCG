@@ -87,4 +87,3 @@ public:
     BubbleDown(heap[0]);
   }
 };
-

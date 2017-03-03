@@ -7,7 +7,7 @@ CXXFLAGS += -O3
 # CXXFLAGS += -ffast-math
 
 
-all : bin/test bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
+all : bin/test # bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 
 bin/test : include/*.h
 bin/test : obj/tree_solver.o obj/cholesky.o obj/stretch.o

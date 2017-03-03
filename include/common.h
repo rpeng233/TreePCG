@@ -28,4 +28,3 @@ inline FLOAT Sqr(FLOAT x) {
 }
 
 #endif
-

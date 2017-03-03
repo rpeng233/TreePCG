@@ -32,7 +32,7 @@ public:
   }
 
   void tic(const std::string& msg="") {
-    cout << msg;
+    cout << msg << endl;
     start = std::chrono::steady_clock::now();
   }
 
@@ -225,7 +225,7 @@ void aug_tree_pcg2(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) 
   CholeskySolver precon;
 
   timer.tic("Constructing preconditioner... ");
-  AugTreePrecon(es, precon, 5 * k);
+  AugTreePrecon3(es, precon, es.n / 10);
   timer.toc();
 
   EdgeList<EdgeC> es2(es);
@@ -409,7 +409,7 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 200;
+  size_t k = 1000;
   size_t n = k * k;
 
   EdgeList<EdgeR> unweighted_grid;
@@ -451,7 +451,7 @@ int main(void) {
   // min_degree(weighted_grid, weighted_b);
   // aug_tree_pcg(weighted_grid, weighted_b, k);
   aug_tree_pcg2(weighted_grid, weighted_b, k);
-  sparse_cholesky(weighted_grid, weighted_b);
+  // sparse_cholesky(weighted_grid, weighted_b);
   // akpw(unweighted_grid);
 
   return 0;

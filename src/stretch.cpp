@@ -89,4 +89,3 @@ void ComputeStretch(const TreeR& tree,
 
   LCA(lca_tree, es.edges, stretch, root);
 }
-

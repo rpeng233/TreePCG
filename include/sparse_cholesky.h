@@ -9,4 +9,3 @@ void SparseCholesky(AdjacencyMap& graph,
                     CholeskyFactor& cholesky_factor);
 
 #endif  // INCLUDE_SPARSE_CHOLESKY_H
-
