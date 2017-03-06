@@ -251,11 +251,15 @@ void sparse_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   CholeskySolver precon;
 
   AdjacencyMap g(es);
-  timer.tic("Constructing preconditioner... ");
-  SparseCholesky(g, log(es.n), precon.cholesky_factor);
-  timer.toc();
 
   EdgeList<EdgeC> es2(es);
+  EdgeList<EdgeC> es3(es);
+
+  timer.tic("Constructing preconditioner... ");
+  // SparseCholesky(g, log(es.n) + 1, precon.cholesky_factor);
+  SparseCholesky2(es3, log(es.n) + 1, precon.cholesky_factor);
+  timer.toc();
+
   PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
 
   std::vector<FLOAT> x(es.n);
@@ -409,7 +413,7 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 1000;
+  size_t k = 100;
   size_t n = k * k;
 
   EdgeList<EdgeR> unweighted_grid;
@@ -450,8 +454,8 @@ int main(void) {
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
   // aug_tree_pcg(weighted_grid, weighted_b, k);
-  aug_tree_pcg2(weighted_grid, weighted_b, k);
-  // sparse_cholesky(weighted_grid, weighted_b);
+  // aug_tree_pcg2(weighted_grid, weighted_b, k);
+  sparse_cholesky(weighted_grid, weighted_b);
   // akpw(unweighted_grid);
 
   return 0;

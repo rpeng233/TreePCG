@@ -8,4 +8,8 @@ void SparseCholesky(AdjacencyMap& graph,
                     size_t k,
                     CholeskyFactor& cholesky_factor);
 
+void SparseCholesky2(EdgeListC& es,
+                     size_t k,
+                     CholeskyFactor& cholesky_factor);
+
 #endif  // INCLUDE_SPARSE_CHOLESKY_H
