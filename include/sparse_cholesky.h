@@ -4,7 +4,7 @@
 #include "cholesky.h"
 #include "graph.h"
 
-void SparseCholesky(AdjacencyMap& graph,
+void SparseCholesky(EdgeListC& es,
                     size_t k,
                     CholeskyFactor& cholesky_factor);
 

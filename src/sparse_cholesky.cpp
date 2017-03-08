@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 #include <random>
+#include <map>
 #include <vector>
 #include "cholesky.h"
 #include "graph.h"
@@ -11,21 +12,49 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
-void SparseCholesky(AdjacencyMap& graph,
+struct Upper {
+  size_t n;
+  std::vector<std::map<size_t, FLOAT>> neighbor_map;
+
+  Upper(const EdgeList<EdgeC>& es) {
+    n = es.n;
+    neighbor_map.resize(n);
+    for (size_t i = 0; i < es.edges.size(); i++) {
+      size_t u = std::min(es[i].u, es[i].v);
+      size_t v = std::max(es[i].u, es[i].v);
+      neighbor_map[u][v] += es[i].conductance;
+    }
+  }
+};
+
+void SparseCholesky(EdgeListC& es,
                     size_t k,
                     CholeskyFactor& cholesky_factor) {
-  size_t n = graph.n;
+  size_t n = es.n;
   cholesky_factor.n = n;
-  vector<size_t> order(n);
+  vector<size_t> new_id(n);
 
   for (size_t i = 0; i < n; i++) {
-    order[i] = i;
+    new_id[i] = i;
   }
-  std::random_shuffle(order.begin(), order.end());
+  std::random_shuffle(new_id.begin(), new_id.end());
+
+  for (size_t i = 0; i < es.Size(); i++) {
+    es[i].u = new_id[es[i].u];
+    es[i].v = new_id[es[i].v];
+  }
+
+  vector<size_t> old_id(n);
+
+  for (size_t i = 0; i < n; i++) {
+    old_id[new_id[i]] = i;
+  }
 
   typedef std::map<size_t, FLOAT>::const_iterator IterType;
 
-  vector<std::map<size_t, FLOAT>>& neighbor_map = graph.neighbor_map;
+  Upper g(es);
+
+  vector<std::map<size_t, FLOAT>>& neighbor_map = g.neighbor_map;
   vector<EliminatedVertex>& elims = cholesky_factor.elims;
   vector<ArcC>& elim_arcs = cholesky_factor.elim_arcs;
 
@@ -35,20 +64,19 @@ void SparseCholesky(AdjacencyMap& graph,
 
   elims.resize(n);
   for (size_t i = 0; i < n - 1; i++) {
-    size_t u = order[i];
-    elims[i].v = u;
+    elims[i].v = i;
     elims[i].degree = 0;
     elims[i].first_arc = elim_arcs.size();
     neighbors.clear();
     weights.clear();
-    for (IterType it = neighbor_map[u].begin();
-         it != neighbor_map[u].end();
+    for (IterType it = neighbor_map[i].begin();
+         it != neighbor_map[i].end();
          ++it) {
       elims[i].degree += it->second;
       elim_arcs.push_back(ArcC(it->first, it->second));
       neighbors.push_back(it->first);
       weights.push_back(static_cast<double>(it->second));
-      neighbor_map[it->first].erase(u);
+      // neighbor_map[it->first].erase(u);
     }
     std::discrete_distribution<unsigned>
       sample(weights.begin(), weights.end());
@@ -62,74 +90,23 @@ void SparseCholesky(AdjacencyMap& graph,
       FLOAT w1 = weights[a1] / k;
       FLOAT w2 = weights[a2] / k;
       FLOAT c = w1 * w2 / (w1 + w2);
-      size_t v1 = neighbors[a1];
-      size_t v2 = neighbors[a2];
+      size_t v1 = std::min(neighbors[a1], neighbors[a2]);
+      size_t v2 = std::max(neighbors[a1], neighbors[a2]);
       neighbor_map[v1][v2] += c;
-      neighbor_map[v2][v1] += c;
     }
   }
   elims[n - 1].first_arc = elim_arcs.size();
 
   cerr << elim_arcs.size() << '\n';
+
+  for (size_t i = 0; i < elim_arcs.size(); i++) {
+    elim_arcs[i].v = old_id[elim_arcs[i].v];
+  }
+
+  for (size_t i = 0; i < elims.size(); i++) {
+    elims[i].v = old_id[elims[i].v];
+  }
 }
-
-struct UpperTriangular {
-  size_t n;
-  std::vector<ArcC> arcs;
-  std::vector<size_t> first_arc;
-
-  UpperTriangular() {
-    n = 0;
-  }
-
-  UpperTriangular(const EdgeListC& es) {
-    BuildGraph(es);
-  }
-
-  void BuildGraph(const EdgeListC& es) {
-    n = es.n;
-    size_t m = es.edges.size();
-
-    arcs.resize(m);
-    first_arc.resize(n + 1);
-    std::vector<size_t> degrees(n);
-
-    for (typename std::vector<EdgeC>::const_iterator it = es.edges.begin();
-         it != es.edges.end();
-         ++it) {
-      degrees[std::min(it->u, it->v)]++;
-    }
-
-    first_arc[0] = 0;
-    for (size_t i = 0; i < n - 1; i++) {
-      first_arc[i + 1] = degrees[i] + first_arc[i];
-    }
-    first_arc[n] = m;
-
-    size_t tmp_index;
-    for (typename std::vector<EdgeC>::const_iterator it = es.edges.begin();
-         it != es.edges.end();
-         ++it) {
-      size_t u = std::min(it->u, it->v);
-      size_t v = std::max(it->u, it->v);
-      arcs[first_arc[u]].v = v;
-      arcs[first_arc[u]].conductance = it->conductance;
-      first_arc[u]++;
-    }
-
-    first_arc[0] = 0;
-    for (size_t i = 0; i < n - 1; i++) {
-      first_arc[i + 1] = degrees[i] + first_arc[i];
-    }
-    first_arc[n] = m;
-  }
-
-  void FreeMemory() {
-    n = 0;
-    arcs = std::vector<ArcC>();
-    first_arc = std::vector<size_t>();
-  }
-};
 
 void SparseCholesky2(EdgeListC& es,
                      size_t k,

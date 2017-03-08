@@ -257,7 +257,7 @@ void sparse_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 
   timer.tic("Constructing preconditioner... ");
   // SparseCholesky(g, log(es.n) + 1, precon.cholesky_factor);
-  SparseCholesky2(es3, log(es.n) + 1, precon.cholesky_factor);
+  SparseCholesky(es3, log(es.n) + 1, precon.cholesky_factor);
   timer.toc();
 
   PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
@@ -413,7 +413,7 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 100;
+  size_t k = 200;
   size_t n = k * k;
 
   EdgeList<EdgeR> unweighted_grid;
