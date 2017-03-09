@@ -225,7 +225,7 @@ void aug_tree_pcg2(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) 
   CholeskySolver precon;
 
   timer.tic("Constructing preconditioner... ");
-  AugTreePrecon3(es, precon, es.n / 10);
+  AugTreePrecon(es, precon, 50 * k);
   timer.toc();
 
   EdgeList<EdgeC> es2(es);
@@ -413,11 +413,19 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 200;
-  size_t n = k * k;
+  size_t k = 100;
+  size_t n = k * k * k;
 
   EdgeList<EdgeR> unweighted_grid;
   EdgeList<EdgeR> weighted_grid;
+
+  std::mt19937 rng(std::random_device{}());
+  std::uniform_real_distribution<> uniform(1, 100);
+  RNG<std::uniform_real_distribution<>, std::mt19937>
+    random_resistance(uniform, rng);
+
+  grid3(k, k, k, unweighted_grid);
+  grid3(k, k, k, weighted_grid, random_resistance);
 
   struct {
     bool operator() (const EdgeR& e1, const EdgeR& e2) const {
@@ -426,14 +434,6 @@ int main(void) {
   } less;
 
   std::sort(weighted_grid.edges.begin(), weighted_grid.edges.end(), less);
-
-  std::mt19937 rng(std::random_device{}());
-  std::uniform_real_distribution<> uniform(1, 100);
-  RNG<std::uniform_real_distribution<>, std::mt19937>
-    random_resistance(uniform, rng);
-
-  grid2(k, k, unweighted_grid);
-  grid2(k, k, weighted_grid, random_resistance);
 
   std::vector<FLOAT> unweighted_b(n);
   std::vector<FLOAT> weighted_b(n);
@@ -454,8 +454,8 @@ int main(void) {
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
   // aug_tree_pcg(weighted_grid, weighted_b, k);
-  // aug_tree_pcg2(weighted_grid, weighted_b, k);
-  sparse_cholesky(weighted_grid, weighted_b);
+  aug_tree_pcg2(weighted_grid, weighted_b, k);
+  // sparse_cholesky(weighted_grid, weighted_b);
   // akpw(unweighted_grid);
 
   return 0;

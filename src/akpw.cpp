@@ -166,9 +166,6 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
 
     if (es2.Size() == 0 && idx == es.Size()) break;
 
-    // for (size_t i = 0; i < es2.Size(); i++) {
-    //   std::cout << es2[i].u << ' ' << es2[i].v << ' ' << es2[i].original_id << '\n';
-    // }
     g.BuildGraph(es2);
     Dijkstra(g, vs, queue);
     queue.Clear();
@@ -179,7 +176,6 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
       const size_t u = remaining[i];
       assert(vs[vs[u].center].center == vs[u].center);
       if (u == vs[u].center) {
-        // std::cout << u << '\n';
         tmp.push_back(u);
         vs[u].Initialize(u);
         vs[u].distance = exponential(rng);
@@ -187,7 +183,6 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
       } else {
         tree.AddEdge(es[vs[u].parent_edge_id]);
         count++;
-        // std::cout << "yeah\n";
         centers[u] = vs[u].center;
       }
     }
@@ -210,6 +205,8 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
 
     remaining.swap(tmp);
     tmp.clear();
+    std::cout << tree.Size() << '\n';
   }
+
   std::cout << tree.Size() << '\n';
 }

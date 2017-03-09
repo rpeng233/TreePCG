@@ -539,7 +539,7 @@ void grid2(size_t n, size_t m, EdgeList<EdgeT>& es, WeightGen wgen=WeightGen()) 
   es.Clear();
   es.n = n * m;
   for (size_t i = 0; i < n; i++) {
-    for(size_t j = 0; j < m; j++) {
+    for (size_t j = 0; j < m; j++) {
       if (j < m - 1) {
         es.AddEdge(EdgeT(i * m + j, i * m + j + 1, wgen()));
       }
@@ -553,6 +553,45 @@ void grid2(size_t n, size_t m, EdgeList<EdgeT>& es, WeightGen wgen=WeightGen()) 
 template <typename EdgeT>
 void grid2(size_t n, size_t m, EdgeList<EdgeT>& es) {
   grid2(n, m, es, One());
+}
+
+template <typename EdgeT, typename WeightGen>
+void grid3(size_t n1, size_t n2, size_t n3,
+           EdgeList<EdgeT>& es, WeightGen wgen=WeightGen()) {
+  es.Clear();
+  es.n = n1 * n2 * n3;
+  for (size_t i = 0; i < n1; i++) {
+    for (size_t j = 0; j < n2; j++) {
+      for (size_t k = 0; k < n3; k++) {
+        if (i < n1 - 1) {
+          es.AddEdge(EdgeT(
+              i * n1 * n2 + j * n2 + k,
+              (i + 1) * n1 * n2 + j * n2 + k,
+              wgen()
+          ));
+        }
+        if (j < n2 - 1) {
+          es.AddEdge(EdgeT(
+              i * n1 * n2 + j * n2 + k,
+              i * n1 * n2 + (j + 1) * n2 + k,
+              wgen()
+          ));
+        }
+        if (k < n3 - 1) {
+          es.AddEdge(EdgeT(
+              i * n1 * n2 + j * n2 + k,
+              i * n1 * n2 + j * n2 + k + 1,
+              wgen()
+          ));
+        }
+      }
+    }
+  }
+}
+
+template <typename EdgeT>
+void grid3(size_t n1, size_t n2, size_t n3, EdgeList<EdgeT>& es) {
+  grid3(n1, n2, n3, es, One());
 }
 
 template <typename EdgeT, typename WeightGen>

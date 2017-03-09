@@ -47,7 +47,9 @@ class PCGSolver {
       axpy(alpha, d, x, x);                   // x = alpha * d + x
       mv(-1, *A, x, 1, b, r);                  // r = b - A * x
       res = MYSQRT(r * r);
-      std::cout << i << ' ' << res << std::endl;
+      if (i % 100 == 0) {
+        std::cout << i << ' ' << res << std::endl;
+      }
       i++;
       if (res / bnorm < tol) {
         std::cerr << "PCG stopped after "
