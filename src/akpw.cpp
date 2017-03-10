@@ -145,7 +145,7 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
 
   for (size_t i = 0; i < vs.size(); i++) {
     vs[i].Initialize(i);
-    vs[i].distance = exponential(rng);
+    vs[i].distance = -exponential(rng);
     queue.Insert(vs[i]);
     centers[i] = i;
     remaining[i] = i;
