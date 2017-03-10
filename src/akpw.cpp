@@ -30,6 +30,7 @@ struct BFSVtx {
   void Initialize(size_t i) {
     center = i;
     distance = std::numeric_limits<double>::infinity();
+    done = false;
   }
 };
 
@@ -130,11 +131,11 @@ void Dijkstra(const AdjacencyArray<AKPWArc>& graph,
 
 void BFS(const AdjacencyArray<AKPWArc>& graph,
          vector<BFSVtx>& vs,
-         vector<size_t>& q1) {
+         vector<size_t>& q1,
+         vector<size_t>& q2) {
   size_t i = 0;
   size_t j = 0;
-  vector<size_t> q2;
-  q2.reserve(q1.size());
+
   for (;;) {
     size_t u;
     while (i < q1.size() && vs[q1[i]].done) {
@@ -236,7 +237,7 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
       if (u == vs[u].center) {
         tmp.push_back(u);
         vs[u].Initialize(u);
-        vs[u].distance = exponential(rng);
+        vs[u].distance = -exponential(rng);
         queue.Insert(vs[u]);
       } else {
         tree.AddEdge(es[vs[u].parent_edge_id]);
@@ -296,7 +297,7 @@ void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
   vector<size_t> tmp;
   tmp.reserve(n);
   EdgeList<AKPWEdge> es2;
-  vector<size_t> queue;
+  vector<size_t> q1, q2;
   AdjacencyArray<AKPWArc> g;
 
   std::mt19937 rng(std::random_device{}());
@@ -305,11 +306,12 @@ void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
   es2.Reserve(m);
   es2.n = n;
 
-  queue.reserve(n);
+  q1.reserve(n);
+  q2.reserve(n);
   for (size_t i = 0; i < vs.size(); i++) {
     vs[i].Initialize(i);
-    vs[i].distance = exponential(rng);
-    queue.emplace_back(i);
+    vs[i].distance = -exponential(rng);
+    q1.emplace_back(i);
     centers[i] = i;
     remaining[i] = i;
   }
@@ -332,10 +334,11 @@ void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
     g.BuildGraph(es2);
 
     Foo cmp(vs);
-    std::sort(queue.begin(), queue.end(), cmp);
+    std::sort(q1.begin(), q1.end(), cmp);
 
-    BFS(g, vs, queue);
-    queue.clear();
+    BFS(g, vs, q1, q2);
+    q1.clear();
+    q2.clear();
     es2.Clear();
     es2.n = n;
 
@@ -345,8 +348,8 @@ void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
       if (u == vs[u].center) {
         tmp.push_back(u);
         vs[u].Initialize(u);
-        vs[u].distance = exponential(rng);
-        queue.emplace_back(u);
+        vs[u].distance = -exponential(rng);
+        q1.emplace_back(u);
       } else {
         tree.AddEdge(es[vs[u].parent_edge_id]);
         count++;

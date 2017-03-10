@@ -19,7 +19,7 @@ void AugTreePrecon(const EdgeListR& es,
   EdgeList<EdgeR> off_tree_es;
   TreeR tree;
 
-  AKPW(es, tree_es);
+  AKPW2(es, tree_es);
   AdjacencyArray<ArcR> g(tree_es);
   DijkstraTree(g, es.n / 2, tree);
   g.FreeMemory();
@@ -38,6 +38,7 @@ void AugTreePrecon(const EdgeListR& es,
   ComputeStretch(tree, off_tree_es, stretches);
 
   FLOAT total_stretch = std::accumulate(stretches.begin(), stretches.end(), 0);
+  cerr << "Total stretch: " << total_stretch << "\n";
   std::mt19937 rng(std::random_device{}());
   std::uniform_real_distribution<> unif01(0, 1);
   AdjacencyMap aug_tree(tree);
@@ -63,7 +64,7 @@ void AugTreePrecon2(const EdgeListR& es,
   EdgeList<EdgeR> off_tree_es;
   TreeR tree;
 
-  AKPW(es, tree_es);
+  AKPW2(es, tree_es);
   AdjacencyArray<ArcR> g(tree_es);
   DijkstraTree(g, es.n / 2, tree);
   g.FreeMemory();
@@ -116,7 +117,7 @@ void AugTreePrecon3(const EdgeListR& es,
   EdgeList<EdgeR> off_tree_es;
   TreeR tree;
 
-  AKPW(es, tree_es);
+  AKPW2(es, tree_es);
   AdjacencyArray<ArcR> g(tree_es);
   DijkstraTree(g, es.n / 2, tree);
   g.FreeMemory();
