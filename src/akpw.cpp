@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <limits>
 #include <random>
@@ -40,25 +42,9 @@ struct DistanceLess {
   }
 };
 
-struct DistanceLess2 {
-  bool operator () (const BFSVtx& u, const BFSVtx& v) const {
-    return u.distance < v.distance;
-  }
-};
-
 typedef
 PairingHeap<DijkstraVtx, offsetof(DijkstraVtx, pairing_node), DistanceLess>
 DijkstraQueue;
-
-struct DistanceGreater {
-  const vector<DijkstraVtx>& vs;
-
-  DistanceGreater(const vector<DijkstraVtx>& vs_) : vs(vs_) { }
-
-  bool operator() (size_t u, size_t v) const {
-    return vs[u].distance > vs[v].distance;
-  }
-};
 
 struct AKPWEdge {
   size_t u;
@@ -86,26 +72,6 @@ struct AKPWArc {
     return *this;
   }
 };
-
-void Dijkstra(const AdjacencyArray<AKPWArc>& graph,
-              BinaryHeap<DistanceGreater>& queue,
-              std::vector<DijkstraVtx>& vs) {
-  while (queue.size != 0) {
-    const size_t u = queue.Top();
-    queue.Pop();
-    for (size_t i = graph.first_arc[u]; i < graph.first_arc[u + 1]; i++) {
-      const AKPWArc& a = graph.arcs[i];
-      double new_distance = vs[u].distance + 1;
-      if (vs[a.v].distance <= new_distance) {
-        continue;
-      }
-      vs[a.v].distance = new_distance;
-      vs[a.v].parent_edge_id = a.original_id;
-      vs[a.v].center = vs[u].center;
-      queue.BubbleUp(a.v);
-    }
-  }
-}
 
 void Dijkstra(const AdjacencyArray<AKPWArc>& graph,
               vector<DijkstraVtx>& vs,
@@ -166,6 +132,19 @@ void BFS(const AdjacencyArray<AKPWArc>& graph,
       vs[a.v].done = true;
       q2.push_back(a.v);
     }
+  }
+}
+
+void AddExponentialShift(vector<BFSVtx>& vs, vector<size_t>& q, double lambda) {
+  std::random_shuffle(q.begin(), q.end());
+
+  std::mt19937 rng(std::random_device{}());
+  std::uniform_real_distribution<double> unif(0, 1);
+  size_t n = q.size();
+  double sum = 0;
+  for (size_t i = n; i > 0; i--) {
+    sum += std::log(1 - unif(rng)) / (lambda * i);
+    vs[q[i - 1]].distance = sum;
   }
 }
 
@@ -264,21 +243,11 @@ void AKPW(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
 
     remaining.swap(tmp);
     tmp.clear();
-    std::cout << tree.Size() << '\n';
+    // std::cout << tree.Size() << '\n';
   }
 
-  std::cout << tree.Size() << '\n';
+  // std::cout << tree.Size() << '\n';
 }
-
-struct Foo {
-  const vector<BFSVtx>& vs;
-
-  Foo(const vector<BFSVtx>& vs_) : vs(vs_) { }
-
-  bool operator()(size_t i, size_t j) {
-    return vs[i].distance < vs[j].distance;
-  }
-};
 
 void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
   const size_t n = es.n;
@@ -301,7 +270,6 @@ void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
   AdjacencyArray<AKPWArc> g;
 
   std::mt19937 rng(std::random_device{}());
-  std::exponential_distribution<> exponential(0.01);
 
   es2.Reserve(m);
   es2.n = n;
@@ -310,7 +278,6 @@ void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
   q2.reserve(n);
   for (size_t i = 0; i < vs.size(); i++) {
     vs[i].Initialize(i);
-    vs[i].distance = -exponential(rng);
     q1.emplace_back(i);
     centers[i] = i;
     remaining[i] = i;
@@ -332,11 +299,9 @@ void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
     if (es2.Size() == 0 && idx == es.Size()) break;
 
     g.BuildGraph(es2);
-
-    Foo cmp(vs);
-    std::sort(q1.begin(), q1.end(), cmp);
-
+    AddExponentialShift(vs, q1, 0.05);
     BFS(g, vs, q1, q2);
+
     q1.clear();
     q2.clear();
     es2.Clear();
@@ -348,7 +313,6 @@ void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
       if (u == vs[u].center) {
         tmp.push_back(u);
         vs[u].Initialize(u);
-        vs[u].distance = -exponential(rng);
         q1.emplace_back(u);
       } else {
         tree.AddEdge(es[vs[u].parent_edge_id]);
@@ -372,11 +336,10 @@ void AKPW2(const EdgeList<EdgeR>& es, EdgeList<EdgeR>& tree) {
       }
     }
 
-
     remaining.swap(tmp);
     tmp.clear();
-    std::cout << tree.Size() << '\n';
+    // std::cout << tree.Size() << '\n';
   }
 
-  std::cout << tree.Size() << '\n';
+  // std::cout << tree.Size() << '\n';
 }

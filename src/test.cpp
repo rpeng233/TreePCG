@@ -414,6 +414,7 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 
 int main(void) {
   size_t k = 100;
+  // size_t n = k * k;
   size_t n = k * k * k;
 
   EdgeList<EdgeR> unweighted_grid;
@@ -424,6 +425,8 @@ int main(void) {
   RNG<std::uniform_real_distribution<>, std::mt19937>
     random_resistance(uniform, rng);
 
+  // grid2(k, k, unweighted_grid);
+  // grid2(k, k, weighted_grid, random_resistance);
   grid3(k, k, k, unweighted_grid);
   grid3(k, k, k, weighted_grid, random_resistance);
 
@@ -454,7 +457,7 @@ int main(void) {
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
   // aug_tree_pcg(weighted_grid, weighted_b, k);
-  aug_tree_pcg2(weighted_grid, weighted_b, k);
+  aug_tree_pcg2(unweighted_grid, unweighted_b, k);
   // sparse_cholesky(weighted_grid, weighted_b);
   // akpw(weighted_grid);
 
