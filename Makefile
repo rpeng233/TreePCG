@@ -12,6 +12,7 @@ all : bin/test # bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 bin/test : include/*.h
 bin/test : obj/tree_solver.o obj/cholesky.o obj/stretch.o
 bin/test : obj/akpw.o obj/aug_tree_precon.o obj/sparse_cholesky.o
+bin/test : obj/incomplete_cholesky.o
 bin/test : src/test.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@
 
@@ -31,11 +32,16 @@ obj/akpw.o : include/graph.h include/binary_heap.h include/pairing_heap.h
 obj/akpw.o : src/akpw.cpp include/akpw.h
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
-obj/sparse_cholesky.o : include/cholesky.h
+obj/aug_tree_precon.o : include/cholesky.h include/graph.h
+obj/aug_tree_precon.o : src/aug_tree_precon.cpp include/aug_tree_precon.h
+	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
+
+obj/sparse_cholesky.o : include/cholesky.h include/graph.h
 obj/sparse_cholesky.o : src/sparse_cholesky.cpp include/sparse_cholesky.h
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
-obj/aug_tree_precon.o : src/aug_tree_precon.cpp include/aug_tree_precon.h
+obj/incomplete_cholesky.o : include/cholesky.h include/graph.h
+obj/incomplete_cholesky.o : src/incomplete_cholesky.cpp include/incomplete_cholesky.h
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
 bin/gen_cayley : generators/gen_cayley.cpp include/*.h

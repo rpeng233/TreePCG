@@ -12,6 +12,7 @@
 #include "common.h"
 #include "graph.h"
 #include "identity_solver.h"
+#include "incomplete_cholesky.h"
 #include "matrix.h"
 #include "pcg_solver.h"
 #include "sparse_cholesky.h"
@@ -276,6 +277,37 @@ void sparse_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   return;
 }
 
+void incomplete_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
+  cout << "===== incomplete cholesky PCG =====\n";
+  cout << "n = " << es.n << ", m = " << es.Size() << endl;
+  CholeskySolver precon;
+
+  AdjacencyMap g(es);
+
+  EdgeList<EdgeC> es2(es);
+  EdgeList<EdgeC> es3(es);
+
+  timer.tic("Constructing preconditioner... ");
+  // SparseCholesky(g, log(es.n) + 1, precon.cholesky_factor);
+  IncompleteCholesky(es3, log(es.n) + 1, precon.cholesky_factor);
+  timer.toc();
+
+  PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
+
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
+
+  timer.tic("PCG... ");
+  s.Solve(b, x);
+  timer.toc();
+
+  mv(-1, es, x, 1, b, r);
+
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
+
+  return;
+}
+
 void stretch(std::mt19937& rng) {
   size_t k = 4;
   size_t n = k * k;
@@ -413,7 +445,7 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 100;
+  size_t k = 50;
   // size_t n = k * k;
   size_t n = k * k * k;
 
@@ -457,8 +489,9 @@ int main(void) {
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
   // aug_tree_pcg(weighted_grid, weighted_b, k);
-  aug_tree_pcg2(unweighted_grid, unweighted_b, k);
+  // aug_tree_pcg2(unweighted_grid, unweighted_b, k);
   // sparse_cholesky(weighted_grid, weighted_b);
+  incomplete_cholesky(weighted_grid, weighted_b);
   // akpw(weighted_grid);
 
   return 0;

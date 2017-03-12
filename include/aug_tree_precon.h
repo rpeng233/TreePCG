@@ -2,6 +2,7 @@
 #define INCLUDE_AUG_TREE_PRECON_H_
 
 #include "cholesky.h"
+#include "graph.h"
 
 using std::vector;
 
