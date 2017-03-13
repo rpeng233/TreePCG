@@ -26,21 +26,24 @@ using std::vector;
 
 class Timer {
   std::chrono::time_point<std::chrono::steady_clock> start;
+  std::string open;
+  std::string close;
 
 public:
-  Timer() {
+  Timer(const std::string& o=">>>> ", const std::string& c="<<<< ")
+    : open(o), close(c) {
     start = std::chrono::steady_clock::now();
   }
 
   void tic(const std::string& msg="") {
-    cout << msg << endl;
+    cout << open << msg << endl;
     start = std::chrono::steady_clock::now();
   }
 
   void toc() {
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> duration = end - start;
-    cout << "Finished in " << duration.count() << "s" << endl;
+    cout << close << "Finished in " << duration.count() << "s" << endl;
   }
 };
 
@@ -122,105 +125,6 @@ void dijkstra(const EdgeList<EdgeR>& es) {
 */
 
 void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
-  cout << "===== aug-tree PCG =====\n";
-  cout << "n = " << es.n << ", m = " << es.Size() << endl;
-  Tree<TreeVertexR> t;
-
-  timer.tic("Finding low stretch spanning tree... ");
-    EdgeList<EdgeR> tree_es;
-    // recursive_c(k, k, tree_es);
-    AKPW(es, tree_es);
-    AdjacencyArray<ArcR> g(tree_es);
-    DijkstraTree<Tree<TreeVertexR>>(g, es.n / 2, t);
-  timer.toc();
-
-  EdgeList<EdgeR> off_tree_es;
-  off_tree_es.n = es.n;
-
-  for (size_t i = 0; i < es.edges.size(); i++) {
-    const EdgeR& e = es.edges[i];
-    if (t.vertices[e.u].parent == e.v || t.vertices[e.v].parent == e.u) {
-      continue;
-    }
-    off_tree_es.AddEdge(EdgeR(e.u, e.v, e.resistance));
-  }
-
-  vector<double> strs(off_tree_es.edges.size());
-
-  timer.tic("Computing stretch and adding edges... ");
-  ComputeStretch(t, off_tree_es, strs);
-
-  AdjacencyMap aug_tree(t);
-  size_t count = 0;
-  FLOAT total_stretch = std::accumulate(strs.begin(), strs.end(), 0);
-  std::mt19937 rng(std::random_device{}());
-  std::uniform_real_distribution<> unif01(0, 1);
-
-  for (size_t i = 0; i < strs.size(); i++) {
-    FLOAT p = 5 * k * strs[i] / total_stretch; // add 5k edges in expectation
-    if (unif01(rng) < p) {
-      // off_tree_es.edges[i].resistance *= 5 * k * strs[i] / total_stretch;
-      count++;
-      aug_tree.AddEdgeR(off_tree_es.edges[i]);
-    }
-  }
-  // cout << "Added " << count << " edges\n";
-  // cout << k << '\n';
-
-  // StretchGreater less(strs);
-  // vector<size_t> indices(off_tree_es.edges.size());
-  // for (size_t i = 0; i < indices.size(); i++) {
-  //   indices[i] = i;
-  // }
-  // std::sort(indices.begin(), indices.end(), less);
-  // for (size_t i = 0; i < 5 * k; i++) {
-  //   aug_tree.AddEdgeR(off_tree_es.edges[indices[i]]);
-  // }
-  timer.toc();
-
-  timer.tic("Factorizing aug tree... ");
-  CholeskySolver precon(aug_tree);
-  timer.toc();
-
-  EdgeList<EdgeC> es2(es);
-  PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
-
-  std::vector<FLOAT> x(es.n);
-  std::vector<FLOAT> r(es.n);
-
-  timer.tic("Aug tree pcg... ");
-  s.Solve(b, x);
-  timer.toc();
-
-  mv(-1, es, x, 1, b, r);
-
-  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
-
-  /*
-  std::ofstream esf("es.txt");
-  esf << es2.n << '\n';
-  for (const auto& e : es2.edges) {
-    esf << e.u << ' ' << e.v << ' ' << std::setprecision(17) << e.conductance << '\n';
-  }
-  esf.close();
-
-  std::ofstream bf("b.txt");
-  for (const auto& f : b) {
-    bf << std::setprecision(17) << f << '\n';
-  }
-  bf.close();
-
-  std::ofstream xf("x.txt");
-  for (const auto& f : x) {
-    xf << std::setprecision(17) << f << '\n';
-  }
-  xf.close();
-  */
-
-  return;
-}
-
-void aug_tree_pcg2(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
   cout << "===== aug-tree PCG =====\n";
   cout << "n = " << es.n << ", m = " << es.Size() << endl;
   CholeskySolver precon;
@@ -330,12 +234,12 @@ void stretch(std::mt19937& rng) {
   ComputeStretch(t, es, strs);
 
   for (size_t i = 0; i < t.vertices.size(); i++) {
-    cout << i << ' ' << t.vertices[i].parent << endl;
+    cout << i << '\t' << t.vertices[i].parent << endl;
   }
 
   for (size_t i = 0; i < es.edges.size(); i++) {
     EdgeR& e = es.edges[i];
-    cout << e.u << ' ' << e.v << ' ' << strs[i] << endl;
+    cout << e.u << '\t' << e.v << '\t' << strs[i] << endl;
   }
 }
 
@@ -445,7 +349,7 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 50;
+  size_t k = 40;
   // size_t n = k * k;
   size_t n = k * k * k;
 
@@ -488,8 +392,7 @@ int main(void) {
   // pcg(unweighted_grid, unweighted_b);
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
-  // aug_tree_pcg(weighted_grid, weighted_b, k);
-  // aug_tree_pcg2(unweighted_grid, unweighted_b, k);
+  // aug_tree_pcg(unweighted_grid, unweighted_b, k);
   // sparse_cholesky(weighted_grid, weighted_b);
   incomplete_cholesky(weighted_grid, weighted_b);
   // akpw(weighted_grid);

@@ -48,7 +48,7 @@ class PCGSolver {
       mv(-1, *A, x, 1, b, r);                  // r = b - A * x
       res = MYSQRT(r * r);
       if (i % 100 == 0) {
-        std::cout << i << ' ' << res << std::endl;
+        std::cout << i << '\t' << res << std::endl;
       }
       i++;
       if (res / bnorm < tol) {

@@ -31,6 +31,7 @@ void IncompleteCholesky(EdgeListC& es,
   vector<bool> is_nonzero(n, false);
   vector<size_t> indices;
 
+  elim_arcs.reserve(es.Size());
   indices.reserve(n);
   elims.resize(n);
 
@@ -66,6 +67,8 @@ void IncompleteCholesky(EdgeListC& es,
         if (!is_nonzero[it->v]) {
           /* Don't introduce any fill */
           continue;
+          // is_nonzero[it->v] = true;
+          // indices.push_back(it->v);
         }
         FLOAT w2 = it->conductance;
         spa[it->v] += w1 * w2 / elims[previous].degree;
