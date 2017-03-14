@@ -279,6 +279,11 @@ struct ArcC {
     conductance = conductance_;
   }
 
+  ArcC& operator=(const EdgeC& e) {
+    conductance = e.conductance;
+    return *this;
+  }
+
   FLOAT Resistance() const {
     return 1.0 / conductance;
   }

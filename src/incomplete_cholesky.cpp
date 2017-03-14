@@ -16,7 +16,7 @@ void IncompleteCholesky(EdgeListC& es,
                         CholeskyFactor& cholesky_factor) {
   size_t n = es.n;
   cholesky_factor.n = n;
-  UpperTriangular g(es);
+  AdjacencyArray<ArcC> g(es);
 
   struct {
     bool operator()(const size_t v, const ArcC& a) {
@@ -34,6 +34,7 @@ void IncompleteCholesky(EdgeListC& es,
   elim_arcs.reserve(es.Size());
   indices.reserve(n);
   elims.resize(n);
+  vector<size_t> prevs;
 
   for (size_t current = 0; current < n - 1; current++) {
     elims[current].v = current;
@@ -41,15 +42,23 @@ void IncompleteCholesky(EdgeListC& es,
     elims[current].first_arc = elim_arcs.size();
 
     /* load the current row into the sparse accumulator */
+    prevs.clear();
     for (size_t i = g.first_arc[current]; i < g.first_arc[current + 1]; i++) {
       const ArcC& a = g.arcs[i];
+      if (a.v < current) {
+        prevs.push_back(a.v);
+        continue;
+      }
       spa[a.v] = a.conductance;
       is_nonzero[a.v] = true;
       indices.push_back(a.v);
     }
+    std::sort(prevs.begin(), prevs.end());
 
     /* go through each previously eliminated vertices */
-    for (size_t previous = 0; previous < current; previous++) {
+    // for (size_t previous = 0; previous < current; previous++) {
+    for (size_t i = 0; i < prevs.size(); i++) {
+      size_t previous = prevs[i];
       IterType first = elim_arcs.begin() + elims[previous].first_arc;
       IterType last = elim_arcs.begin() + elims[previous + 1].first_arc;
       IterType upper = std::upper_bound(first, last, current, cmp);
@@ -72,6 +81,7 @@ void IncompleteCholesky(EdgeListC& es,
         }
         FLOAT w2 = it->conductance;
         spa[it->v] += w1 * w2 / elims[previous].degree;
+        // spa[it->v] += w1 * w2 / (w1 + w2);
       }
     }
 
