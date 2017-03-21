@@ -74,7 +74,6 @@ struct UpperTriangular {
     }
     first_arc[n] = m;
 
-    size_t tmp_index;
     for (typename std::vector<EdgeC>::const_iterator it = es.edges.begin();
          it != es.edges.end();
          ++it) {

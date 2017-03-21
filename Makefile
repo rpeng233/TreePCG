@@ -1,9 +1,8 @@
 CXX = g++
 CXXFLAGS += -I./include
-# CXXFLAGS += -Wall -pedantic
+CXXFLAGS += -Wall -pedantic
 CXXFLAGS += -O3
 # CXXFLAGS += -g
-# CXXFLAGS += --std=c++11
 # CXXFLAGS += -ffast-math
 
 

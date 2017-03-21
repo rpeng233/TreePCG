@@ -39,6 +39,7 @@
 #ifndef INCLUDE_GRAPH_H_
 #define INCLUDE_GRAPH_H_
 
+#include <limits>
 #include <map>
 #include <queue>
 #include <vector>
@@ -66,6 +67,7 @@ struct EdgeR {
     u = e.u;
     v = e.v;
     resistance = e.resistance;
+    return *this;
   }
 
   EdgeR& operator=(const EdgeC& e);
@@ -673,74 +675,74 @@ void recursive_c(size_t n, size_t m, EdgeListType& es) {
   recursive_c_helper(es, n, 0, 0, n - 1, m - 1);
 }
 
-struct Graph {
-  int n;
-  std::vector<ArcR> *neighbor_list;
-
-  Graph() {
-    n = 0;
-    neighbor_list = NULL;
-  }
-
-  Graph(int n_) {
-    n = n_;
-    neighbor_list = new std::vector<ArcR>[n];
-  }
-
-  Graph(const Graph &o) {
-    n = o.n;
-    neighbor_list = o.neighbor_list;
-  }
-
-  Graph &operator =(const Graph & o) {
-    n = o.n;
-    neighbor_list = o.neighbor_list;
-    return (*this);
-  }
-
-  void AddEdge(int u, int v, FLOAT resistance) {
-    neighbor_list[u].push_back(ArcR(v, resistance));
-    neighbor_list[v].push_back(ArcR(u, resistance));
-  }
-
-  void AddEdge(EdgeR e) {
-    AddEdge(e.u, e.v, e.resistance);
-  }
-
-  void SortAndCombine() const {
-    for (int u = 0; u < n; ++u) {
-      int new_degree = 0;
-      sort(neighbor_list[u].begin(), neighbor_list[u].end());
-
-      int last_vertex = -1;
-      FLOAT last_weight = 0;
-
-      for (std::vector<ArcR>::iterator it = neighbor_list[u].begin();
-          it != neighbor_list[u].end(); ++it) {
-        if (it -> v != last_vertex) {
-          if (last_vertex >= 0) {
-            neighbor_list[u][new_degree] =
-              ArcR(last_vertex, FLOAT(1) / last_weight);
-            new_degree++;
-          }
-          last_vertex = it -> v;
-        }
-        last_weight += FLOAT(1) / it -> resistance;
-      }
-
-      if (last_vertex >= 0) {
-        neighbor_list[u][new_degree] =
-          ArcR(last_vertex, FLOAT(1) / last_weight);
-        new_degree++;
-      }
-      neighbor_list[u].resize(new_degree);
-    }
-  }
-
-
-  void FreeMemory() const {
-    delete neighbor_list;
-  }
-};
+// struct Graph {
+//   int n;
+//   std::vector<ArcR> *neighbor_list;
+// 
+//   Graph() {
+//     n = 0;
+//     neighbor_list = NULL;
+//   }
+// 
+//   Graph(int n_) {
+//     n = n_;
+//     neighbor_list = new std::vector<ArcR>[n];
+//   }
+// 
+//   Graph(const Graph &o) {
+//     n = o.n;
+//     neighbor_list = o.neighbor_list;
+//   }
+// 
+//   Graph &operator =(const Graph & o) {
+//     n = o.n;
+//     neighbor_list = o.neighbor_list;
+//     return (*this);
+//   }
+// 
+//   void AddEdge(int u, int v, FLOAT resistance) {
+//     neighbor_list[u].push_back(ArcR(v, resistance));
+//     neighbor_list[v].push_back(ArcR(u, resistance));
+//   }
+// 
+//   void AddEdge(EdgeR e) {
+//     AddEdge(e.u, e.v, e.resistance);
+//   }
+// 
+//   void SortAndCombine() const {
+//     for (int u = 0; u < n; ++u) {
+//       int new_degree = 0;
+//       sort(neighbor_list[u].begin(), neighbor_list[u].end());
+// 
+//       int last_vertex = -1;
+//       FLOAT last_weight = 0;
+// 
+//       for (std::vector<ArcR>::iterator it = neighbor_list[u].begin();
+//           it != neighbor_list[u].end(); ++it) {
+//         if (it -> v != last_vertex) {
+//           if (last_vertex >= 0) {
+//             neighbor_list[u][new_degree] =
+//               ArcR(last_vertex, FLOAT(1) / last_weight);
+//             new_degree++;
+//           }
+//           last_vertex = it -> v;
+//         }
+//         last_weight += FLOAT(1) / it -> resistance;
+//       }
+// 
+//       if (last_vertex >= 0) {
+//         neighbor_list[u][new_degree] =
+//           ArcR(last_vertex, FLOAT(1) / last_weight);
+//         new_degree++;
+//       }
+//       neighbor_list[u].resize(new_degree);
+//     }
+//   }
+// 
+// 
+//   void FreeMemory() const {
+//     delete neighbor_list;
+//   }
+// };
 
 #endif  // INCLUDE_GRAPH_H_

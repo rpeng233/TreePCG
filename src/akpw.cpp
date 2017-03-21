@@ -60,6 +60,7 @@ struct AKPWEdge {
   AKPWEdge& operator=(const EdgeR& e) {
     u = e.u;
     v = e.v;
+    return *this;
   }
 };
 

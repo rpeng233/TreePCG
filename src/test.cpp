@@ -196,6 +196,8 @@ void incomplete_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   IncompleteCholesky(es3, log(es.n) + 1, precon.cholesky_factor);
   timer.toc();
 
+  return;
+
   PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
 
   std::vector<FLOAT> x(es.n);
@@ -214,7 +216,7 @@ void incomplete_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 
 void stretch(std::mt19937& rng) {
   size_t k = 4;
-  size_t n = k * k;
+  // size_t n = k * k;
 
   EdgeList<EdgeR> es;
 
@@ -349,9 +351,9 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 }
 
 int main(void) {
-  size_t k = 40;
-  // size_t n = k * k;
-  size_t n = k * k * k;
+  size_t k = 500;
+  size_t n = k * k;
+  // size_t n = k * k * k;
 
   EdgeList<EdgeR> unweighted_grid;
   EdgeList<EdgeR> weighted_grid;
@@ -361,10 +363,10 @@ int main(void) {
   RNG<std::uniform_real_distribution<>, std::mt19937>
     random_resistance(uniform, rng);
 
-  // grid2(k, k, unweighted_grid);
-  // grid2(k, k, weighted_grid, random_resistance);
-  grid3(k, k, k, unweighted_grid);
-  grid3(k, k, k, weighted_grid, random_resistance);
+  grid2(k, k, unweighted_grid);
+  grid2(k, k, weighted_grid, random_resistance);
+  // grid3(k, k, k, unweighted_grid);
+  // grid3(k, k, k, weighted_grid, random_resistance);
 
   struct {
     bool operator() (const EdgeR& e1, const EdgeR& e2) const {

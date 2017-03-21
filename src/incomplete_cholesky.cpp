@@ -37,6 +37,9 @@ void IncompleteCholesky(EdgeListC& es,
   vector<size_t> prevs;
 
   for (size_t current = 0; current < n - 1; current++) {
+    // if (current % 100 == 0) {
+    //   cout << current << '\n';
+    // }
     elims[current].v = current;
     elims[current].degree = 0;
     elims[current].first_arc = elim_arcs.size();
@@ -62,6 +65,10 @@ void IncompleteCholesky(EdgeListC& es,
       IterType first = elim_arcs.begin() + elims[previous].first_arc;
       IterType last = elim_arcs.begin() + elims[previous + 1].first_arc;
       IterType upper = std::upper_bound(first, last, current, cmp);
+      // IterType upper = first;
+      // while (upper->v <= current) {
+      //   ++upper;
+      // }
 
       if (upper == first || (upper - 1)->v != current) {
         /* no edge between previous and current */
@@ -69,7 +76,6 @@ void IncompleteCholesky(EdgeListC& es,
       }
 
       FLOAT w1 = (upper - 1)->conductance;
-      size_t lol = elims[previous + 1].first_arc - elims[previous].first_arc;
 
       /* go through each neighbor of previous that came after current */
       for (IterType it = upper; it != last; ++it) {

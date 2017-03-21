@@ -17,7 +17,7 @@ template <typename MatrixType, typename Preconditioner>
 class PCGSolver {
  public:
   PCGSolver(const MatrixType *A_, const Preconditioner *p)
-    : preconditioner(p), A(A_) { }
+    : A(A_), preconditioner(p) { }
 
   void Solve(
       const std::vector<FLOAT>& b,
