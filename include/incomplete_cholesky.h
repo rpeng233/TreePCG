@@ -4,7 +4,10 @@
 #include "cholesky.h"
 #include "graph.h"
 void IncompleteCholesky(EdgeListC& es,
-                        size_t k,
+                        CholeskyFactor& cholesky_factor);
+
+void IncompleteCholesky(EdgeListC& es,
+                        double droptol,
                         CholeskyFactor& cholesky_factor);
 
 #endif  // INCLUDE_INCOMPLETE_CHOLESKY_H_

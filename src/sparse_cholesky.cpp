@@ -194,11 +194,11 @@ void SparseCholesky2(EdgeListC& es,
     for (size_t i = 0; i < indices.size(); i++) {
       elim_arcs.push_back(ArcC(indices[i], spa[indices[i]]));
       elims[current].degree += spa[indices[i]];
+      spa[indices[i]] = 0;
+      is_nonzero[indices[i]] = false;
     }
 
     indices.clear();
-    std::fill(spa.begin(), spa.end(), 0);
-    std::fill(is_nonzero.begin(), is_nonzero.end(), false);
   }
   elims[n - 1].first_arc = elim_arcs.size();
 

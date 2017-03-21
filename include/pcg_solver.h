@@ -47,7 +47,7 @@ class PCGSolver {
       axpy(alpha, d, x, x);                   // x = alpha * d + x
       mv(-1, *A, x, 1, b, r);                  // r = b - A * x
       res = MYSQRT(r * r);
-      if (i % 100 == 0) {
+      if (i % 10 == 0) {
         std::cout << i << '\t' << res << std::endl;
       }
       i++;

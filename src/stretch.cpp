@@ -65,7 +65,7 @@ void ComputeStretch(const TreeR& tree,
                     vector<double>& stretch) {
   const vector<TreeVertexR>& vs = tree.vertices;
   vector<LCAVertex> lca_tree(vs.size());
-  size_t root;
+  size_t root = 0;
   size_t found_root = 0;
 
   stretch.clear();
