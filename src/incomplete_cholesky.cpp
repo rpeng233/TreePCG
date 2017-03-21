@@ -126,7 +126,7 @@ void IncompleteCholesky(EdgeListC& es,
   elim_arcs.reserve(es.Size());
   indices.reserve(n);
   elims.resize(n);
-  vector<size_t> prevs;
+  vector<vector<size_t>> prevs(n);
 
   for (size_t current = 0; current < n - 1; current++) {
     elims[current].v = current;
@@ -134,23 +134,23 @@ void IncompleteCholesky(EdgeListC& es,
     elims[current].first_arc = elim_arcs.size();
 
     /* load the current row into the sparse accumulator */
-    prevs.clear();
+    // prevs.clear();
     for (size_t i = g.first_arc[current]; i < g.first_arc[current + 1]; i++) {
       const ArcC& a = g.arcs[i];
       if (a.v < current) {
-        prevs.push_back(a.v);
+        // prevs.push_back(a.v);
         continue;
       }
       spa[a.v] = a.conductance;
       is_nonzero[a.v] = true;
       indices.push_back(a.v);
     }
-    std::sort(prevs.begin(), prevs.end());
+    // std::sort(prevs.begin(), prevs.end());
 
     /* go through each previously eliminated vertices */
     // for (size_t previous = 0; previous < current; previous++) {
-    for (size_t i = 0; i < prevs.size(); i++) {
-      size_t previous = prevs[i];
+    for (size_t i = 0; i < prevs[current].size(); i++) {
+      size_t previous = prevs[current][i];
       IterType first = elim_arcs.begin() + elims[previous].first_arc;
       IterType last = elim_arcs.begin() + elims[previous + 1].first_arc;
       IterType upper = std::upper_bound(first, last, current, cmp);
@@ -189,6 +189,7 @@ void IncompleteCholesky(EdgeListC& es,
       }
       elim_arcs.push_back(ArcC(indices[i], spa[indices[i]]));
       elims[current].degree += spa[indices[i]];
+      prevs[indices[i]].push_back(current);
       spa[indices[i]] = 0;
       is_nonzero[indices[i]] = false;
     }
