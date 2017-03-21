@@ -36,9 +36,6 @@ void IncompleteCholesky(EdgeListC& es,
   vector<size_t> prevs;
 
   for (size_t current = 0; current < n - 1; current++) {
-    // if (current % 100 == 0) {
-    //   cout << current << '\n';
-    // }
     elims[current].v = current;
     elims[current].degree = 0;
     elims[current].first_arc = elim_arcs.size();
@@ -58,7 +55,6 @@ void IncompleteCholesky(EdgeListC& es,
     std::sort(prevs.begin(), prevs.end());
 
     /* go through each previously eliminated vertices */
-    // for (size_t previous = 0; previous < current; previous++) {
     for (size_t i = 0; i < prevs.size(); i++) {
       size_t previous = prevs[i];
       IterType first = elim_arcs.begin() + elims[previous].first_arc;
@@ -127,15 +123,12 @@ void IncompleteCholesky(EdgeListC& es,
   vector<bool> is_nonzero(n, false);
   vector<size_t> indices;
 
-  // elim_arcs.reserve(es.Size());
+  elim_arcs.reserve(es.Size());
   indices.reserve(n);
   elims.resize(n);
   vector<size_t> prevs;
 
   for (size_t current = 0; current < n - 1; current++) {
-    // if (current % 100 == 0) {
-    //   cout << current << '\n';
-    // }
     elims[current].v = current;
     elims[current].degree = 0;
     elims[current].first_arc = elim_arcs.size();

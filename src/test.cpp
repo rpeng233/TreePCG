@@ -193,7 +193,7 @@ void incomplete_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 
   timer.tic("Constructing preconditioner... ");
   // SparseCholesky(g, log(es.n) + 1, precon.cholesky_factor);
-  IncompleteCholesky(es3, 0.000001, precon.cholesky_factor);
+  IncompleteCholesky(es3, 1e-1, precon.cholesky_factor);
   timer.toc();
 
   PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);

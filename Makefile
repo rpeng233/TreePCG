@@ -1,4 +1,5 @@
 CXX = g++
+CC = gcc
 CXXFLAGS += -I./include
 CXXFLAGS += -Wall -pedantic
 CXXFLAGS += -O3
@@ -12,6 +13,7 @@ bin/test : include/*.h
 bin/test : obj/tree_solver.o obj/cholesky.o obj/stretch.o
 bin/test : obj/akpw.o obj/aug_tree_precon.o obj/sparse_cholesky.o
 bin/test : obj/incomplete_cholesky.o
+# bin/test : obj/mmio.o
 bin/test : src/test.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@
 
@@ -42,6 +44,9 @@ obj/sparse_cholesky.o : src/sparse_cholesky.cpp include/sparse_cholesky.h
 obj/incomplete_cholesky.o : include/cholesky.h include/graph.h
 obj/incomplete_cholesky.o : src/incomplete_cholesky.cpp include/incomplete_cholesky.h
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
+
+# obj/mmio.o : src/mmio.c include/mmio.h
+# 	$(CC) $(CXXFLAGS) $< -c -o $@
 
 bin/gen_cayley : generators/gen_cayley.cpp include/*.h
 	$(CXX) $(CXXFLAGS) $< -o $@
