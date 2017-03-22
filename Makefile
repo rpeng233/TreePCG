@@ -3,7 +3,7 @@ CC = gcc
 CXXFLAGS += -I./include
 CXXFLAGS += -Wall -pedantic
 CXXFLAGS += -O3
-# CXXFLAGS += -g
+CXXFLAGS += -pg
 # CXXFLAGS += -ffast-math
 
 

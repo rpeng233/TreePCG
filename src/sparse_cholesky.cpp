@@ -64,6 +64,9 @@ void SparseCholesky(EdgeListC& es,
 
   elims.resize(n);
   for (size_t i = 0; i < n - 1; i++) {
+    if (i % 1000 == 0) {
+      cout << i << endl;
+    }
     elims[i].v = i;
     elims[i].degree = 0;
     elims[i].first_arc = elim_arcs.size();
@@ -94,6 +97,7 @@ void SparseCholesky(EdgeListC& es,
       size_t v2 = std::max(neighbors[a1], neighbors[a2]);
       neighbor_map[v1][v2] += c;
     }
+    neighbor_map[i].clear();
   }
   elims[n - 1].first_arc = elim_arcs.size();
 
@@ -149,6 +153,7 @@ void SparseCholesky2(EdgeListC& es,
   elims.resize(n);
 
   std::mt19937 rng(std::random_device{}());
+  vector<vector<size_t>> prevs(n);
 
   for (size_t current = 0; current < n - 1; current++) {
     elims[current].v = current;
@@ -162,10 +167,12 @@ void SparseCholesky2(EdgeListC& es,
       indices.push_back(a.v);
     }
     /* go through previously eliminated vertices */
-    for (size_t previous = 0; previous < current; previous++) {
-      IterType first = elim_arcs.begin() + elims[previous].first_arc;
-      IterType last = elim_arcs.begin() + elims[previous + 1].first_arc;
-      IterType upper = std::upper_bound(first, last, current, cmp);
+    // for (size_t previous = 0; previous < current; previous++) {
+    for (size_t i = 0; i < prevs[current].size(); i++) {
+      size_t previous = prevs[current][i];
+      const IterType first = elim_arcs.begin() + elims[previous].first_arc;
+      const IterType last = elim_arcs.begin() + elims[previous + 1].first_arc;
+      const IterType upper = std::upper_bound(first, last, current, cmp);
       if (upper == first || (upper - 1)->v != current) {
         /* not edge between previous and current */
         continue;
@@ -179,7 +186,7 @@ void SparseCholesky2(EdgeListC& es,
         // FLOAT c = w1 * w2 / elims[previous].degree;
         std::binomial_distribution<unsigned> sample(
             k * lol,
-            (1.0 / lol) * (it->conductance / elims[previous].degree)
+            (1.0 / lol) * (it->conductance + (upper - 1)->conductance) / elims[previous].degree
         );
         size_t count = sample(rng);
         spa[it->v] += c * count;
@@ -194,6 +201,7 @@ void SparseCholesky2(EdgeListC& es,
     for (size_t i = 0; i < indices.size(); i++) {
       elim_arcs.push_back(ArcC(indices[i], spa[indices[i]]));
       elims[current].degree += spa[indices[i]];
+      prevs[indices[i]].push_back(current);
       spa[indices[i]] = 0;
       is_nonzero[indices[i]] = false;
     }
