@@ -1,10 +1,10 @@
-CXX = icc
+CXX = g++
 CXXFLAGS += -I./include
-CXXFLAGS += -lcholmod -lamd -lcolamd -lcamd -lccolamd -lmetis
 CXXFLAGS += -Wall -pedantic
 CXXFLAGS += -O3
-CXXFLAGS += -pg
+# CXXFLAGS += -g
 # CXXFLAGS += -ffast-math
+LDFLAGS += -lcholmod -lamd -lcolamd -lcamd -lccolamd -lmetis
 
 all : bin/test # bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 
@@ -12,48 +12,47 @@ bin/test : include/*.h
 bin/test : obj/tree_solver.o obj/cholesky.o obj/stretch.o
 bin/test : obj/akpw.o obj/aug_tree_precon.o obj/sparse_cholesky.o
 bin/test : obj/incomplete_cholesky.o
-# bin/test : obj/mmio.o
 bin/test : src/test.cpp
-	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) --std=c++11 $< obj/*.o -o $@
 
-obj/tree_solver.o : include/graph.h
-obj/tree_solver.o : src/tree_solver.cpp include/tree_solver.h
+obj/tree_solver.o : include/*.h
+obj/tree_solver.o : src/tree_solver.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
-obj/cholesky.o : include/binary_heap.h
-obj/cholesky.o : src/cholesky.cpp include/cholesky.h
+obj/cholesky.o : include/*.h
+obj/cholesky.o : src/cholesky.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
-obj/stretch.o : include/graph.h include/disjoint_set.h
-obj/stretch.o : src/stretch.cpp include/stretch.h
+obj/stretch.o : include/*.h
+obj/stretch.o : src/stretch.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
-obj/akpw.o : include/graph.h include/binary_heap.h include/pairing_heap.h
-obj/akpw.o : src/akpw.cpp include/akpw.h
+obj/akpw.o : include/*.h
+obj/akpw.o : src/akpw.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
-obj/aug_tree_precon.o : include/cholesky.h include/graph.h
-obj/aug_tree_precon.o : src/aug_tree_precon.cpp include/aug_tree_precon.h
+obj/aug_tree_precon.o : include/*.h
+obj/aug_tree_precon.o : src/aug_tree_precon.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
-obj/sparse_cholesky.o : include/cholesky.h include/graph.h
-obj/sparse_cholesky.o : src/sparse_cholesky.cpp include/sparse_cholesky.h
+obj/sparse_cholesky.o : include/*.h
+obj/sparse_cholesky.o : src/sparse_cholesky.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
-obj/incomplete_cholesky.o : include/cholesky.h include/graph.h
-obj/incomplete_cholesky.o : src/incomplete_cholesky.cpp include/incomplete_cholesky.h
+obj/incomplete_cholesky.o : include/*.h
+obj/incomplete_cholesky.o : src/incomplete_cholesky.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
 # obj/mmio.o : src/mmio.c include/mmio.h
 # 	$(CC) $(CXXFLAGS) $< -c -o $@
 
-bin/gen_cayley : generators/gen_cayley.cpp include/*.h
+bin/gen_cayley : generators/gen_cayley.cpp include/graph.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/graph_to_graph: generators/graph_to_graph.cpp include/*.h
+bin/graph_to_graph: generators/graph_to_graph.cpp include/graph.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-bin/graph_to_matrix: generators/graph_to_matrix.cpp include/*h
+bin/graph_to_matrix: generators/graph_to_matrix.cpp include/graph.h
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean :

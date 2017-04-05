@@ -15,7 +15,7 @@
  */
 template <typename MatrixType, typename Preconditioner>
 class PCGSolver {
- public:
+public:
   PCGSolver(const MatrixType *A_, Preconditioner *p)
     : A(A_), preconditioner(p) { }
 
@@ -44,7 +44,7 @@ class PCGSolver {
     for (;;) {
       mv(1, *A, d, 0, r, r);                   // q = A * d
       alpha = delta_new / (d * r);
-      axpy(alpha, d, x, x);                   // x = alpha * d + x
+      axpy(alpha, d, x, x);                    // x = alpha * d + x
       mv(-1, *A, x, 1, b, r);                  // r = b - A * x
       res = MYSQRT(r * r);
       if (i % 10 == 0) {
@@ -67,7 +67,7 @@ class PCGSolver {
     }
   }
 
- private:
+private:
   const MatrixType *A;
   Preconditioner *preconditioner;
 };

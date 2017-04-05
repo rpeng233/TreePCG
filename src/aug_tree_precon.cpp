@@ -19,7 +19,7 @@ void AugTreePrecon(const EdgeListR& es,
   EdgeList<EdgeR> off_tree_es;
   TreeR tree;
 
-  AKPW2(es, tree_es);
+  AKPW(es, tree_es);
   AdjacencyArray<ArcR> g(tree_es);
   DijkstraTree(g, es.n / 2, tree);
   g.FreeMemory();
@@ -67,7 +67,7 @@ void AugTreePrecon(const EdgeListR& es,
   EdgeList<EdgeR> off_tree_es;
   TreeR tree;
 
-  AKPW2(es, tree_es);
+  AKPW(es, tree_es);
   AdjacencyArray<ArcR> g(tree_es);
   DijkstraTree(g, es.n / 2, tree);
   g.FreeMemory();
@@ -112,7 +112,7 @@ void AugTreePrecon2(const EdgeListR& es,
   EdgeList<EdgeR> off_tree_es;
   TreeR tree;
 
-  AKPW2(es, tree_es);
+  AKPW(es, tree_es);
   AdjacencyArray<ArcR> g(tree_es);
   DijkstraTree(g, es.n / 2, tree);
   g.FreeMemory();
@@ -165,7 +165,7 @@ void AugTreePrecon3(const EdgeListR& es,
   EdgeList<EdgeR> off_tree_es;
   TreeR tree;
 
-  AKPW2(es, tree_es);
+  AKPW(es, tree_es);
   AdjacencyArray<ArcR> g(tree_es);
   DijkstraTree(g, es.n / 2, tree);
   g.FreeMemory();

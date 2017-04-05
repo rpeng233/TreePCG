@@ -13,6 +13,7 @@
 #include "cholmod_solver.h"
 #include "common.h"
 #include "graph.h"
+#include "graph_gen.h"
 #include "identity_solver.h"
 #include "incomplete_cholesky.h"
 #include "matrix.h"
@@ -75,7 +76,7 @@ public:
 
 void akpw(const EdgeList<EdgeR>& es) {
   EdgeList<EdgeR> tree;
-  AKPW2(es, tree);
+  AKPW(es, tree);
 
   // for (const auto& e : tree.edges) {
   //   cout << e.u << ' ' << e.v << ' ' << e.resistance << '\n';
