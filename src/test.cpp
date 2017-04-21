@@ -12,6 +12,7 @@
 #include "cholmod.h"
 #include "cholmod_solver.h"
 #include "common.h"
+#include "flow_gradient_solver.h"
 #include "graph.h"
 #include "graph_gen.h"
 #include "identity_solver.h"
@@ -371,6 +372,34 @@ void pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 }
 
+void flow_gradient_descent(const EdgeListR& es, const vector<FLOAT>& b) {
+  EdgeListR tree_es;
+  EdgeListR off_tree_es;
+  AKPW(es, tree_es);
+
+  TreeR tree;
+  AdjacencyArray<ArcR> g(tree_es);
+  DijkstraTree(g, es.n / 2, tree);
+  g.FreeMemory();
+
+  for (size_t i = 0; i < es.Size(); i++) {
+    const EdgeR& e = es[i];
+    if (tree[e.u].parent == e.v || tree[e.v].parent == e.u) {
+      continue;
+    }
+    off_tree_es.AddEdge(e);
+  }
+
+  FlowGradientSolver solver(tree, off_tree_es);
+
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
+
+  solver.Solve(b, x);
+  mv(-1, tree_es, x, 1, b, r);
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
+}
+
 int main(void) {
   size_t k = 100;
   size_t n = k * k;
@@ -399,8 +428,11 @@ int main(void) {
 
   std::vector<FLOAT> unweighted_b(n);
   std::vector<FLOAT> weighted_b(n);
+  std::vector<FLOAT> unit_b(n);
   std::vector<FLOAT> x(n);
 
+  unit_b[0] = 10;
+  unit_b[n - 1] = -10;
   for (auto& f : x) {
     f = uniform(rng);
   }
@@ -416,10 +448,11 @@ int main(void) {
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
   // aug_tree_pcg(weighted_grid, weighted_b, k);
-  cholmod(weighted_grid, weighted_b);
+  // cholmod(weighted_grid, weighted_b);
   // sparse_cholesky(weighted_grid, weighted_b);
   // incomplete_cholesky(weighted_grid, weighted_b);
   // akpw(weighted_grid);
+  flow_gradient_descent(unweighted_grid, unit_b);
 
   return 0;
 }
