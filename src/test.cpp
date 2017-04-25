@@ -396,8 +396,9 @@ void flow_gradient_descent(const EdgeListR& es, const vector<FLOAT>& b) {
   std::vector<FLOAT> r(es.n);
 
   solver.Solve(b, x);
-  mv(-1, tree_es, x, 1, b, r);
-  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
+
+  mv(-1, es, x, 1, b, r);
+  std::cout << MYSQRT(r * r) << std::endl;
 }
 
 int main(void) {
@@ -407,6 +408,7 @@ int main(void) {
 
   EdgeList<EdgeR> unweighted_grid;
   EdgeList<EdgeR> weighted_grid;
+  EdgeList<EdgeR> c;
 
   std::mt19937 rng(std::random_device{}());
   std::uniform_real_distribution<> uniform(1, 100);
@@ -417,6 +419,8 @@ int main(void) {
   grid2(k, k, weighted_grid, random_resistance);
   // grid3(k, k, k, unweighted_grid);
   // grid3(k, k, k, weighted_grid, random_resistance);
+
+  cycle(n, c);
 
   struct {
     bool operator() (const EdgeR& e1, const EdgeR& e2) const {
@@ -431,8 +435,8 @@ int main(void) {
   std::vector<FLOAT> unit_b(n);
   std::vector<FLOAT> x(n);
 
-  unit_b[0] = 10;
-  unit_b[n - 1] = -10;
+  unit_b[0] = 1;
+  unit_b[n - 1] = -1;
   for (auto& f : x) {
     f = uniform(rng);
   }

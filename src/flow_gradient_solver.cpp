@@ -54,39 +54,6 @@ void FlowGradientSolver::ComputeTreeGradients(
   }
 }
 
-// void FlowGradientSolver::ComputeOverestmates(
-//     std::vector<double>& off_tree_grad,
-//     size_t cur
-// ) {
-//   FlowGradientVtx& u = tree[cur];
-//   u.ds_node.MakeSet();
-//   u.ancestor = cur;
-//   for (std::vector<size_t>::const_iterator it = u.children.begin();
-//        it != u.children.end();
-//        ++it) {
-//     FlowGradientVtx& v = tree[*it];
-//     ComputeOverestmates(off_tree_grad, *it);
-//     u.ds_node.Union(&v.ds_node);
-//     u.internal += v.internal;
-//     FlowGradientVtx *tmp = (FlowGradientVtx *) (
-//         (char *) u.ds_node.Find() - offsetof(FlowGradientVtx, ds_node)
-//     );
-//     tmp->ancestor = cur;
-//   }
-//   u.finished = true;
-//   for (std::vector<size_t>::const_iterator it = u.incident_edges.begin();
-//        it != u.incident_edges.end();
-//        ++it) {
-//     FlowGradientVtx& v = tree[off_tree_es[*it].u ^ off_tree_es[*it].v ^ cur];
-//     if (v.finished) {
-//       FlowGradientVtx *p = (FlowGradientVtx *) (
-//           (char *) v.ds_node.Find() - offsetof(FlowGradientVtx, ds_node)
-//       );
-//       p->internal += off_tree_grad[*it];
-//     }
-//   }
-// }
-
 void FlowGradientSolver::TreeFlow(const std::vector<double>& demand,
                                   size_t cur) {
   FlowGradientVtx& u = tree[cur];
@@ -158,19 +125,19 @@ void FlowGradientSolver::Solve(const std::vector<double>& b,
   std::vector<double> tree_vs(tree.size());
   std::vector<double> demand(b);
 
-  // compute the feasible tree flow
-  TreeFlow(demand, root);
-
   for (size_t i = 0; i < off_tree_es.size(); i++) {
     off_tree_es[i].flow = 0;
   }
 
+  // compute the feasible tree flow
+  TreeFlow(demand, root);
+
   for (size_t iter = 0; ; iter++) {
     // compute tree voltages
-    TreeVoltage(tree_vs, root);
+    TreeVoltage(x, root);
 
     double p = PrimalEnergy();
-    double d = DualEnergy(b, tree_vs);
+    double d = DualEnergy(b, x);
     std::cout << iter << '\t'
               << "Primal energy:\t" << p << '\t'
               << "Dual energy:\t" << d << '\t'
@@ -179,18 +146,20 @@ void FlowGradientSolver::Solve(const std::vector<double>& b,
     // demand = b;
     // for (size_t i = 0; i < off_tree_es.size(); i++) {
     //   FlowGradientEdge& e = off_tree_es[i];
-    //   demand[e.u] -= e.flow;
-    //   demand[e.v] += e.flow;
+    //   double f = (x[e.u] - x[e.v]) / e.resistance;
+    //   demand[e.u] -= f;//e.flow;
+    //   demand[e.v] += f;//e.flow;
     // }
     // for (size_t i = 0; i < tree.size(); i++) {
     //   if (i == root) continue;
-    //   demand[i] -= tree[i].flow;
-    //   demand[tree[i].parent] += tree[i].flow;
+    //   double f = (x[i] - x[tree[i].parent]) / tree[i].parent_resistance;
+    //   demand[i] -= f;//tree[i].flow;
+    //   demand[tree[i].parent] += f;//tree[i].flow;
     // }
     // std::cout << "Residual: " << demand * demand << std::endl;
 
     if (p - d < 0.5 * p) break;
-    if (iter >= 500) break;
+    // if (iter >= 20) break;
 
     // compute gradient on off-tree edges
     std::vector<double> off_tree_grad(off_tree_es.size());
@@ -198,7 +167,7 @@ void FlowGradientSolver::Solve(const std::vector<double>& b,
     double fRc = 0;
     for (size_t i = 0; i < off_tree_es.size(); i++) {
       FlowGradientEdge& e = off_tree_es[i];
-      off_tree_grad[i] = e.flow * e.resistance - (tree_vs[e.u] - tree_vs[e.v]);
+      off_tree_grad[i] = e.flow * e.resistance - (x[e.u] - x[e.v]);
       cRc += off_tree_grad[i] * off_tree_grad[i] * e.resistance;
       fRc += off_tree_grad[i] * e.flow * e.resistance;
     }
@@ -230,9 +199,5 @@ void FlowGradientSolver::Solve(const std::vector<double>& b,
 
     // fix the demand using a tree flow
     TreeFlow(demand, root);
-  }
-
-  for (size_t i = 0; i < tree.size(); i++) {
-    x[i] = tree_vs[i];
   }
 }

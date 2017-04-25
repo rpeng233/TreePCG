@@ -11,19 +11,19 @@ public:
 
 private:
   struct FlowGradientVtx {
-    DisjointSetNode ds_node;
+    // DisjointSetNode ds_node;
     size_t parent;
-    size_t ancestor;
+    // size_t ancestor;
     double gradient;
     double internal;
     double flow;
     double parent_resistance;
     std::vector<size_t> children;
     std::vector<size_t> incident_edges;
-    bool finished;
+    // bool finished;
 
     FlowGradientVtx () {
-      finished = false;
+      // finished = false;
     }
   };
 
