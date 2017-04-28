@@ -402,43 +402,42 @@ void flow_gradient_descent(const EdgeListR& es, const vector<FLOAT>& b) {
   std::cout << MYSQRT(r * r) << std::endl;
 }
 
-void cycle_toggling() {
-  EdgeListR es;
-  EdgeListR tes;
+void cycle_toggling(const EdgeListR& es, const vector<FLOAT>& b) {
+  EdgeListR tree;
   EdgeListR otes;
-
-  size_t n = 9;
-  es.n = n;
-  tes.n = n;
-  otes.n = n;
-  for (size_t i = 0; i < n - 1; i++) {
-    tes.AddEdge(EdgeR(i, i + 1, 1));
-    es.AddEdge(EdgeR(i, i + 1, 1));
-  }
-  otes.AddEdge(EdgeR(2, 5, 1));
-  otes.AddEdge(EdgeR(3, 7, 1));
-  es.AddEdge(EdgeR(2, 5, 1));
-  es.AddEdge(EdgeR(3, 7, 1));
-
+  AKPW(es, tree);
   TreeR t;
-  AdjacencyArray<ArcR> g(tes);
-  DijkstraTree<TreeR>(g, 4, t);
+  AdjacencyArray<ArcR> g(tree);
+  DijkstraTree<TreeR>(g, es.n / 2, t);
+  for (size_t i = 0; i < es.Size(); i++) {
+    const EdgeR& e = es[i];
+    if (t[e.u].parent == e.v || t[e.v].parent == e.u) {
+      continue;
+    }
+    otes.AddEdge(e);
+  }
 
   CycleTogglingSolver s(t, otes);
 
-  std::vector<double> b(n);
-  std::vector<double> x(n);
+  std::vector<double> x(es.n);
   std::vector<FLOAT> r(es.n);
-  b[0] = 1;
-  b[n - 1] = -1;
 
   s.Solve(b, x);
+  // for (auto d : x) {
+  //   printf("%5f ", d);
+  // }
+  // printf("\n");
+  // mv(1, es, x, 0, b, r);
+  // for (auto d : r) {
+  //   printf("%.2f ", d);
+  // }
+  // printf("\n");
   mv(-1, es, x, 1, b, r);
   std::cout << MYSQRT(r * r) << std::endl;
 }
 
 int main(void) {
-  size_t k = 100;
+  size_t k = 500;
   size_t n = k * k;
   // size_t n = k * k * k;
 
@@ -493,7 +492,7 @@ int main(void) {
   // incomplete_cholesky(weighted_grid, weighted_b);
   // akpw(weighted_grid);
   // flow_gradient_descent(unweighted_grid, unit_b);
-  cycle_toggling();
+  cycle_toggling(unweighted_grid, unit_b);
 
   return 0;
 }

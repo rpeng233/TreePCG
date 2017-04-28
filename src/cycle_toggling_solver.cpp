@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <cstdio>
+#include <random>
 #include "cycle_toggling_solver.h"
 
 CycleTogglingSolver::CycleTogglingSolver(const TreeR& t, const EdgeListR& o)
@@ -37,42 +38,55 @@ CycleTogglingSolver::CycleTogglingSolver(const TreeR& t, const EdgeListR& o)
   HLD(helper, root);
   LCA(helper, root);
 
-  for (size_t i = 0; i < hld.size(); i++) {
-    std::cout << "VNode " << i << ":"
-              << " p = " << hld[i].parent << ','
-              << " l = " << hld[i].left_child << ','
-              << " r = " << hld[i].right_child << ','
-              << " t = " << (int) hld[i].type << std::endl;
-  }
-  for (size_t i = 0 ; i < es.size(); i++) {
-    std::cout << "Edge " << i << ":"
-              << " (" << es[i].u << ", " << es[i].v << "), "
-              << "lca = " << es[i].lca
-              << " str = " << stretches[i] << std::endl;
-  }
+  // for (size_t i = 0; i < helper.size(); i++) {
+  //   std::cout << "Node " << i << ":"
+  //             << " head = " << helper[i].is_head
+  //             << " size = " << helper[i].size
+  //             << " h = " << helper[i].heavy << std::endl;
+  // }
+  // for (size_t i = 0; i < hld.size(); i++) {
+  //   std::cout << "VNode " << i << ":"
+  //             << " p = " << hld[i].parent << ','
+  //             << " l = " << hld[i].left_child << ','
+  //             << " r = " << hld[i].right_child << ','
+  //             << " t = " << (int) hld[i].type << std::endl;
+  // }
+  // for (size_t i = 0 ; i < es.size(); i++) {
+  //   std::cout << "Edge " << i << ":"
+  //             << " (" << es[i].u << ", " << es[i].v << "), "
+  //             << "lca = " << es[i].lca
+  //             << " str = " << stretches[i] << std::endl;
+  // }
 }
 
 void CycleTogglingSolver::Solve(const std::vector<double>& b,
                                 std::vector<double>& x) {
   ComputeTreeFlow(b);
   DecomposeTreeFlow();
-  for (size_t i = 0; i < 100; i++) {
-    Toggle(es[0]);
-    Toggle(es[1]);
+
+  std::mt19937 rng(std::random_device{}());
+  std::discrete_distribution<unsigned>
+    sample(stretches.begin(), stretches.end());
+
+  for (size_t i = 0; i < 5000000; i++) {
+    size_t e = sample(rng);
+    Toggle(es[e]);
   }
   Dump();
+  tree[root].flow = 0;
 
-  for (size_t i = 0; i < tree.size(); i++) {
-    std::cout << "Node " << i << ":"
-              << " p = " << tree[i].parent << ','
-              << " f = " << tree[i].flow << std::endl;
-  }
+  // for (size_t i = 0; i < tree.size(); i++) {
+  //   std::cout << "Node " << i << ":"
+  //             << " p = " << tree[i].parent << ','
+  //             << " r = " << tree[i].resistance << ','
+  //             << " f = " << tree[i].flow << std::endl;
+  // }
 
-  for (size_t i = 0; i < es.size(); i++) {
-    std::cout << "Edge " << i << ":"
-              << " (" << es[i].u << ", " << es[i].v << "), "
-              << "f = " << es[i].flow << std::endl;
-  }
+  // for (size_t i = 0; i < es.size(); i++) {
+  //   std::cout << "Edge " << i << ":"
+  //             << " (" << es[i].u << ", " << es[i].v << "), "
+  //             << "f = " << es[i].flow << std::endl;
+  // }
 
   ComputeTreeVoltage(x);
 }
@@ -109,9 +123,7 @@ double CycleTogglingSolver::Query(size_t v) {
         rf_sum += hld[v].rf_sum;
         resistance_so_far += hld[v].resistance_to_left;
       }
-      if (hld[v].type == LEFT) {
-        was_left = true;
-      }
+      was_left = hld[v].type == LEFT;
       if (hld[v].type == VIRTUAL) break;
       v = hld[v].parent;
     }
@@ -136,9 +148,7 @@ void CycleTogglingSolver::Update(size_t v, double delta) {
         hld[v].rf_sum += rf_delta;
         rf_delta_so_far += rf_delta;
       }
-      if (hld[v].type == LEFT) {
-        was_left = true;
-      }
+      was_left = hld[v].type == LEFT;
       if (hld[v].type == VIRTUAL) break;
       v = hld[v].parent;
     }
@@ -215,12 +225,14 @@ void CycleTogglingSolver::DFS(std::vector<HelperNode>& helper, size_t cur) {
       helper[cur].heavy = v;
     }
   }
-  helper[helper[cur].heavy].is_head = false;
+  if (helper[cur].heavy != cur) {
+    helper[helper[cur].heavy].is_head = false;
+  }
 }
 
 std::pair<size_t, double>
 CycleTogglingSolver::BST(const std::vector<size_t>& chain, size_t l, size_t r) {
-  std::cout << "DFS(" << chain[l] << ", " << chain[r] << ")\n";
+  // std::cout << "DFS(" << chain[l] << ", " << chain[r] << ")\n";
   size_t m = (l + r) / 2;
   size_t v = chain[m];
   double total_resistance = tree[v].resistance;
@@ -287,27 +299,33 @@ void CycleTogglingSolver::ComputeTreeVoltage(std::vector<double>& x) {
        it != preorder.end();
        it++) {
     if (*it == root) {
+      // std::cout << "v[" << *it << "] = 0\n";
       x[*it] = 0;
     } else {
       const Node& u = tree[*it];
       x[*it] = x[u.parent] + u.flow * u.resistance;
+      // std::cout << *it << ' ' << u.parent << ", f = " << u.flow
+      //           << ", r = " << u.resistance << ", v[parent] = " <<x[u.parent] << ", thus v = "
+      //           << x[*it] << std::endl;
     }
   }
 }
 
 double CycleTogglingSolver::DecomposeChainFlow(size_t v, double flow_from_right) {
   hld[v].flow_to_left = tree[v].flow - flow_from_right;
-  hld[v].rf_sum = hld[v].flow_to_left * tree[v].resistance;
-  double total = tree[v].flow * tree[v].resistance;
+  hld[v].rf_sum = hld[v].flow_to_left * hld[v].resistance_to_left;
+  double total_rf = hld[v].flow_to_left * hld[v].resistance_to_left;
   if (hld[v].left_child != v) {
-    hld[v].rf_sum +=
-      DecomposeChainFlow(hld[v].left_child, hld[v].flow_to_left + flow_from_right);
+    double tmp =
+      DecomposeChainFlow(hld[v].left_child, tree[v].flow);
+    hld[v].rf_sum += tmp;
+    total_rf += tmp;
   }
   if (hld[v].right_child != v) {
-    total += DecomposeChainFlow(hld[v].right_child, flow_from_right);
+    total_rf += DecomposeChainFlow(hld[v].right_child, flow_from_right);
   }
 
-  return total;
+  return total_rf;
 }
 
 void CycleTogglingSolver::DecomposeTreeFlow() {

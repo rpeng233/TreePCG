@@ -123,7 +123,7 @@ private:
     bool is_head;
 
     void Initialize(size_t i) {
-      size = 1;
+      // size = 1;
       heavy = i;
     }
   };
