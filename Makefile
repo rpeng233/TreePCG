@@ -1,8 +1,8 @@
 CXX = g++
 CXXFLAGS += -I./include
 CXXFLAGS += -Wall -pedantic
-CXXFLAGS += -O3
-# CXXFLAGS += -g
+# CXXFLAGS += -O3
+CXXFLAGS += -g
 # CXXFLAGS += -ffast-math
 LDFLAGS += -lcholmod -lamd -lcolamd -lcamd -lccolamd -lmetis
 
@@ -11,7 +11,8 @@ all : bin/test # bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 bin/test : include/*.h
 bin/test : obj/tree_solver.o obj/cholesky.o obj/stretch.o
 bin/test : obj/akpw.o obj/aug_tree_precon.o obj/sparse_cholesky.o
-bin/test : obj/incomplete_cholesky.o obj/flow_gradient_solver.o
+bin/test : obj/incomplete_cholesky.o
+bin/test : obj/flow_gradient_solver.o obj/cycle_toggling_solver.o
 bin/test : src/test.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) --std=c++11 $< obj/*.o -o $@
 
@@ -45,6 +46,10 @@ obj/incomplete_cholesky.o : src/incomplete_cholesky.cpp
 
 obj/flow_gradient_solver.o : include/*.h
 obj/flow_gradient_solver.o : src/flow_gradient_solver.cpp
+	$(CXX) $(CXXFLAGS) $< -c -o $@
+
+obj/cycle_toggling_solver.o : include/*.h
+obj/cycle_toggling_solver.o : src/cycle_toggling_solver.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 # obj/mmio.o : src/mmio.c include/mmio.h

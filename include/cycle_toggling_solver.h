@@ -56,17 +56,13 @@
  * the flows starting from 6 and 4.
  * 
  * In addition to the decomposed chain flow, each BST vertex also maintain the sum
- * of resistance-flow product on the range its responsible fore. Unlike the
- * decomposed chain flow which are kept separate (in a way, maintained lazily),
- * this value needs to be kept up to date, since we want to query it by only
- * walking up the tree.
- *
- * This is done by propogating the delta in the sum up the tree whenever we
- * change the flows. Whenever we walk up from a left child, we need to update
- * the sum at current vertex by whatever happened in its left subtree. In the
- * above example, if we push flow from vertex 3, we not only need to update the
- * flow values at 2 and 3, but we also need to update the resistance*flow sum
- * at vertex 4.
+ * of resistance-flow product on the range corresponding to its subtree. This
+ * is done by propogating the delta in the sum up the tree whenever we change
+ * the flows. Whenever we walk up from a left child, we need to update the sum
+ * at current vertex by whatever happened in its left subtree. In the above
+ * example, if we push flow from vertex 3, we not only need to update the flow
+ * values at 2 and 3, but we also need to update the resistance*flow sum at
+ * vertex 4.
  *
  * To query the resistance*flow sum, we walk up the tree collecting the sum at
  * each vertex. However since flows are lazily kept seperate, we need to also
@@ -83,12 +79,15 @@
 #ifndef INCLUDE_CYCLE_TOGGLING_SOLVER_H__
 #define INCLUDE_CYCLE_TOGGLING_SOLVER_H__
 
+#include <vector>
 #include "common.h"
+#include "disjoint_set.h"
 #include "graph.h"
 
 class CycleTogglingSolver {
 public:
-  CycleTogglingSolver(const TreeR& tree_, const EdgeListR& off_tree_es_);
+  CycleTogglingSolver(const TreeR& t, const EdgeListR& o);
+  void Solve(const std::vector<double>& b, std::vector<double>& x);
 
 private:
   struct Node {
@@ -112,17 +111,54 @@ private:
     char type;                    // One of LEFT, RIGHT and VIRTUAL
   };
 
+  struct HelperNode {
+    DisjointSetNode ds_node;
+    size_t ancestor;
+    size_t size;
+    size_t heavy;
+    size_t heavy_size;
+    std::vector<size_t> children;
+    std::vector<size_t> incident_edges;
+    bool finished;
+    bool is_head;
+
+    void Initialize(size_t i) {
+      size = 1;
+      heavy = i;
+    }
+  };
+
   struct OffTreeEdge {
     size_t u;
     size_t v;
     size_t lca;
     double flow;
     double resistance;
-  }
+  };
 
   std::vector<Node> tree;
   std::vector<VirtualNode> hld;
   std::vector<OffTreeEdge> es;
+  std::vector<size_t> chain_roots;
+  std::vector<double> stretches;
+  std::vector<size_t> preorder;
+  size_t root;
+
+  void LCA(std::vector<HelperNode>& helper, size_t cur);
+  void DFS(std::vector<HelperNode>& helper, size_t cur);
+  std::pair<size_t, double> BST(const std::vector<size_t>& chain,
+                                size_t l,
+                                size_t r);
+  void HLD(std::vector<HelperNode>& helper, size_t root);
+  void ComputeTreeFlow(const std::vector<double>& demand);
+  void ComputeTreeVoltage(std::vector<double>& x);
+  double DecomposeChainFlow(size_t v, double flow_from_right);
+  void DecomposeTreeFlow();
+  void Toggle(OffTreeEdge& e);
+  void Dump();
+  void DumpChain(size_t v, double flow_from_right);
+  double Query(size_t v);
+  void Update(size_t v, double delta);
 };
 
 #endif  // INCLUDE_CYCLE_TOGGLING_SOLVER_H__
