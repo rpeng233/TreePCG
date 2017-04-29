@@ -3,6 +3,10 @@
 #include <random>
 #include "cycle_toggling_solver.h"
 
+inline double square(double x) {
+  return x * x;
+}
+
 CycleTogglingSolver::CycleTogglingSolver(const TreeR& t, const EdgeListR& o)
 : tree(t.n),
   hld(t.n),
@@ -64,16 +68,36 @@ void CycleTogglingSolver::Solve(const std::vector<double>& b,
   ComputeTreeFlow(b);
   DecomposeTreeFlow();
 
+  Dump();
+  tree[root].flow = 0;
+  ComputeTreeVoltage(x);
+
+  std::pair<double, double> energy = ComputeEnergy(b, x);
+  std::cout << ", p = " << energy.first << ", d = " << energy.second
+            << ", gap = " << energy.first - energy.second << std::endl;
+
   std::mt19937 rng(std::random_device{}());
   std::discrete_distribution<unsigned>
     sample(stretches.begin(), stretches.end());
 
-  for (size_t i = 0; i < 5000000; i++) {
-    size_t e = sample(rng);
-    Toggle(es[e]);
+  size_t batch_size = tree.size() * 4;
+  for (size_t i = 0; ; i++) {
+    for (size_t j = 0; j < batch_size; j++) {
+      size_t e = sample(rng);
+      Toggle(es[e]);
+    }
+    Dump();
+    tree[root].flow = 0;
+    ComputeTreeVoltage(x);
+
+    std::pair<double, double> energy = ComputeEnergy(b, x);
+    std::cout << "i = " << (i + 1) * batch_size
+              << ", p = " << energy.first << ", d = " << energy.second
+              << ", gap = " << energy.first - energy.second << std::endl;
+
+    // if (energy.first - energy.second < energy.first * 1e-6) break;
+    if (i >= 30) break;
   }
-  Dump();
-  tree[root].flow = 0;
 
   // for (size_t i = 0; i < tree.size(); i++) {
   //   std::cout << "Node " << i << ":"
@@ -88,21 +112,30 @@ void CycleTogglingSolver::Solve(const std::vector<double>& b,
   //             << "f = " << es[i].flow << std::endl;
   // }
 
-  ComputeTreeVoltage(x);
+  for (size_t i = 0; i < tree.size(); i++) {
+    tree[i].flow = 0;
+  }
+  for (size_t i = 0; i < es.size(); i++) {
+    es[i].flow = 0;
+  }
 }
 
 void CycleTogglingSolver::HLD(std::vector<HelperNode>& helper, size_t root) {
   DFS(helper, root);
   chain_roots.clear();
   std::vector<size_t> chain;
+  std::vector<double> weights;
+  double w = 0;
   for (size_t i = 0; i < helper.size(); i++) {
     if (helper[i].is_head) {
       chain.clear();
       for (size_t j = i; ; j = helper[j].heavy) {
         chain.push_back(j);
+        weights.push_back(helper[j].size - helper[j].heavy_size + w);
+        w = weights[weights.size() - 1];
         if (helper[j].size == 1) break;
       }
-      std::pair<size_t, double> p = BST(chain, 0, chain.size() - 1);
+      std::pair<size_t, double> p = BST(chain, weights, 0, chain.size() - 1);
       chain_roots.push_back(p.first);
       hld[p.first].parent = (i == root) ? p.first : tree[i].parent;
       hld[p.first].type = VIRTUAL;
@@ -206,6 +239,7 @@ void CycleTogglingSolver::LCA(std::vector<HelperNode>& helper,
       assert(tree[ngbr].resistance_to_root >= r);
       stretches[*it] = (
           tree[cur].resistance_to_root + tree[ngbr].resistance_to_root - r * 2
+          + es[*it].resistance
       ) / es[*it].resistance;
     }
   }
@@ -230,10 +264,35 @@ void CycleTogglingSolver::DFS(std::vector<HelperNode>& helper, size_t cur) {
   }
 }
 
+static size_t FindSeperator(const std::vector<double>& weights,
+                            size_t l, size_t r) {
+  double target;
+  if (l == 0) {
+    target = (weights[r] + 1) / 2;
+  } else {
+    target = (weights[l - 1] + weights[r] + 1) / 2;
+  }
+  while (l <= r) {
+    size_t mid = (l + r) / 2;
+    if (weights[mid - 1] < target && target <= weights[mid]) {
+      return mid;
+    } else if (target <= weights[mid - 1]) {
+      r = mid - 1;
+    } else {
+      l = mid + 1;
+    }
+  }
+  assert(false);
+  return 0;
+}
+
 std::pair<size_t, double>
-CycleTogglingSolver::BST(const std::vector<size_t>& chain, size_t l, size_t r) {
+CycleTogglingSolver::BST(const std::vector<size_t>& chain,
+                         const std::vector<double>& weights,
+                         size_t l, size_t r) {
   // std::cout << "DFS(" << chain[l] << ", " << chain[r] << ")\n";
-  size_t m = (l + r) / 2;
+  // size_t m = (l + r) / 2;
+  size_t m = FindSeperator(weights, l, r);
   size_t v = chain[m];
   double total_resistance = tree[v].resistance;
 
@@ -243,7 +302,7 @@ CycleTogglingSolver::BST(const std::vector<size_t>& chain, size_t l, size_t r) {
   hld[v].resistance_to_left = tree[v].resistance;
 
   if (l < m) {
-    std::pair<size_t, double> p = BST(chain, l, m - 1);
+    std::pair<size_t, double> p = BST(chain, weights, l, m - 1);
     size_t left_child = p.first;
     hld[v].left_child = left_child;
     hld[left_child].parent = v;
@@ -255,7 +314,7 @@ CycleTogglingSolver::BST(const std::vector<size_t>& chain, size_t l, size_t r) {
   }
 
   if (m < r) {
-    std::pair<size_t, double> p = BST(chain, m + 1, r);
+    std::pair<size_t, double> p = BST(chain, weights, m + 1, r);
     size_t right_child = p.first;
     hld[v].right_child = right_child;
     hld[right_child].parent = v;
@@ -332,4 +391,29 @@ void CycleTogglingSolver::DecomposeTreeFlow() {
   for (size_t i = 0; i < chain_roots.size(); i++) {
     DecomposeChainFlow(chain_roots[i], 0);
   }
+}
+
+std::pair<double, double>
+CycleTogglingSolver::ComputeEnergy(const std::vector<double>& b,
+                                   const std::vector<double>& x) {
+  double primal = 0;
+  double dual = 0;
+
+  for (size_t i = 0; i < b.size(); i++) {
+    dual += 2 * b[i] * x[i];
+  }
+
+  for (size_t i = 0; i < tree.size(); i++) {
+    if (i == root) continue;
+    primal += tree[i].resistance * square(tree[i].flow);
+    dual -= square(x[i] - x[tree[i].parent]) / tree[i].resistance;
+  }
+
+  for (size_t i = 0; i < es.size(); i++) {
+    const OffTreeEdge& e = es[i];
+    primal += e.resistance * square(e.flow);
+    dual -= square(x[e.u] - x[e.v]) / e.resistance;
+  }
+
+  return std::make_pair(primal, dual);
 }

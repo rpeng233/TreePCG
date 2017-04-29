@@ -147,6 +147,7 @@ private:
   void LCA(std::vector<HelperNode>& helper, size_t cur);
   void DFS(std::vector<HelperNode>& helper, size_t cur);
   std::pair<size_t, double> BST(const std::vector<size_t>& chain,
+                                const std::vector<double>& weights,
                                 size_t l,
                                 size_t r);
   void HLD(std::vector<HelperNode>& helper, size_t root);
@@ -159,6 +160,8 @@ private:
   void DumpChain(size_t v, double flow_from_right);
   double Query(size_t v);
   void Update(size_t v, double delta);
+  std::pair<double, double>
+    ComputeEnergy(const std::vector<double>& b, const std::vector<double>& x);
 };
 
 #endif  // INCLUDE_CYCLE_TOGGLING_SOLVER_H__

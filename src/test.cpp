@@ -402,17 +402,20 @@ void flow_gradient_descent(const EdgeListR& es, const vector<FLOAT>& b) {
   std::cout << MYSQRT(r * r) << std::endl;
 }
 
-void cycle_toggling(const EdgeListR& es, const vector<FLOAT>& b) {
+void cycle_toggling(EdgeListR& es, const vector<FLOAT>& b) {
   EdgeListR tree;
   EdgeListR otes;
   AKPW(es, tree);
+  for (size_t i = 0; i < tree.Size(); i++) {
+    tree[i].resistance /= 1;
+  }
   TreeR t;
   AdjacencyArray<ArcR> g(tree);
   DijkstraTree<TreeR>(g, es.n / 2, t);
   for (size_t i = 0; i < es.Size(); i++) {
-    const EdgeR& e = es[i];
+    EdgeR& e = es[i];
     if (t[e.u].parent == e.v || t[e.v].parent == e.u) {
-      continue;
+      e.resistance /= 1;
     }
     otes.AddEdge(e);
   }
@@ -433,66 +436,112 @@ void cycle_toggling(const EdgeListR& es, const vector<FLOAT>& b) {
   // }
   // printf("\n");
   mv(-1, es, x, 1, b, r);
-  std::cout << MYSQRT(r * r) << std::endl;
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 }
 
 int main(void) {
-  size_t k = 500;
-  size_t n = k * k;
-  // size_t n = k * k * k;
+  size_t n;
+  size_t m;
+  std::cin >> n >> m;
+  EdgeListR tes;
+  EdgeListR otes;
+  EdgeListR es;
 
-  EdgeList<EdgeR> unweighted_grid;
-  EdgeList<EdgeR> weighted_grid;
-  EdgeList<EdgeR> c;
+  tes.n = otes.n = es.n = n;
 
-  std::mt19937 rng(std::random_device{}());
-  std::uniform_real_distribution<> uniform(1, 100);
-  RNG<std::uniform_real_distribution<>, std::mt19937>
-    random_resistance(uniform, rng);
-
-  grid2(k, k, unweighted_grid);
-  grid2(k, k, weighted_grid, random_resistance);
-  // grid3(k, k, k, unweighted_grid);
-  // grid3(k, k, k, weighted_grid, random_resistance);
-
-  cycle(n, c);
-
-  struct {
-    bool operator() (const EdgeR& e1, const EdgeR& e2) const {
-      return e1.resistance < e2.resistance;
-    }
-  } less;
-
-  std::sort(weighted_grid.edges.begin(), weighted_grid.edges.end(), less);
-
-  std::vector<FLOAT> unweighted_b(n);
-  std::vector<FLOAT> weighted_b(n);
-  std::vector<FLOAT> unit_b(n);
-  std::vector<FLOAT> x(n);
-
-  unit_b[0] = 1;
-  unit_b[n - 1] = -1;
-  for (auto& f : x) {
-    f = uniform(rng);
+  size_t i = 0;
+  while (i < n - 1) {
+    size_t u, v;
+    double r;
+    cin >> u >> v >> r;
+    es.AddEdge(EdgeR(u, v, r));
+    tes.AddEdge(EdgeR(u, v, r));
+    i++;
   }
-  mv(1, weighted_grid, x, 0, x, weighted_b);
-
-  for (auto& f : x) {
-    f = uniform(rng);
+  while (i < m) {
+    size_t u, v;
+    double r;
+    cin >> u >> v >> r;
+    es.AddEdge(EdgeR(u, v, r));
+    otes.AddEdge(EdgeR(u, v, r));
+    i++;
   }
-  mv(1, unweighted_grid, x, 0, x, unweighted_b);
 
-  // bst(rng);
-  // pcg(unweighted_grid, unweighted_b);
-  // resistance_vs_conductance(weighted_grid, weighted_b);
-  // min_degree(weighted_grid, weighted_b);
-  // aug_tree_pcg(weighted_grid, weighted_b, k);
-  // cholmod(weighted_grid, weighted_b);
-  // sparse_cholesky(weighted_grid, weighted_b);
-  // incomplete_cholesky(weighted_grid, weighted_b);
-  // akpw(weighted_grid);
-  // flow_gradient_descent(unweighted_grid, unit_b);
-  cycle_toggling(unweighted_grid, unit_b);
+  TreeR t;
+  AdjacencyArray<ArcR> g(tes);
+  DijkstraTree<TreeR>(g, 0, t);
+  CycleTogglingSolver s(t, otes);
+
+  std::vector<double> x(es.n);
+  std::vector<FLOAT> r(es.n);
+  std::vector<FLOAT> b(es.n);
+  b[0] = -1;
+  b[n - 1] = 1;
+
+  s.Solve(b, x);
+  mv(-1, es, x, 1, b, r);
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 
   return 0;
 }
+
+// int main(void) {
+//   size_t k = 500;
+//   size_t n = k * k;
+//   // size_t n = k * k * k;
+// 
+//   EdgeList<EdgeR> unweighted_grid;
+//   EdgeList<EdgeR> weighted_grid;
+//   EdgeList<EdgeR> c;
+// 
+//   std::mt19937 rng(std::random_device{}());
+//   std::uniform_real_distribution<> uniform(1, 100);
+//   RNG<std::uniform_real_distribution<>, std::mt19937>
+//     random_resistance(uniform, rng);
+// 
+//   grid2(k, k, unweighted_grid);
+//   grid2(k, k, weighted_grid, random_resistance);
+//   // grid3(k, k, k, unweighted_grid);
+//   // grid3(k, k, k, weighted_grid, random_resistance);
+// 
+//   cycle(n, c);
+// 
+//   struct {
+//     bool operator() (const EdgeR& e1, const EdgeR& e2) const {
+//       return e1.resistance < e2.resistance;
+//     }
+//   } less;
+// 
+//   std::sort(weighted_grid.edges.begin(), weighted_grid.edges.end(), less);
+// 
+//   std::vector<FLOAT> unweighted_b(n);
+//   std::vector<FLOAT> weighted_b(n);
+//   std::vector<FLOAT> unit_b(n);
+//   std::vector<FLOAT> x(n);
+// 
+//   unit_b[0] = 1;
+//   unit_b[n - 1] = -1;
+//   for (auto& f : x) {
+//     f = uniform(rng);
+//   }
+//   mv(1, weighted_grid, x, 0, x, weighted_b);
+// 
+//   for (auto& f : x) {
+//     f = uniform(rng);
+//   }
+//   mv(1, unweighted_grid, x, 0, x, unweighted_b);
+// 
+//   // bst(rng);
+//   // pcg(unweighted_grid, unweighted_b);
+//   // resistance_vs_conductance(weighted_grid, weighted_b);
+//   // min_degree(weighted_grid, weighted_b);
+//   // aug_tree_pcg(weighted_grid, weighted_b, k);
+//   // cholmod(weighted_grid, weighted_b);
+//   // sparse_cholesky(weighted_grid, weighted_b);
+//   // incomplete_cholesky(weighted_grid, weighted_b);
+//   // akpw(weighted_grid);
+//   // flow_gradient_descent(unweighted_grid, unit_b);
+//   cycle_toggling(unweighted_grid, unit_b);
+// 
+//   return 0;
+// }
