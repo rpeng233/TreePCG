@@ -60,53 +60,53 @@ void AugTreePrecon(const EdgeListR& es,
   cerr << "Added " << count << " off-tree edges\n";
 }
 
-void AugTreePrecon(const EdgeListR& es,
-                   CholeskySolver& precon,
-                   size_t k) {
-  EdgeList<EdgeR> tree_es;
-  EdgeList<EdgeR> off_tree_es;
-  TreeR tree;
-
-  AKPW(es, tree_es);
-  AdjacencyArray<ArcR> g(tree_es);
-  DijkstraTree(g, es.n / 2, tree);
-  g.FreeMemory();
-
-  for (size_t i = 0; i < es.Size(); i++) {
-    const EdgeR& e = es[i];
-    if (tree[e.u].parent == e.v || tree[e.v].parent == e.u) {
-      continue;
-    }
-    off_tree_es.AddEdge(e);
-  }
-
-  vector<double> stretches(off_tree_es.Size());
-  vector<size_t> indices(off_tree_es.Size());
-
-  ComputeStretch(tree, off_tree_es, stretches);
-
-  FLOAT total_stretch = std::accumulate(stretches.begin(), stretches.end(), 0);
-  cerr << "Total stretch: " << total_stretch << "\n";
-  std::mt19937 rng(std::random_device{}());
-  std::uniform_real_distribution<> unif01(0, 1);
-  AdjacencyMap aug_tree(tree);
-
-  size_t count = 0;
-  for (size_t i = 0; i < stretches.size(); i++) {
-    FLOAT p = k * stretches[i] / total_stretch;
-    if (unif01(rng) < p) {
-      aug_tree.AddEdgeR(off_tree_es.edges[i]);
-      count++;
-    }
-  }
-
-  cerr << "Added " << count << " off-tree edges\n";
-
-  Cholesky(aug_tree, precon.cholesky_factor);
-}
+// void AugTreePrecon(const EdgeListR& es,
+//                    CholeskySolver& precon,
+//                    size_t k) {
+//   EdgeList<EdgeR> tree_es;
+//   EdgeList<EdgeR> off_tree_es;
+//   TreeR tree;
+// 
+//   AKPW(es, tree_es);
+//   AdjacencyArray<ArcR> g(tree_es);
+//   DijkstraTree(g, es.n / 2, tree);
+//   g.FreeMemory();
+// 
+//   for (size_t i = 0; i < es.Size(); i++) {
+//     const EdgeR& e = es[i];
+//     if (tree[e.u].parent == e.v || tree[e.v].parent == e.u) {
+//       continue;
+//     }
+//     off_tree_es.AddEdge(e);
+//   }
+// 
+//   vector<double> stretches(off_tree_es.Size());
+//   vector<size_t> indices(off_tree_es.Size());
+// 
+//   ComputeStretch(tree, off_tree_es, stretches);
+// 
+//   FLOAT total_stretch = std::accumulate(stretches.begin(), stretches.end(), 0);
+//   cerr << "Total stretch: " << total_stretch << "\n";
+//   std::mt19937 rng(std::random_device{}());
+//   std::uniform_real_distribution<> unif01(0, 1);
+//   AdjacencyMap aug_tree(tree);
+// 
+//   size_t count = 0;
+//   for (size_t i = 0; i < stretches.size(); i++) {
+//     FLOAT p = k * stretches[i] / total_stretch;
+//     if (unif01(rng) < p) {
+//       aug_tree.AddEdgeR(off_tree_es.edges[i]);
+//       count++;
+//     }
+//   }
+// 
+//   cerr << "Added " << count << " off-tree edges\n";
+// 
+//   Cholesky(aug_tree, precon.cholesky_factor);
+// }
 
 void AugTreePrecon2(const EdgeListR& es,
-                    CholeskySolver& precon,
+                    EdgeListC& precon,
                     size_t k) {
   EdgeList<EdgeR> tree_es;
   EdgeList<EdgeR> off_tree_es;
@@ -142,11 +142,15 @@ void AugTreePrecon2(const EdgeListR& es,
     off_tree_es[i].resistance *= k * stretches[i] / total_stretch;
   }
 
+  precon = tree_es;
+
   size_t count = 0;
   std::unordered_set<size_t> set;
+  EdgeC tmp;
   for (size_t i = 0; i < k; i++) {
     size_t e = sample(rng);
-    aug_tree.AddEdgeR(off_tree_es[e]);
+    tmp = off_tree_es[e];
+    precon.AddEdge(tmp);
     if (set.find(e) == set.end()) {
       set.insert(e);
       count++;
@@ -154,8 +158,6 @@ void AugTreePrecon2(const EdgeListR& es,
   }
 
   cerr << "Added " << count << " off-tree edges\n";
-
-  Cholesky(aug_tree, precon.cholesky_factor);
 }
 
 void AugTreePrecon3(const EdgeListR& es,

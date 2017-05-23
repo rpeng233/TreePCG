@@ -12,4 +12,8 @@ void SparseCholesky2(EdgeListC& es,
                      size_t k,
                      CholeskyFactor& cholesky_factor);
 
+void SparseCholesky3(EdgeListC& es,
+                     size_t k,
+                     CholeskyFactor& cholesky_factor);
+
 #endif  // INCLUDE_SPARSE_CHOLESKY_H

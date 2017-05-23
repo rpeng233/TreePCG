@@ -80,7 +80,7 @@ void CycleTogglingSolver::Solve(const std::vector<double>& b,
   std::discrete_distribution<unsigned>
     sample(stretches.begin(), stretches.end());
 
-  size_t batch_size = tree.size() * 4;
+  size_t batch_size = tree.size();
   for (size_t i = 0; ; i++) {
     for (size_t j = 0; j < batch_size; j++) {
       size_t e = sample(rng);
@@ -95,22 +95,9 @@ void CycleTogglingSolver::Solve(const std::vector<double>& b,
               << ", p = " << energy.first << ", d = " << energy.second
               << ", gap = " << energy.first - energy.second << std::endl;
 
-    // if (energy.first - energy.second < energy.first * 1e-6) break;
-    if (i >= 30) break;
+    if (energy.first - energy.second < energy.first * 5e-1) break;
+    if (i >= 28) break;
   }
-
-  // for (size_t i = 0; i < tree.size(); i++) {
-  //   std::cout << "Node " << i << ":"
-  //             << " p = " << tree[i].parent << ','
-  //             << " r = " << tree[i].resistance << ','
-  //             << " f = " << tree[i].flow << std::endl;
-  // }
-
-  // for (size_t i = 0; i < es.size(); i++) {
-  //   std::cout << "Edge " << i << ":"
-  //             << " (" << es[i].u << ", " << es[i].v << "), "
-  //             << "f = " << es[i].flow << std::endl;
-  // }
 
   for (size_t i = 0; i < tree.size(); i++) {
     tree[i].flow = 0;
@@ -129,6 +116,7 @@ void CycleTogglingSolver::HLD(std::vector<HelperNode>& helper, size_t root) {
   for (size_t i = 0; i < helper.size(); i++) {
     if (helper[i].is_head) {
       chain.clear();
+      weights.clear();
       for (size_t j = i; ; j = helper[j].heavy) {
         chain.push_back(j);
         weights.push_back(helper[j].size - helper[j].heavy_size + w);
@@ -290,13 +278,11 @@ std::pair<size_t, double>
 CycleTogglingSolver::BST(const std::vector<size_t>& chain,
                          const std::vector<double>& weights,
                          size_t l, size_t r) {
-  // std::cout << "DFS(" << chain[l] << ", " << chain[r] << ")\n";
   // size_t m = (l + r) / 2;
   size_t m = FindSeperator(weights, l, r);
   size_t v = chain[m];
   double total_resistance = tree[v].resistance;
 
-  // preorder.push_back(v);
   hld[v].rf_sum = 0;
   hld[v].flow_to_left = 0;
   hld[v].resistance_to_left = tree[v].resistance;
@@ -358,14 +344,10 @@ void CycleTogglingSolver::ComputeTreeVoltage(std::vector<double>& x) {
        it != preorder.end();
        it++) {
     if (*it == root) {
-      // std::cout << "v[" << *it << "] = 0\n";
       x[*it] = 0;
     } else {
       const Node& u = tree[*it];
       x[*it] = x[u.parent] + u.flow * u.resistance;
-      // std::cout << *it << ' ' << u.parent << ", f = " << u.flow
-      //           << ", r = " << u.resistance << ", v[parent] = " <<x[u.parent] << ", thus v = "
-      //           << x[*it] << std::endl;
     }
   }
 }

@@ -13,6 +13,7 @@ bin/test : obj/tree_solver.o obj/cholesky.o obj/stretch.o
 bin/test : obj/akpw.o obj/aug_tree_precon.o obj/sparse_cholesky.o
 bin/test : obj/incomplete_cholesky.o
 bin/test : obj/flow_gradient_solver.o obj/cycle_toggling_solver.o
+bin/test : obj/cholmod_solver.o
 bin/test : src/test.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) --std=c++11 $< obj/*.o -o $@
 
@@ -35,6 +36,10 @@ obj/akpw.o : src/akpw.cpp
 obj/aug_tree_precon.o : include/*.h
 obj/aug_tree_precon.o : src/aug_tree_precon.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
+
+obj/cholmod_solver.o : include/*.h
+obj/cholmod_solver.o : src/cholmod_solver.cpp
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 obj/sparse_cholesky.o : include/*.h
 obj/sparse_cholesky.o : src/sparse_cholesky.cpp

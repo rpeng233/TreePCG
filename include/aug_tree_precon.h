@@ -10,12 +10,8 @@ void AugTreePrecon(const EdgeListR& es,
                    EdgeListC& precon,
                    size_t k);
 
-void AugTreePrecon(const EdgeListR& es,
-                   CholeskySolver& precon,
-                   size_t k);
-
 void AugTreePrecon2(const EdgeListR& es,
-                    CholeskySolver& precon,
+                   EdgeListC& precon,
                     size_t k);
 
 void AugTreePrecon3(const EdgeListR& es,

@@ -1,7 +1,8 @@
 #include <cassert>
 #include <iostream>
-#include <random>
 #include <map>
+#include <list>
+#include <random>
 #include <vector>
 #include "cholesky.h"
 #include "graph.h"
@@ -207,6 +208,110 @@ void SparseCholesky2(EdgeListC& es,
     }
 
     indices.clear();
+  }
+  elims[n - 1].first_arc = elim_arcs.size();
+
+  cerr << elim_arcs.size() << '\n';
+
+  for (size_t i = 0; i < elim_arcs.size(); i++) {
+    elim_arcs[i].v = old_id[elim_arcs[i].v];
+  }
+
+  for (size_t i = 0; i < elims.size(); i++) {
+    elims[i].v = old_id[elims[i].v];
+  }
+}
+
+struct Upper2 {
+  size_t n;
+  std::vector<std::list<ArcC>> neighbor_list;
+
+  Upper2(const EdgeListC& es, size_t k) {
+    n = es.n;
+    neighbor_list.resize(n);
+    for (size_t i = 0; i < es.edges.size(); i++) {
+      size_t u = std::min(es[i].u, es[i].v);
+      size_t v = std::max(es[i].u, es[i].v);
+      for (size_t j = 0; j < k; j++) {
+        neighbor_list[u].emplace_back(v, es[i].conductance / k);
+      }
+    }
+  }
+};
+
+void SparseCholesky3(EdgeListC& es,
+                     size_t k,
+                     CholeskyFactor& cholesky_factor) {
+  size_t n = es.n;
+  cholesky_factor.n = n;
+  vector<size_t> new_id(n);
+
+  for (size_t i = 0; i < n; i++) {
+    new_id[i] = i;
+  }
+  std::random_shuffle(new_id.begin(), new_id.end());
+
+  vector<size_t> old_id(n);
+
+  for (size_t i = 0; i < n; i++) {
+    old_id[new_id[i]] = i;
+  }
+
+  Upper2 g(es, 5 * k * k);
+  std::vector<std::list<ArcC>> neighbor_list = g.neighbor_list;
+  vector<EliminatedVertex>& elims = cholesky_factor.elims;
+  vector<ArcC>& elim_arcs = cholesky_factor.elim_arcs;
+
+  typedef std::list<ArcC>::const_iterator IterType;
+
+  std::mt19937 rng(std::random_device{}());
+  vector<size_t> neighbors;
+  vector<double> weights;
+  std::map<size_t, FLOAT> arcs;
+
+  elims.resize(n);
+  for (size_t i = 0; i < n - 1; i++) {
+    if (i % 1000 == 0) {
+      cout << i << endl;
+    }
+    elims[i].v = i;
+    elims[i].degree = 0;
+    elims[i].first_arc = elim_arcs.size();
+
+    arcs.clear();
+    neighbors.clear();
+    weights.clear();
+    for (IterType it = neighbor_list[i].begin();
+         it != neighbor_list[i].end();
+         ++it) {
+      arcs[it->v] += it->conductance;
+      neighbors.push_back(it->v);
+      weights.push_back(static_cast<double>(it->conductance));
+    }
+    for (std::map<size_t, FLOAT>::const_iterator it = arcs.begin();
+         it != arcs.end();
+         ++it) {
+      elims[i].degree += it->second;
+      elim_arcs.push_back(ArcC(it->first, it->second));
+    }
+
+    std::discrete_distribution<unsigned>
+      sample(weights.begin(), weights.end());
+    std::uniform_int_distribution<unsigned>
+      uniform(0, neighbors.size() - 1);
+
+    for (size_t j = 0; j < neighbors.size(); j++) {
+      size_t a1 = sample(rng);
+      size_t a2 = uniform(rng);
+      if (a1 == a2) continue;
+      FLOAT w1 = weights[a1];
+      FLOAT w2 = weights[a2];
+      FLOAT c = w1 * w2 / (w1 + w2);
+      size_t v1 = std::min(neighbors[a1], neighbors[a2]);
+      size_t v2 = std::max(neighbors[a1], neighbors[a2]);
+      neighbor_list[v1].emplace_back(v2, c);
+    }
+    neighbor_list[i].clear();
   }
   elims[n - 1].first_arc = elim_arcs.size();
 
