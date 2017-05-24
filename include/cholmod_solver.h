@@ -16,7 +16,7 @@ private:
   cholmod_dense *E = NULL;
 
 public:
-  CholmodSolver(const EdgeListC& es, cholmod_common *c=nullptr);
+  CholmodSolver(const EdgeListC& es, cholmod_common *c=NULL);
 
   void Solve(const std::vector<FLOAT>& b_, std::vector<FLOAT>& x_);
 

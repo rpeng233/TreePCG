@@ -4,7 +4,7 @@
 
 CholmodSolver::CholmodSolver(const EdgeListC& es, cholmod_common *c) {
   common = c;
-  if (common == nullptr) {
+  if (common == NULL) {
     common = &common_;
     cholmod_start(common);
   }

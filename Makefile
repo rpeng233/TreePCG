@@ -15,7 +15,7 @@ bin/test : obj/incomplete_cholesky.o
 bin/test : obj/flow_gradient_solver.o obj/cycle_toggling_solver.o
 bin/test : obj/cholmod_solver.o
 bin/test : src/test.cpp
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) --std=c++11 $< obj/*.o -o $@
+	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@ $(LDFLAGS)
 
 obj/tree_solver.o : include/*.h
 obj/tree_solver.o : src/tree_solver.cpp
@@ -55,7 +55,7 @@ obj/flow_gradient_solver.o : src/flow_gradient_solver.cpp
 
 obj/cycle_toggling_solver.o : include/*.h
 obj/cycle_toggling_solver.o : src/cycle_toggling_solver.cpp
-	$(CXX) $(CXXFLAGS) $< -c -o $@
+	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
 # obj/mmio.o : src/mmio.c include/mmio.h
 # 	$(CC) $(CXXFLAGS) $< -c -o $@
