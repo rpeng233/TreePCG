@@ -72,7 +72,6 @@ CholmodSolver::CholmodSolver(const EdgeListC& es, cholmod_common *c) {
 
 void CholmodSolver::Solve(const std::vector<FLOAT>& b_,
                           std::vector<FLOAT>& x_) {
-  cholmod_dense *b = cholmod_zeros(n, 1, CHOLMOD_REAL, common);
   double* bx = reinterpret_cast<double *>(b->x);
 
   for (size_t i = 0; i < n; i++) {

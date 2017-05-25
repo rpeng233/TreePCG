@@ -6,6 +6,17 @@
 
 using std::vector;
 
+void AugTreePrecon(const EdgeListR& tree_es,
+                   const std::vector<double>& stretches,
+                   const EdgeListR& off_tree_es,
+                   EdgeListC& precon,
+                   size_t k);
+
+void AugTreePrecon(const EdgeListR& es,
+                   const EdgeListR& tree_es,
+                   EdgeListC& precon,
+                   size_t k);
+
 void AugTreePrecon(const EdgeListR& es,
                    EdgeListC& precon,
                    size_t k);

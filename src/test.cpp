@@ -129,13 +129,16 @@ void dijkstra(const EdgeList<EdgeR>& es) {
 }
 */
 
-void aug_tree_pcg(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, size_t k) {
+void aug_tree_pcg(const EdgeList<EdgeR>& es,
+                  const EdgeListR& tree_es,
+                  const vector<FLOAT>& b,
+                  size_t k) {
   cout << "===== aug-tree PCG =====\n";
   cout << "n = " << es.n << ", m = " << es.Size() << endl;
   EdgeListC aug_tree;
 
   timer.tic("constructing augmented tree... ");
-  AugTreePrecon(es, aug_tree, 500 * k);
+  AugTreePrecon(es, aug_tree, k);
   timer.toc();
 
   timer.tic("factorizing... ");
@@ -204,7 +207,7 @@ void incomplete_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
 
   timer.tic("Constructing preconditioner... ");
   // SparseCholesky(g, log(es.n) + 1, precon.cholesky_factor);
-  IncompleteCholesky(es3, 1e-5, precon.cholesky_factor);
+  IncompleteCholesky(es3, 1e-4, precon.cholesky_factor);
   timer.toc();
 
   PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
@@ -495,24 +498,26 @@ void cycle_toggling(EdgeListR& es, const vector<FLOAT>& b) {
 
 int main(void) {
   size_t k = 1000;
-  size_t n = k * k;
-  // size_t n = k * k * k;
 
   EdgeList<EdgeR> unweighted_grid;
   EdgeList<EdgeR> weighted_grid;
   EdgeList<EdgeR> c;
+  EdgeListR rec_c;
 
   std::mt19937 rng(std::random_device{}());
   std::uniform_real_distribution<> uniform(1, 100);
   RNG<std::uniform_real_distribution<>, std::mt19937>
     random_resistance(uniform, rng);
 
-  grid2(k, k, unweighted_grid);
-  grid2(k, k, weighted_grid, random_resistance);
-  // grid3(k, k, k, unweighted_grid);
-  // grid3(k, k, k, weighted_grid, random_resistance);
+  // grid2(k, k, unweighted_grid);
+  // grid2(k, k, weighted_grid, random_resistance);
+  grid3(k, k, 2, unweighted_grid);
+  grid3(k, k, 2, weighted_grid, random_resistance);
 
-  cycle(n, c);
+  size_t n = unweighted_grid.n;
+
+  // cycle(n, c);
+  // recursive_c(k, k, rec_c);
 
   struct {
     bool operator() (const EdgeR& e1, const EdgeR& e2) const {
@@ -543,10 +548,10 @@ int main(void) {
   // pcg(unweighted_grid, unweighted_b);
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
-  aug_tree_pcg(weighted_grid, unit_b, k);
-  // cholmod(weighted_grid, weighted_b);
+  // aug_tree_pcg(unweighted_grid, rec_c, unit_b, 250 * sqrt(n));
+  // cholmod(unweighted_grid, unit_b);
   // sparse_cholesky(weighted_grid, weighted_b);
-  // incomplete_cholesky(unweighted_grid, unit_b);
+  incomplete_cholesky(unweighted_grid, unit_b);
   // akpw(weighted_grid);
   // flow_gradient_descent(unweighted_grid, unit_b);
   // cycle_toggling(unweighted_grid, unit_b);

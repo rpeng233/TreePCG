@@ -63,22 +63,22 @@ void grid3(size_t n1, size_t n2, size_t n3,
       for (size_t k = 0; k < n3; k++) {
         if (i < n1 - 1) {
           es.AddEdge(EdgeT(
-              i * n1 * n2 + j * n2 + k,
-              (i + 1) * n1 * n2 + j * n2 + k,
+              i * n2 * n3 + j * n3 + k,
+              (i + 1) * n2 * n3 + j * n3 + k,
               wgen()
           ));
         }
         if (j < n2 - 1) {
           es.AddEdge(EdgeT(
-              i * n1 * n2 + j * n2 + k,
-              i * n1 * n2 + (j + 1) * n2 + k,
+              i * n2 * n3 + j * n3 + k,
+              i * n2 * n3 + (j + 1) * n3 + k,
               wgen()
           ));
         }
         if (k < n3 - 1) {
           es.AddEdge(EdgeT(
-              i * n1 * n2 + j * n2 + k,
-              i * n1 * n2 + j * n2 + k + 1,
+              i * n2 * n3 + j * n3 + k,
+              i * n2 * n3 + j * n3 + k + 1,
               wgen()
           ));
         }
