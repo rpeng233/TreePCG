@@ -11,9 +11,9 @@ all : bin/test # bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
 bin/test : include/*.h
 bin/test : obj/tree_solver.o obj/cholesky.o obj/stretch.o
 bin/test : obj/akpw.o obj/aug_tree_precon.o obj/sparse_cholesky.o
-bin/test : obj/incomplete_cholesky.o
+bin/test : obj/cholmod_solver.o obj/incomplete_cholesky.o
 bin/test : obj/flow_gradient_solver.o obj/cycle_toggling_solver.o
-bin/test : obj/cholmod_solver.o
+bin/test : obj/mmio.o
 bin/test : src/test.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@ $(LDFLAGS)
 
@@ -57,8 +57,8 @@ obj/cycle_toggling_solver.o : include/*.h
 obj/cycle_toggling_solver.o : src/cycle_toggling_solver.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
-# obj/mmio.o : src/mmio.c include/mmio.h
-# 	$(CC) $(CXXFLAGS) $< -c -o $@
+obj/mmio.o : src/mmio.c include/mmio.h
+	$(CXX) $(CXXFLAGS) -w $< -c -o $@
 
 bin/gen_cayley : generators/gen_cayley.cpp include/graph.h
 	$(CXX) $(CXXFLAGS) $< -o $@

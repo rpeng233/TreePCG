@@ -64,10 +64,54 @@
 
 namespace IO {
 
-void WriteGraph(FILE *fout, const EdgeListC &es) {
+template <typename EdgeT>
+void WriteEdgeList(FILE *fout, const EdgeList<EdgeT>& es) {
   fprintf(fout, "%zu %zu\n", es.n, es.Size());
   for (size_t i = 0; i < es.Size(); i++) {
-    fprintf(fout, "%zu %zu %f\n", es[i].u, es[i].v, (double) es[i].conductance);
+    fprintf(fout, "%zu %zu %f\n", es[i].u, es[i].v, (double) es[i].Conductance());
+  }
+}
+
+template <typename EdgeT>
+void ReadEdgeList(FILE *fin, EdgeList<EdgeT> &es) {
+  size_t n, m;
+  double c;
+
+  fscanf(fin, "%zu %zu", &n, &m);
+  es.n = n;
+  es.Resize(m);
+  for (size_t i = 0; i < m; i++) {
+    fscanf(fin, "%zu %zu %lf", &es[i].u, &es[i].v, &c);
+    es[i].SetConductance(c);
+  }
+}
+
+template <typename EdgeT>
+void WriteMtx(FILE *fout, const EdgeList<EdgeT>& es) {
+  MM_typecode matcode;
+
+  mm_initialize_typecode(&matcode);
+  mm_set_matrix(&matcode);
+  mm_set_coordinate(&matcode);
+  mm_set_real(&matcode);
+  mm_set_symmetric(&matcode);
+  mm_write_banner(fout, matcode);
+  mm_write_mtx_crd_size(fout, es.n, es.n, es.n + es.Size());
+
+  std::vector<double> degrees(es.n);
+
+  for (size_t i = 0; i < es.Size(); i++) {
+    const EdgeT& e = es[i];
+    double c = e.Conductance();
+    size_t u = std::max(e.u, e.v);
+    size_t v = std::min(e.u, e.v);
+    degrees[u] += c;
+    degrees[v] += c;
+    fprintf(fout, "%zu %zu %f\n", u + 1, v + 1, c);
+  }
+
+  for (size_t i = 0; i < degrees.size(); i++) {
+    fprintf(fout, "%zu %zu %f\n", i + 1, i + 1, degrees[i]);
   }
 }
 
@@ -78,30 +122,17 @@ void WriteVector(FILE *fout, const std::vector<FLOAT>& xs) {
   }
 }
 
-void ReadGraph(FILE *fin, EdgeListC &es) {
-  size_t n, m;
-  double c;
-
-  fscanf(fin, "%zu %zu", &n, &m);
-  es.n = n;
-  es.Resize(m);
-  for (size_t i = 0; i < m; i++) {
-    fscanf(fin, "%zu %zu %f", &es[i].u, &es[i].v, &c);
-    es[i].conductance = c;
-  }
-}
-
-void ReadVector(std::vector<FLOAT>& xs, std::istream& in) {
-  size_t n;
-  double x;
-
-  fscanf(fin, "%zu", &n);
-  xs.resize(n);
-  for (size_t i = 0; i < n; i++) {
-    fscanf(fin, "%f", &x);
-    xs[i] = x;
-  }
-}
+// void ReadVector(std::vector<FLOAT>& xs, std::istream& in) {
+//   size_t n;
+//   double x;
+// 
+//   fscanf(fin, "%zu", &n);
+//   xs.resize(n);
+//   for (size_t i = 0; i < n; i++) {
+//     fscanf(fin, "%f", &x);
+//     xs[i] = x;
+//   }
+// }
 
 // const char ASCII = 0;
 // const char BINARY = 1;

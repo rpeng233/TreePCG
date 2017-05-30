@@ -18,6 +18,7 @@
 #include "graph_gen.h"
 #include "identity_solver.h"
 #include "incomplete_cholesky.h"
+#include "io.h"
 #include "matrix.h"
 #include "pcg_solver.h"
 #include "sparse_cholesky.h"
@@ -497,7 +498,7 @@ void cycle_toggling(EdgeListR& es, const vector<FLOAT>& b) {
 // }
 
 int main(void) {
-  size_t k = 1000;
+  size_t k = 3;
 
   EdgeList<EdgeR> unweighted_grid;
   EdgeList<EdgeR> weighted_grid;
@@ -509,10 +510,10 @@ int main(void) {
   RNG<std::uniform_real_distribution<>, std::mt19937>
     random_resistance(uniform, rng);
 
-  // grid2(k, k, unweighted_grid);
-  // grid2(k, k, weighted_grid, random_resistance);
-  grid3(k, k, 2, unweighted_grid);
-  grid3(k, k, 2, weighted_grid, random_resistance);
+  grid2(k, k, unweighted_grid);
+  grid2(k, k, weighted_grid, random_resistance);
+  // grid3(k, k, 2, unweighted_grid);
+  // grid3(k, k, 2, weighted_grid, random_resistance);
 
   size_t n = unweighted_grid.n;
 
@@ -555,6 +556,8 @@ int main(void) {
   // akpw(weighted_grid);
   // flow_gradient_descent(unweighted_grid, unit_b);
   // cycle_toggling(unweighted_grid, unit_b);
+
+  IO::WriteMtx(stdout, unweighted_grid);
 
   return 0;
 }
