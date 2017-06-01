@@ -498,7 +498,7 @@ void cycle_toggling(EdgeListR& es, const vector<FLOAT>& b) {
 // }
 
 int main(void) {
-  size_t k = 3;
+  size_t k = 1000;
 
   EdgeList<EdgeR> unweighted_grid;
   EdgeList<EdgeR> weighted_grid;
@@ -549,15 +549,15 @@ int main(void) {
   // pcg(unweighted_grid, unweighted_b);
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
-  // aug_tree_pcg(unweighted_grid, rec_c, unit_b, 250 * sqrt(n));
+  aug_tree_pcg(unweighted_grid, rec_c, unit_b, 150 * sqrt(n));
   // cholmod(unweighted_grid, unit_b);
   // sparse_cholesky(weighted_grid, weighted_b);
-  incomplete_cholesky(unweighted_grid, unit_b);
+  // incomplete_cholesky(unweighted_grid, unit_b);
   // akpw(weighted_grid);
   // flow_gradient_descent(unweighted_grid, unit_b);
   // cycle_toggling(unweighted_grid, unit_b);
 
-  IO::WriteMtx(stdout, unweighted_grid);
+  // WriteMtx(stdout, unweighted_grid);
 
   return 0;
 }

@@ -62,27 +62,25 @@
 #include "matrix.h"
 #include "graph.h"
 
-namespace IO {
-
 template <typename EdgeT>
 void WriteEdgeList(FILE *fout, const EdgeList<EdgeT>& es) {
   fprintf(fout, "%zu %zu\n", es.n, es.Size());
   for (size_t i = 0; i < es.Size(); i++) {
-    fprintf(fout, "%zu %zu %f\n", es[i].u, es[i].v, (double) es[i].Conductance());
+    fprintf(fout, "%zu %zu %f\n", es[i].u, es[i].v, (double) es[i].Resistance());
   }
 }
 
 template <typename EdgeT>
 void ReadEdgeList(FILE *fin, EdgeList<EdgeT> &es) {
   size_t n, m;
-  double c;
+  double r;
 
   fscanf(fin, "%zu %zu", &n, &m);
   es.n = n;
   es.Resize(m);
   for (size_t i = 0; i < m; i++) {
-    fscanf(fin, "%zu %zu %lf", &es[i].u, &es[i].v, &c);
-    es[i].SetConductance(c);
+    fscanf(fin, "%zu %zu %lf", &es[i].u, &es[i].v, &r);
+    es[i].SetResistance(r);
   }
 }
 
@@ -122,6 +120,8 @@ void WriteVector(FILE *fout, const std::vector<FLOAT>& xs) {
   }
 }
 
+// namespace IO {
+// 
 // void ReadVector(std::vector<FLOAT>& xs, std::istream& in) {
 //   size_t n;
 //   double x;
@@ -491,5 +491,5 @@ void WriteVector(FILE *fout, const std::vector<FLOAT>& xs) {
 //   CloseOutputFile(file_out);
 // }
 
-}      // namespace IO
+// }      // namespace IO
 #endif  // INCLUDE_IO_H_
