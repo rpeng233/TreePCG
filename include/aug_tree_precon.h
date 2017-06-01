@@ -9,24 +9,27 @@ using std::vector;
 void AugTreePrecon(const EdgeListR& tree_es,
                    const std::vector<double>& stretches,
                    const EdgeListR& off_tree_es,
-                   EdgeListC& precon,
+                   EdgeListC& aug_tree,
+                   size_t top,
                    size_t k);
 
 void AugTreePrecon(const EdgeListR& es,
                    const EdgeListR& tree_es,
-                   EdgeListC& precon,
+                   EdgeListC& aug_tree,
+                   size_t top,
                    size_t k);
 
 void AugTreePrecon(const EdgeListR& es,
-                   EdgeListC& precon,
+                   EdgeListC& aug_tree,
+                   size_t top,
                    size_t k);
 
 void AugTreePrecon2(const EdgeListR& es,
-                   EdgeListC& precon,
+                   EdgeListC& aug_tree,
                     size_t k);
 
 void AugTreePrecon3(const EdgeListR& es,
-                    CholeskySolver& precon,
+                    CholeskySolver& aug_tree,
                     size_t k);
 
 #endif  // INCLUDE_AUG_TREE_PRECON_H_

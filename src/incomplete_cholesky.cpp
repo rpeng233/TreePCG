@@ -108,8 +108,6 @@ void IncompleteCholesky(EdgeListC& es,
   cholesky_factor.n = n;
   AdjacencyArray<ArcC> g(es);
 
-  cerr << "yay\n";
-
   struct {
     bool operator()(const size_t v, const ArcC& a) {
       return v < a.v;

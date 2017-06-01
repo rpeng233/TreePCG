@@ -15,7 +15,8 @@ using std::endl;
 void AugTreePrecon(const EdgeListR& tree_es,
                    const std::vector<double>& stretches,
                    const EdgeListR& off_tree_es,
-                   EdgeListC& precon,
+                   EdgeListC& aug_tree,
+                   size_t top,
                    size_t k) {
   FLOAT total_stretch = std::accumulate(stretches.begin(), stretches.end(), 0);
   cerr << "Total stretch: " << total_stretch << "\n";
@@ -39,35 +40,36 @@ void AugTreePrecon(const EdgeListR& tree_es,
   }
   std::sort(ids.begin(), ids.end(), comp);
 
-  precon = tree_es;
+  aug_tree = tree_es;
   size_t count = 0;
   EdgeC tmp;
 
-  for (size_t i = 0; i < k; i++) {
+  for (size_t i = 0; i < top && i < ids.size(); i++) {
     tmp = off_tree_es[ids[i]];
     total_stretch -= stretches[ids[i]];
-    precon.AddEdge(tmp);
+    aug_tree.AddEdge(tmp);
     count++;
   }
 
   cerr << "Added the top " << count << " stretched off-tree edges\n";
   count = 0;
 
-  for (size_t i = k; i < ids.size(); i++) {
+  for (size_t i = top; i < ids.size(); i++) {
     FLOAT p = k * stretches[ids[i]] / total_stretch;
     if (unif01(rng) < p) {
       tmp = off_tree_es[ids[i]];
-      precon.AddEdge(tmp);
+      aug_tree.AddEdge(tmp);
       count++;
     }
   }
 
-  cerr << "Added " << count << " sampled off-tree edges\n";
+  cerr << "Sampled " << count << " off-tree edges from the rest\n";
 }
 
 void AugTreePrecon(const EdgeListR& es,
                    const EdgeListR& tree_es,
-                   EdgeListC& precon,
+                   EdgeListC& aug_tree,
+                   size_t top,
                    size_t k) {
   AdjacencyArray<ArcR> g(tree_es);
   TreeR tree;
@@ -87,16 +89,17 @@ void AugTreePrecon(const EdgeListR& es,
   vector<double> stretches(off_tree_es.Size());
   ComputeStretch(tree, off_tree_es, stretches);
 
-  AugTreePrecon(tree_es, stretches, off_tree_es, precon, k);
+  AugTreePrecon(tree_es, stretches, off_tree_es, aug_tree, top, k);
 }
 
 void AugTreePrecon(const EdgeListR& es,
-                   EdgeListC& precon,
+                   EdgeListC& aug_tree,
+                   size_t top,
                    size_t k) {
   EdgeListR tree_es;
 
   AKPW(es, tree_es);
-  AugTreePrecon(es, tree_es, precon, k);
+  AugTreePrecon(es, tree_es, aug_tree, top, k);
 }
 
 // void AugTreePrecon(const EdgeListR& es,

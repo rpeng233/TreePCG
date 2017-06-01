@@ -36,7 +36,7 @@ class Timer {
   std::string close;
 
 public:
-  Timer(const std::string& o=">>>> ", const std::string& c="<<<< ")
+  Timer(const std::string& o=">>>>> ", const std::string& c="<<<<< ")
     : open(o), close(c) {
     start = std::chrono::steady_clock::now();
   }
@@ -49,7 +49,7 @@ public:
   void toc() {
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> duration = end - start;
-    cout << close << "Finished in " << duration.count() << "s" << endl;
+    cout << close << "Finished in " << duration.count() << "s\n" << endl;
   }
 };
 
@@ -133,13 +133,14 @@ void dijkstra(const EdgeList<EdgeR>& es) {
 void aug_tree_pcg(const EdgeList<EdgeR>& es,
                   const EdgeListR& tree_es,
                   const vector<FLOAT>& b,
+                  size_t top,
                   size_t k) {
   cout << "===== aug-tree PCG =====\n";
   cout << "n = " << es.n << ", m = " << es.Size() << endl;
   EdgeListC aug_tree;
 
   timer.tic("constructing augmented tree... ");
-  AugTreePrecon(es, aug_tree, k);
+  AugTreePrecon(es, aug_tree, top, k);
   timer.toc();
 
   timer.tic("factorizing... ");
@@ -196,7 +197,7 @@ void sparse_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   return;
 }
 
-void incomplete_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
+void incomplete_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b, double eps) {
   cout << "===== incomplete cholesky PCG =====\n";
   cout << "n = " << es.n << ", m = " << es.Size() << endl;
   CholeskySolver precon;
@@ -207,8 +208,7 @@ void incomplete_cholesky(const EdgeList<EdgeR>& es, const vector<FLOAT>& b) {
   EdgeList<EdgeC> es3(es);
 
   timer.tic("Constructing preconditioner... ");
-  // SparseCholesky(g, log(es.n) + 1, precon.cholesky_factor);
-  IncompleteCholesky(es3, 1e-4, precon.cholesky_factor);
+  IncompleteCholesky(es3, eps, precon.cholesky_factor);
   timer.toc();
 
   PCGSolver<EdgeList<EdgeC>, CholeskySolver> s(&es2, &precon);
@@ -498,7 +498,7 @@ void cycle_toggling(EdgeListR& es, const vector<FLOAT>& b) {
 // }
 
 int main(void) {
-  size_t k = 1000;
+  // size_t k = 3000;
 
   EdgeList<EdgeR> unweighted_grid;
   EdgeList<EdgeR> weighted_grid;
@@ -510,12 +510,15 @@ int main(void) {
   RNG<std::uniform_real_distribution<>, std::mt19937>
     random_resistance(uniform, rng);
 
-  grid2(k, k, unweighted_grid);
-  grid2(k, k, weighted_grid, random_resistance);
-  // grid3(k, k, 2, unweighted_grid);
-  // grid3(k, k, 2, weighted_grid, random_resistance);
+  // grid2(k, k, unweighted_grid);
+  // grid2(k, k, weighted_grid, random_resistance);
+  // // grid3(k, k, k, unweighted_grid);
+  // // grid3(k, k, k, weighted_grid, random_resistance);
+
+  ReadEdgeList(stdin, unweighted_grid);
 
   size_t n = unweighted_grid.n;
+  std::cout << n << std::endl;
 
   // cycle(n, c);
   // recursive_c(k, k, rec_c);
@@ -535,10 +538,10 @@ int main(void) {
 
   unit_b[0] = 1;
   unit_b[n - 1] = -1;
-  for (auto& f : x) {
-    f = uniform(rng);
-  }
-  mv(1, weighted_grid, x, 0, x, weighted_b);
+  // for (auto& f : x) {
+  //   f = uniform(rng);
+  // }
+  // mv(1, weighted_grid, x, 0, x, weighted_b);
 
   for (auto& f : x) {
     f = uniform(rng);
@@ -549,10 +552,10 @@ int main(void) {
   // pcg(unweighted_grid, unweighted_b);
   // resistance_vs_conductance(weighted_grid, weighted_b);
   // min_degree(weighted_grid, weighted_b);
-  aug_tree_pcg(unweighted_grid, rec_c, unit_b, 150 * sqrt(n));
+  aug_tree_pcg(unweighted_grid, rec_c, unit_b, 70 * sqrt(n), 70 * sqrt(n));
   // cholmod(unweighted_grid, unit_b);
   // sparse_cholesky(weighted_grid, weighted_b);
-  // incomplete_cholesky(unweighted_grid, unit_b);
+  // incomplete_cholesky(unweighted_grid, unit_b, 1e-2);
   // akpw(weighted_grid);
   // flow_gradient_descent(unweighted_grid, unit_b);
   // cycle_toggling(unweighted_grid, unit_b);

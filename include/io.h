@@ -71,7 +71,7 @@ void WriteEdgeList(FILE *fout, const EdgeList<EdgeT>& es) {
 }
 
 template <typename EdgeT>
-void ReadEdgeList(FILE *fin, EdgeList<EdgeT> &es) {
+void ReadEdgeList(FILE *fin, EdgeList<EdgeT>& es) {
   size_t n, m;
   double r;
 
