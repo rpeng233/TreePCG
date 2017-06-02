@@ -6,7 +6,7 @@ CXXFLAGS += -O3
 # CXXFLAGS += -ffast-math
 LDFLAGS += -lcholmod -lamd -lcolamd -lcamd -lccolamd -lmetis
 
-all : bin/test # bin/gen_cayley bin/graph_to_matrix bin/graph_to_graph
+all : bin/test bin/es2mtx
 
 bin/test : include/*.h
 bin/test : obj/tree_solver.o obj/cholesky.o obj/stretch.o
@@ -16,6 +16,11 @@ bin/test : obj/flow_gradient_solver.o obj/cycle_toggling_solver.o
 bin/test : obj/mmio.o
 bin/test : src/test.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@ $(LDFLAGS)
+
+bin/es2mtx : include/*.h
+bin/es2mtx : obj/mmio.o
+bin/es2mtx : src/es2mtx.cpp
+	$(CXX) $(CXXFLAGS) $< obj/mmio.o -o $@
 
 obj/tree_solver.o : include/*.h
 obj/tree_solver.o : src/tree_solver.cpp

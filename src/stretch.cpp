@@ -25,7 +25,7 @@ public:
 };
 
 struct Frame {
-  const size_t id;
+  size_t id;
   size_t child;
 
   Frame(size_t i, size_t c) : id(i), child(c) { }

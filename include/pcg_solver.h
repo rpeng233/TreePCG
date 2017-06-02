@@ -48,7 +48,7 @@ public:
       mv(-1, *A, x, 1, b, r);                  // r = b - A * x
       res = MYSQRT(r * r);
       if (i % 10 == 0) {
-        std::cout << i << '\t' << res << std::endl;
+        std::cout << i << '\t' << res / bnorm << std::endl;
       }
       i++;
       if (res / bnorm < tol) {

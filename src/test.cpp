@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -142,6 +143,11 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es,
   timer.tic("constructing augmented tree... ");
   AugTreePrecon(es, aug_tree, top, k);
   timer.toc();
+
+  // FILE *f = fopen("precon.mtx", "w");
+  // WriteMtx(f, aug_tree);
+  // fclose(f);
+  // return;
 
   timer.tic("factorizing... ");
   cholmod_common common;
@@ -498,30 +504,34 @@ void cycle_toggling(EdgeListR& es, const vector<FLOAT>& b) {
 // }
 
 int main(void) {
-  // size_t k = 3000;
+  size_t k = 100;
 
-  EdgeList<EdgeR> unweighted_grid;
-  EdgeList<EdgeR> weighted_grid;
-  EdgeList<EdgeR> c;
-  EdgeListR rec_c;
+  EdgeList<EdgeR> es;
+  EdgeListR tree_es;
 
   std::mt19937 rng(std::random_device{}());
   std::uniform_real_distribution<> uniform(1, 100);
   RNG<std::uniform_real_distribution<>, std::mt19937>
     random_resistance(uniform, rng);
 
-  // grid2(k, k, unweighted_grid);
-  // grid2(k, k, weighted_grid, random_resistance);
-  // // grid3(k, k, k, unweighted_grid);
-  // // grid3(k, k, k, weighted_grid, random_resistance);
+  // grid2(k, k, es);
+  // grid2(k, k, es, random_resistance);
+  // grid3(k, k, k, es);
+  // grid3(k, k, k, es, random_resistance);
+  // cycle(n, es);
+  // recursive_c(k, k, tree_es);
 
-  ReadEdgeList(stdin, unweighted_grid);
+  ReadEdgeList(stdin, es);
+  // FILE *f = fopen("grid.txt", "w");
+  // WriteEdgeList(f, es);
+  // fclose(f);
+  // f = fopen("grid.mtx", "w");
+  // WriteMtx(f, es);
+  // fclose(f);
+  // return 0;
 
-  size_t n = unweighted_grid.n;
-  std::cout << n << std::endl;
+  size_t n = es.n;
 
-  // cycle(n, c);
-  // recursive_c(k, k, rec_c);
 
   struct {
     bool operator() (const EdgeR& e1, const EdgeR& e2) const {
@@ -529,38 +539,33 @@ int main(void) {
     }
   } less;
 
-  std::sort(weighted_grid.edges.begin(), weighted_grid.edges.end(), less);
+  std::sort(es.edges.begin(), es.edges.end(), less);
 
-  std::vector<FLOAT> unweighted_b(n);
-  std::vector<FLOAT> weighted_b(n);
+  std::vector<FLOAT> random_b(n);
   std::vector<FLOAT> unit_b(n);
   std::vector<FLOAT> x(n);
 
-  unit_b[0] = 1;
-  unit_b[n - 1] = -1;
-  // for (auto& f : x) {
-  //   f = uniform(rng);
-  // }
-  // mv(1, weighted_grid, x, 0, x, weighted_b);
+  unit_b[0] = 100;
+  unit_b[n - 1] = -100;
 
   for (auto& f : x) {
     f = uniform(rng);
   }
-  mv(1, unweighted_grid, x, 0, x, unweighted_b);
+  mv(1, es, x, 0, x, random_b);
 
   // bst(rng);
-  // pcg(unweighted_grid, unweighted_b);
-  // resistance_vs_conductance(weighted_grid, weighted_b);
-  // min_degree(weighted_grid, weighted_b);
-  aug_tree_pcg(unweighted_grid, rec_c, unit_b, 70 * sqrt(n), 70 * sqrt(n));
-  // cholmod(unweighted_grid, unit_b);
-  // sparse_cholesky(weighted_grid, weighted_b);
-  // incomplete_cholesky(unweighted_grid, unit_b, 1e-2);
-  // akpw(weighted_grid);
-  // flow_gradient_descent(unweighted_grid, unit_b);
-  // cycle_toggling(unweighted_grid, unit_b);
+  // pcg(es, random_b);
+  // resistance_vs_conductance(es, random_b);
+  // min_degree(es, random_b);
+  // aug_tree_pcg(es, tree_es, unit_b, 100 * sqrt(n), 100 * sqrt(n));
+  // cholmod(es, unit_b);
+  // sparse_cholesky(es, random_b);
+  incomplete_cholesky(es, unit_b, 1e-6);
+  // akpw(es);
+  // flow_gradient_descent(es, unit_b);
+  // cycle_toggling(es, unit_b);
 
-  // WriteMtx(stdout, unweighted_grid);
+  // WriteMtx(stdout, es);
 
   return 0;
 }

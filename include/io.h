@@ -53,20 +53,21 @@
 #ifndef INCLUDE_IO_H__
 #define INCLUDE_IO_H__
 
-#include <utility>
-#include <string>
-#include <vector>
+#include <cstdio>
 #include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 #include "common.h"
-#include "mmio.h"
-#include "matrix.h"
 #include "graph.h"
+#include "matrix.h"
+#include "mmio.h"
 
 template <typename EdgeT>
 void WriteEdgeList(FILE *fout, const EdgeList<EdgeT>& es) {
-  fprintf(fout, "%zu %zu\n", es.n, es.Size());
+  fprintf(fout, "%lu %lu\n", es.n, es.Size());
   for (size_t i = 0; i < es.Size(); i++) {
-    fprintf(fout, "%zu %zu %f\n", es[i].u, es[i].v, (double) es[i].Resistance());
+    fprintf(fout, "%lu %lu %f\n", es[i].u, es[i].v, (double) es[i].Resistance());
   }
 }
 
@@ -74,12 +75,15 @@ template <typename EdgeT>
 void ReadEdgeList(FILE *fin, EdgeList<EdgeT>& es) {
   size_t n, m;
   double r;
+  int ret;
 
-  fscanf(fin, "%zu %zu", &n, &m);
+  ret = fscanf(fin, "%lu %lu", &n, &m);
+  assert(ret == 2);
   es.n = n;
   es.Resize(m);
   for (size_t i = 0; i < m; i++) {
-    fscanf(fin, "%zu %zu %lf", &es[i].u, &es[i].v, &r);
+    ret = fscanf(fin, "%lu %lu %lf", &es[i].u, &es[i].v, &r);
+    assert(ret == 3);
     es[i].SetResistance(r);
   }
 }
@@ -105,16 +109,16 @@ void WriteMtx(FILE *fout, const EdgeList<EdgeT>& es) {
     size_t v = std::min(e.u, e.v);
     degrees[u] += c;
     degrees[v] += c;
-    fprintf(fout, "%zu %zu %f\n", u + 1, v + 1, c);
+    fprintf(fout, "%lu %lu %f\n", u + 1, v + 1, c);
   }
 
   for (size_t i = 0; i < degrees.size(); i++) {
-    fprintf(fout, "%zu %zu %f\n", i + 1, i + 1, degrees[i]);
+    fprintf(fout, "%lu %lu %f\n", i + 1, i + 1, degrees[i]);
   }
 }
 
 void WriteVector(FILE *fout, const std::vector<FLOAT>& xs) {
-  fprintf(fout, "%zu\n", xs.size());
+  fprintf(fout, "%lu\n", xs.size());
   for (size_t i = 0; i < xs.size(); i++) {
     fprintf(fout, "%f\n", (double) xs[i]);
   }
