@@ -34,7 +34,6 @@ public:
 
   void Solve(const std::vector<FLOAT>& b, std::vector<FLOAT>& x) const;
 
-private:
   void ForwardSubstitution(const std::vector<FLOAT>& b,
                            std::vector<FLOAT>& y) const;
   void BackSubstitution(const std::vector<FLOAT>& y,

@@ -6,10 +6,11 @@
 #include <iostream>
 #include <limits>
 #include <random>
+#include <unordered_map>
 #include <vector>
 #include "akpw.h"
 #include "aug_tree_precon.h"
-#include "aug_tree_chain.h"
+// #include "aug_tree_chain.h"
 #include "cholesky.h"
 #include "cholmod.h"
 #include "cholmod_solver.h"
@@ -466,35 +467,91 @@ void partial_cholesky(EdgeListR& es, const vector<FLOAT>& b) {
   DijkstraTree(g, es.n / 2, tree);
   g.FreeMemory();
 
-  CholeskySolver s;
+  std::mt19937 rng(std::random_device{}());
+  std::uniform_real_distribution<> uniform(0, 1);
 
+  EdgeListR new_es;
+  new_es.n = es.n;
   for (size_t i = 0; i < es.Size(); i++) {
     const EdgeR& e = es[i];
     if (tree[e.u].parent == e.v || tree[e.v].parent == e.u) {
+      new_es.AddEdge(e);
       continue;
     }
+    if (uniform(rng) > 0.3) continue;
     off_tree_es.AddEdge(e);
+    new_es.AddEdge(e);
     tree[e.u].ref_count++;
     tree[e.v].ref_count++;
   }
 
-  PartialCholesky(tree, off_tree_es, s.cholesky_factor);
-
-  // AdjacencyMap g(es);
-  // CholeskySolver s(g);
-
   std::vector<double> x(es.n);
   std::vector<FLOAT> r(es.n);
 
-  s.Solve(b, x);
+  CholeskySolver s;
+  PartialCholesky(tree, off_tree_es, s.cholesky_factor);
 
-  mv(-1, es, x, 1, b, r);
+  std::vector<double> y(es.n);
+  s.ForwardSubstitution(b, y);
+
+  std::unordered_map<size_t, size_t> old_id;
+  std::unordered_map<size_t, size_t> new_id;
+  EdgeListR small_es;
+  for (size_t i = 0; i < tree.n; i++) {
+    if (tree[i].eliminated) {
+      continue;
+    }
+    new_id[i] = old_id.size();
+    old_id[old_id.size()] = i;
+  }
+
+  for (size_t i = 0; i < tree.n; i++) {
+    if (tree[i].eliminated || tree[i].parent == i) {
+      continue;
+    }
+    small_es.AddEdge(EdgeR(new_id[i], new_id[tree[i].parent], tree[i].parent_resistance));
+  }
+
+  for (size_t i = 0; i < off_tree_es.Size(); i++) {
+    EdgeR& e = off_tree_es[i];
+    if (e.resistance < 0) {
+      continue;
+    }
+    small_es.AddEdge(EdgeR(new_id[e.u], new_id[e.v], e.resistance));
+  }
+
+  std::vector<double> nb(old_id.size());
+  std::vector<double> nx(old_id.size());
+  for (size_t i = 0; i < old_id.size(); i++) {
+    nb[i] = y[old_id[i]];
+  }
+
+  small_es.n = old_id.size();
+
+  std::cout << small_es.n << std::endl;
+
+  cholmod_common common;
+  cholmod_start(&common);
+  common.supernodal = CHOLMOD_SIMPLICIAL;
+  CholmodSolver s2(small_es, &common);
+  s2.Solve(nb, nx);
+
+  for (size_t i = 0; i < old_id.size(); i++) {
+    x[old_id[i]] = nx[i];
+  }
+
+  s.BackSubstitution(y, x);
+
+  // cholmod_common common;
+  // cholmod_start(&common);
+  // common.supernodal = CHOLMOD_SIMPLICIAL;
+  // CholmodSolver s(new_es, &common);
+  // s.Solve(b, x);
+
+  mv(-1, new_es, x, 1, b, r);
   std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
   std::cout << MYSQRT(r * r) << std::endl;
   std::cout << MYSQRT(b * b) << std::endl;
-  std::cout << s.cholesky_factor.n << std::endl;
-  std::cout << s.cholesky_factor.elims.size() << std::endl;
-  std::cout << s.cholesky_factor.elim_arcs.size() << std::endl;
 }
 
 int main(void) {
@@ -508,11 +565,11 @@ int main(void) {
   RNG<std::uniform_real_distribution<>, std::mt19937>
     random_resistance(uniform, rng);
 
-  // grid2(k, k, es);
+  grid2(k, k, es);
   // grid2(k, k, es, random_resistance);
   // grid3(k, k, k, es);
   // grid3(k, k, k, es, random_resistance);
-  cycle(1000000, es);
+  // cycle(1000000, es);
   recursive_c(k, k, tree_es);
 
   // ReadEdgeList(stdin, es);

@@ -146,7 +146,6 @@ void Cholesky(AdjacencyMap& graph, CholeskyFactor& cholesky_factor) {
   // }
 }
 
-inline
 void CholeskySolver::ForwardSubstitution(const vector<FLOAT>& b,
                                           vector<FLOAT>& y) const {
   // vector<FLOAT> b(b_);
@@ -162,7 +161,6 @@ void CholeskySolver::ForwardSubstitution(const vector<FLOAT>& b,
   }
 }
 
-inline
 void CholeskySolver::BackSubstitution(const vector<FLOAT>& y,
                                        vector<FLOAT>& x) const {
   const vector<EliminatedVertex>& elims = cholesky_factor.elims;
