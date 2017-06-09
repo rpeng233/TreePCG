@@ -155,14 +155,10 @@ void CholeskySolver::ForwardSubstitution(const vector<FLOAT>& b,
 
   y = b;
   for (size_t i = 0; i < elims.size() - 1; i++) {
-    // y[i] = b[elims[i].v];
-    // FLOAT tmp = b[elims[i].v] / elims[i].degree;
     FLOAT tmp = y[elims[i].v] / elims[i].degree;
     for (size_t j = elims[i].first_arc; j < elims[i + 1].first_arc; j++) {
-      // b[elim_arcs[j].v] += tmp * elim_arcs[j].conductance;
       y[elim_arcs[j].v] += tmp * elim_arcs[j].conductance;
     }
-    // b[elims[i].v] = 0;
   }
 }
 
