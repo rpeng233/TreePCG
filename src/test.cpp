@@ -9,6 +9,7 @@
 #include <vector>
 #include "akpw.h"
 #include "aug_tree_precon.h"
+#include "aug_tree_chain.h"
 #include "cholesky.h"
 #include "cholmod.h"
 #include "cholmod_solver.h"
@@ -21,6 +22,7 @@
 #include "incomplete_cholesky.h"
 #include "io.h"
 #include "matrix.h"
+#include "partial_cholesky.h"
 #include "pcg_solver.h"
 #include "sparse_cholesky.h"
 #include "stretch.h"
@@ -141,7 +143,7 @@ void aug_tree_pcg(const EdgeList<EdgeR>& es,
   EdgeListC aug_tree;
 
   timer.tic("constructing augmented tree... ");
-  AugTreePrecon(es, aug_tree, top, k);
+  AugTreePrecon(es, tree_es, aug_tree, top, k);
   timer.toc();
 
   // FILE *f = fopen("precon.mtx", "w");
@@ -456,55 +458,47 @@ void cycle_toggling(EdgeListR& es, const vector<FLOAT>& b) {
   std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 }
 
-// int main(void) {
-//   size_t n;
-//   size_t m;
-//   std::cin >> n >> m;
-//   EdgeListR tes;
-//   EdgeListR otes;
-//   EdgeListR es;
-// 
-//   tes.n = otes.n = es.n = n;
-// 
-//   size_t i = 0;
-//   while (i < n - 1) {
-//     size_t u, v;
-//     double r;
-//     cin >> u >> v >> r;
-//     r /= log(n);
-//     es.AddEdge(EdgeR(u, v, r));
-//     tes.AddEdge(EdgeR(u, v, r));
-//     i++;
-//   }
-//   while (i < m) {
-//     size_t u, v;
-//     double r;
-//     cin >> u >> v >> r;
-//     es.AddEdge(EdgeR(u, v, r));
-//     otes.AddEdge(EdgeR(u, v, r));
-//     i++;
-//   }
-// 
-//   TreeR t;
-//   AdjacencyArray<ArcR> g(tes);
-//   DijkstraTree<TreeR>(g, 0, t);
-//   CycleTogglingSolver s(t, otes);
-// 
-//   std::vector<double> x(es.n);
-//   std::vector<FLOAT> r(es.n);
-//   std::vector<FLOAT> b(es.n);
-//   b[0] = -1;
-//   b[n - 1] = 1;
-// 
-//   s.Solve(b, x);
-//   mv(-1, es, x, 1, b, r);
-//   std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
-// 
-//   return 0;
-// }
+void partial_cholesky(EdgeListR& es, const vector<FLOAT>& b) {
+  AdjacencyArray<ArcR> g(es);
+  Tree<PCholVertex> tree;
+  EdgeListR off_tree_es;
+
+  DijkstraTree(g, es.n / 2, tree);
+  g.FreeMemory();
+
+  CholeskySolver s;
+
+  for (size_t i = 0; i < es.Size(); i++) {
+    const EdgeR& e = es[i];
+    if (tree[e.u].parent == e.v || tree[e.v].parent == e.u) {
+      continue;
+    }
+    off_tree_es.AddEdge(e);
+    tree[e.u].ref_count++;
+    tree[e.v].ref_count++;
+  }
+
+  PartialCholesky(tree, off_tree_es, s.cholesky_factor);
+
+  // AdjacencyMap g(es);
+  // CholeskySolver s(g);
+
+  std::vector<double> x(es.n);
+  std::vector<FLOAT> r(es.n);
+
+  s.Solve(b, x);
+
+  mv(-1, es, x, 1, b, r);
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
+  std::cout << MYSQRT(r * r) << std::endl;
+  std::cout << MYSQRT(b * b) << std::endl;
+  std::cout << s.cholesky_factor.n << std::endl;
+  std::cout << s.cholesky_factor.elims.size() << std::endl;
+  std::cout << s.cholesky_factor.elim_arcs.size() << std::endl;
+}
 
 int main(void) {
-  size_t k = 100;
+  size_t k = 1000;
 
   EdgeList<EdgeR> es;
   EdgeListR tree_es;
@@ -518,10 +512,10 @@ int main(void) {
   // grid2(k, k, es, random_resistance);
   // grid3(k, k, k, es);
   // grid3(k, k, k, es, random_resistance);
-  // cycle(n, es);
-  // recursive_c(k, k, tree_es);
+  cycle(1000000, es);
+  recursive_c(k, k, tree_es);
 
-  ReadEdgeList(stdin, es);
+  // ReadEdgeList(stdin, es);
   // FILE *f = fopen("grid.txt", "w");
   // WriteEdgeList(f, es);
   // fclose(f);
@@ -531,7 +525,6 @@ int main(void) {
   // return 0;
 
   size_t n = es.n;
-
 
   struct {
     bool operator() (const EdgeR& e1, const EdgeR& e2) const {
@@ -551,19 +544,20 @@ int main(void) {
   for (auto& f : x) {
     f = uniform(rng);
   }
-  mv(1, es, x, 0, x, random_b);
+  mv(1, tree_es, x, 0, x, random_b);
 
   // bst(rng);
   // pcg(es, random_b);
   // resistance_vs_conductance(es, random_b);
   // min_degree(es, random_b);
-  // aug_tree_pcg(es, tree_es, unit_b, 100 * sqrt(n), 100 * sqrt(n));
+  // aug_tree_pcg(es, tree_es, unit_b, 0, es.Size() / 4);
   // cholmod(es, unit_b);
   // sparse_cholesky(es, random_b);
-  incomplete_cholesky(es, unit_b, 1e-6);
+  // incomplete_cholesky(es, unit_b, 1e-6);
   // akpw(es);
   // flow_gradient_descent(es, unit_b);
   // cycle_toggling(es, unit_b);
+  partial_cholesky(es, random_b);
 
   // WriteMtx(stdout, es);
 
