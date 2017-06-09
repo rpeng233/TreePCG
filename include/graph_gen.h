@@ -166,4 +166,33 @@ void recursive_c(size_t n, size_t m, EdgeListType& es) {
   recursive_c_helper(es, n, 0, 0, n - 1, m - 1);
 }
 
+template <typename EdgeT, typename WeightGen>
+void random_cycles(size_t n,
+                   size_t k,
+                   EdgeList<EdgeT>& es,
+                   WeightGen wgen=WeightGen()) {
+  es.Clear();
+  es.n = n;
+  std::vector<size_t> vs(n);
+
+  for (size_t i = 0; i < n; i++) {
+    vs[i] = i;
+  }
+
+  for (size_t i = 0; i < k; i++) {
+    std::random_shuffle(vs.begin(), vs.end());
+    for (size_t i = 0; i < n - 1; i++) {
+      es.AddEdge(EdgeT(vs[i], vs[i + 1], wgen()));
+    }
+    es.AddEdge(EdgeT(vs[n - 1], vs[0], wgen()));
+  }
+}
+
+template <typename EdgeT>
+void random_cycles(size_t n,
+                   size_t k,
+                   EdgeList<EdgeT>& es) {
+  random_cycles(n, k, es, One());
+}
+
 #endif  // INCLUDE_GRAPH_GEN_H_

@@ -109,7 +109,7 @@ void WriteMtx(FILE *fout, const EdgeList<EdgeT>& es) {
     size_t v = std::min(e.u, e.v);
     degrees[u] += c;
     degrees[v] += c;
-    fprintf(fout, "%lu %lu %f\n", u + 1, v + 1, c);
+    fprintf(fout, "%lu %lu %f\n", u + 1, v + 1, -c);
   }
 
   for (size_t i = 0; i < degrees.size(); i++) {
