@@ -1,0 +1,37 @@
+#ifndef INCLUDE_PRECON_CHAIN_SOLVER_H__
+#define INCLUDE_PRECON_CHAIN_SOLVER_H__
+
+#include <vector>
+#include "graph.h"
+#include "aug_tree_chain.h"
+
+class PreconChainSolver {
+public:
+  PreconChainSolver(const EdgeListR& tree_es, const EdgeListR& off_tree_es) {
+    AugTreeChain(tree_es, off_tree_es, chain, base_solver);
+  }
+
+  void Solve(const std::vector<double>& b,
+             std::vector<double>& x) {
+    SolveChain(0, b, x);
+  }
+
+  const PreconLevel& GetLevel(size_t lvl) {
+    return chain[lvl];
+  }
+
+private:
+  std::vector<PreconLevel> chain;
+  CholmodSolver base_solver;
+
+  void SolveChain(size_t lvl,
+                  const std::vector<double>& b,
+                  std::vector<double>& x,
+                  double tol = 1e-3);
+
+  inline void PreconSolve(size_t lvl,
+                          const std::vector<double>& b,
+                          std::vector<double>& x);
+};
+
+#endif  // INCLUDE_PRECON_CHAIN_SOLVER_H__

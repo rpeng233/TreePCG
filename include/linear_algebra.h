@@ -4,6 +4,7 @@
 #include <cassert>
 #include <vector>
 #include "common.h"
+#include "graph.h"
 #include "matrix.h"
 
 inline FLOAT operator *(

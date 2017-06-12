@@ -23,12 +23,14 @@ struct EdgeR {
     u = u_;
     v = v_;
     resistance = resistance_;
+    Validate();
   }
 
   EdgeR& operator=(const EdgeR& e) {
     u = e.u;
     v = e.v;
     resistance = e.resistance;
+    Validate();
     return *this;
   }
 
@@ -48,6 +50,12 @@ struct EdgeR {
 
   void SetConductance(FLOAT c) {
     resistance = 1.0 / c;
+  }
+
+  void Validate() {
+    assert(u != v);
+    assert(resistance >= 0);
+    assert(resistance != 0);
   }
 
   bool operator <(const EdgeR &o) const {
@@ -77,6 +85,7 @@ struct EdgeC {
     u = u_;
     v = v_;
     conductance = conductance_;
+    Validate();
   }
 
   EdgeC& operator=(const EdgeR& e);
@@ -97,6 +106,12 @@ struct EdgeC {
     conductance = c;
   }
 
+  void Validate() {
+    assert(u != v);
+    assert(conductance >= 0);
+    assert(conductance != 0);
+  }
+
   bool operator <(const EdgeC &o) const {
     if (this->u != o.u) {
       return this->u < o.u;
@@ -114,6 +129,7 @@ inline EdgeR& EdgeR::operator=(const EdgeC& e) {
   u = e.u;
   v = e.v;
   resistance = 1 / e.conductance;
+  Validate();
   return *this;
 }
 
@@ -121,6 +137,7 @@ inline EdgeC& EdgeC::operator=(const EdgeR& e) {
   u = e.u;
   v = e.v;
   conductance = 1 / e.resistance;
+  Validate();
   return *this;
 }
 
@@ -152,6 +169,8 @@ struct EdgeList {
   // }
 
   void AddEdge(const EdgeT& e) {
+    assert(e.u < n);
+    assert(e.v < n);
     edges.push_back(e);
   }
 

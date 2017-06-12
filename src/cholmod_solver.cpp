@@ -2,10 +2,11 @@
 #include "cholmod_solver.h"
 #include "graph.h"
 
-CholmodSolver::CholmodSolver(const EdgeListC& es, cholmod_common *c) {
+void CholmodSolver::Initialize(const EdgeListC& es, cholmod_common *c) {
   common = c;
   if (common == NULL) {
     common = &common_;
+    common->supernodal = CHOLMOD_SIMPLICIAL;
     cholmod_start(common);
   }
 

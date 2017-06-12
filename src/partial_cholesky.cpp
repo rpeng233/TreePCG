@@ -16,6 +16,7 @@ void PartialCholesky(Tree<PCholVertex>& tree,
     count = 0;
 
     // eliminate the leaves
+    size_t leaf = 0;
     for (size_t i = 0; i < n; i++) {
       if (tree[i].ref_count > 0 || tree[i].eliminated || tree[i].parent == i) {
         continue;
@@ -30,7 +31,7 @@ void PartialCholesky(Tree<PCholVertex>& tree,
         ev.degree = tree[j].ParentConductance();
         ev.first_arc = elim_arcs.size();
         elims.push_back(ev);
-        count++;
+        leaf++;
 
         elim_arcs.push_back(ArcC(p, tree[j].ParentConductance()));
 
@@ -42,9 +43,11 @@ void PartialCholesky(Tree<PCholVertex>& tree,
       } while (tree[j].ref_count == 0 && tree[j].parent != j);
     }
 
-    std::cout << "eliminated " << count << " leaves\n";
+    count += leaf;
+    // std::cout << "eliminated " << leaf << " leaves\n";
 
     // eliminate degree 2 vertices with two tree edges
+    size_t tpath = 0;
     for (size_t i = 0; i < n; ) {
       size_t j = tree[i].parent;
       size_t k = tree[j].parent;
@@ -65,7 +68,7 @@ void PartialCholesky(Tree<PCholVertex>& tree,
       ev.degree = tree[i].ParentConductance() + tree[j].ParentConductance();
       ev.first_arc = elim_arcs.size();
       elims.push_back(ev);
-      count++;
+      tpath++;
 
       elim_arcs.push_back(ArcC(i, tree[i].ParentConductance()));
       elim_arcs.push_back(ArcC(k, tree[j].ParentConductance()));
@@ -76,9 +79,11 @@ void PartialCholesky(Tree<PCholVertex>& tree,
 
     }
 
-    std::cout << "eliminated " << count << " tree paths\n";
+    count += tpath;
+    // std::cout << "eliminated " << tpath << " tree paths\n";
 
     // eliminate the other degree 2 vertices
+    size_t deg2 = 0;
     for (size_t i = 0; i < off_tree_es.Size(); ) {
       EdgeR& e = off_tree_es[i];
 
@@ -92,6 +97,24 @@ void PartialCholesky(Tree<PCholVertex>& tree,
 
       bool flag = false;
 
+      if (tree[e.u].parent == e.v) {
+        double c = tree[e.u].ParentConductance();
+        c += 1 / e.resistance;
+        tree[e.u].parent_resistance = 1 / c;
+        e.resistance = -1;
+        tree[e.u].ref_count--;
+        tree[e.v].ref_count--;
+        continue;
+      } else if (tree[e.v].parent == e.u) {
+        double c = tree[e.v].ParentConductance();
+        c += 1 / e.resistance;
+        tree[e.v].parent_resistance = 1 / c;
+        e.resistance = -1;
+        tree[e.u].ref_count--;
+        tree[e.v].ref_count--;
+        continue;
+      }
+
       // try to eliminate e.u
       if (!tree[e.u].eliminated && tree[e.u].ref_count == 1) {
         size_t p = tree[e.u].parent;
@@ -103,7 +126,7 @@ void PartialCholesky(Tree<PCholVertex>& tree,
         ev.degree = tree[e.u].ParentConductance() + 1 / e.resistance;
         ev.first_arc = elim_arcs.size();
         elims.push_back(ev);
-        count++;
+        deg2++;
 
         elim_arcs.push_back(ArcC(p, tree[e.u].ParentConductance()));
         elim_arcs.push_back(ArcC(e.v, 1 / e.resistance));
@@ -138,7 +161,7 @@ void PartialCholesky(Tree<PCholVertex>& tree,
         ev.degree = tree[e.v].ParentConductance() + 1 / e.resistance;
         ev.first_arc = elim_arcs.size();
         elims.push_back(ev);
-        count++;
+        deg2++;
 
         elim_arcs.push_back(ArcC(p, tree[e.v].ParentConductance()));
         elim_arcs.push_back(ArcC(e.u, 1 / e.resistance));
@@ -165,7 +188,9 @@ void PartialCholesky(Tree<PCholVertex>& tree,
         i++;
       }
     }
-    std::cout << "eliminated " << count << " deg 2\n";
+
+    count += deg2;
+    // std::cout << "eliminated " << deg2 << " deg 2\n";
   } while (count != 0);
 
   ev.first_arc = elim_arcs.size();

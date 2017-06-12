@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS += -I./include
 CXXFLAGS += -Wall -pedantic
-CXXFLAGS += -O3
+CXXFLAGS += -O2
 # CXXFLAGS += -g
 # CXXFLAGS += -ffast-math
 LDFLAGS += -lcholmod -lamd -lcolamd -lcamd -lccolamd -lmetis
@@ -13,7 +13,7 @@ bin/test : obj/tree_solver.o obj/cholesky.o obj/stretch.o
 bin/test : obj/akpw.o obj/aug_tree_precon.o obj/sparse_cholesky.o
 bin/test : obj/cholmod_solver.o obj/incomplete_cholesky.o
 bin/test : obj/flow_gradient_solver.o obj/cycle_toggling_solver.o
-bin/test : obj/partial_cholesky.o obj/aug_tree_chain.o
+bin/test : obj/partial_cholesky.o obj/aug_tree_chain.o obj/precon_chain_solver.o
 bin/test : obj/mmio.o
 bin/test : src/test.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< obj/*.o -o $@ $(LDFLAGS)
@@ -61,6 +61,10 @@ obj/partial_cholesky.o : src/partial_cholesky.cpp
 
 obj/aug_tree_chain.o : include/*.h
 obj/aug_tree_chain.o : src/aug_tree_chain.cpp
+	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
+
+obj/precon_chain_solver.o : include/*.h
+obj/precon_chain_solver.o : src/precon_chain_solver.cpp
 	$(CXX) $(CXXFLAGS) --std=c++11 $< -c -o $@
 
 obj/flow_gradient_solver.o : include/*.h

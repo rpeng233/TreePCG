@@ -10,7 +10,7 @@
 #include <vector>
 #include "akpw.h"
 #include "aug_tree_precon.h"
-// #include "aug_tree_chain.h"
+#include "aug_tree_chain.h"
 #include "cholesky.h"
 #include "cholmod.h"
 #include "cholmod_solver.h"
@@ -25,6 +25,7 @@
 #include "matrix.h"
 #include "partial_cholesky.h"
 #include "pcg_solver.h"
+#include "precon_chain_solver.h"
 #include "sparse_cholesky.h"
 #include "stretch.h"
 #include "tree_solver.h"
@@ -472,6 +473,7 @@ void partial_cholesky(EdgeListR& es, const vector<FLOAT>& b) {
 
   EdgeListR new_es;
   new_es.n = es.n;
+  off_tree_es.n = es.n;
   for (size_t i = 0; i < es.Size(); i++) {
     const EdgeR& e = es[i];
     if (tree[e.u].parent == e.v || tree[e.v].parent == e.u) {
@@ -505,6 +507,7 @@ void partial_cholesky(EdgeListR& es, const vector<FLOAT>& b) {
     old_id[old_id.size()] = i;
   }
 
+  small_es.n = old_id.size();
   for (size_t i = 0; i < tree.n; i++) {
     if (tree[i].eliminated || tree[i].parent == i) {
       continue;
@@ -552,6 +555,144 @@ void partial_cholesky(EdgeListR& es, const vector<FLOAT>& b) {
   std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
   std::cout << MYSQRT(r * r) << std::endl;
   std::cout << MYSQRT(b * b) << std::endl;
+}
+
+void aug_tree_chain(const EdgeListR& es, const EdgeListR& tree_es, const vector<FLOAT>& b) {
+  TreeR tree;
+  AdjacencyArray<ArcR> g(tree_es);
+
+  DijkstraTree(g, tree_es.n / 2, tree);
+  g.FreeMemory();
+
+  EdgeListR off_tree_es;
+  off_tree_es.n = es.n;
+  for (size_t i = 0; i < es.Size(); i++) {
+    const EdgeR& e = es[i];
+    if (tree[e.u].parent == e.v || tree[e.v].parent == e.u) {
+      continue;
+    }
+    off_tree_es.AddEdge(e);
+  }
+
+  PreconChainSolver s(tree_es, off_tree_es);
+
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
+
+  timer.tic("solving chain... ");
+  s.Solve(b, x);
+  timer.toc();
+
+  mv(-1, s.GetLevel(0).es, x, 1, b, r);
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
+
+  return;
+}
+
+void aug_tree_chain_precon(const EdgeListR& es, const EdgeListR& tree_es, const vector<FLOAT>& b) {
+  TreeR tree;
+  AdjacencyArray<ArcR> g(tree_es);
+
+  DijkstraTree(g, tree_es.n / 2, tree);
+  g.FreeMemory();
+
+  EdgeListR off_tree_es;
+  off_tree_es.n = es.n;
+  for (size_t i = 0; i < es.Size(); i++) {
+    const EdgeR& e = es[i];
+    if (tree[e.u].parent == e.v || tree[e.v].parent == e.u) {
+      continue;
+    }
+    off_tree_es.AddEdge(e);
+  }
+
+  PreconChainSolver precon(tree_es, off_tree_es);
+  EdgeListC es2(es);
+  PCGSolver<EdgeListC, PreconChainSolver> s(&es2, &precon);
+  std::vector<FLOAT> x(es.n);
+
+  timer.tic("pcg with preconditioner chain... ");
+  s.Solve(b, x, 1e-3);
+  timer.toc();
+}
+
+void spine_heavy_precon(const EdgeListR& es, const EdgeListR& tree_es, const vector<FLOAT>& b) {
+  // EdgeListR tree_es(tree_es);
+  EdgeListR spine_heavy;
+  EdgeListR off_tree_es;
+  EdgeListR sampled_es;
+  std::vector<double> stretch;
+  AdjacencyArray<ArcR> g(tree_es);
+  TreeR tree;
+
+  DijkstraTree(g, tree_es.n / 2, tree);
+  g.FreeMemory();
+
+  spine_heavy.n = es.n;
+  sampled_es.n = es.n;
+  off_tree_es.n = es.n;
+  for (size_t i = 0; i < es.Size(); i++) {
+    const EdgeR& e = es[i];
+    if (tree[e.u].parent == e.v || tree[e.v].parent == e.u) {
+
+    }
+    spine_heavy.AddEdge(e);
+    off_tree_es.AddEdge(e);
+  }
+
+  ComputeStretch(tree, off_tree_es, stretch);
+
+  double logn = log(es.n);
+  for (size_t i = 0; i < tree_es.Size(); i++) {
+    EdgeR e = tree_es[i];
+    e.resistance /= logn;
+    spine_heavy.AddEdge(e);
+    sampled_es.AddEdge(e);
+  }
+
+  cholmod_common common;
+  cholmod_start(&common);
+  common.supernodal = CHOLMOD_SIMPLICIAL;
+
+  CholmodSolver p1(spine_heavy, &common);
+  PCGSolver<EdgeListR, CholmodSolver> s1(&es, &p1);
+
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
+
+  s1.Solve(b, x);
+
+  mv(-1, es, x, 1, b, r);
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
+
+  std::mt19937 rng(std::random_device{}());
+  std::uniform_real_distribution<> unif01(0, 1);
+
+  double total_stretch = std::accumulate(stretch.begin(), stretch.end(), 0);
+  for (size_t i = 0; i < off_tree_es.Size(); i++) {
+    double p = (off_tree_es.Size() / 3.0) * stretch[i] / total_stretch;
+    EdgeR e = off_tree_es[i];
+    if (p < 1) {
+      if (unif01(rng) < p) {
+        e.resistance /= p;
+        sampled_es.AddEdge(e);
+      }
+    } else {
+      sampled_es.AddEdge(e);
+    }
+  }
+
+  cholmod_common common2;
+  cholmod_start(&common2);
+  common2.supernodal = CHOLMOD_SIMPLICIAL;
+
+  CholmodSolver p2(sampled_es, &common2);
+  PCGSolver<EdgeListR, CholmodSolver> s2(&spine_heavy, &p2);
+
+  s2.Solve(b, x);
+
+  mv(-1, es, x, 1, b, r);
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 }
 
 int main(void) {
@@ -607,14 +748,17 @@ int main(void) {
   // pcg(es, random_b);
   // resistance_vs_conductance(es, random_b);
   // min_degree(es, random_b);
-  // aug_tree_pcg(es, tree_es, unit_b, 0, es.Size() / 4);
+  // aug_tree_pcg(es, tree_es, unit_b, 150 * sqrt(n), 150 * sqrt(n));
   // cholmod(es, unit_b);
   // sparse_cholesky(es, random_b);
   // incomplete_cholesky(es, unit_b, 1e-6);
   // akpw(es);
   // flow_gradient_descent(es, unit_b);
   // cycle_toggling(es, unit_b);
-  partial_cholesky(es, random_b);
+  // partial_cholesky(es, random_b);
+  // spine_heavy_precon(es, tree_es, unit_b);
+  // aug_tree_chain(es, tree_es, unit_b);
+  aug_tree_chain_precon(es, tree_es, unit_b);
 
   // WriteMtx(stdout, es);
 
