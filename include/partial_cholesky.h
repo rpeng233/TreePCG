@@ -35,4 +35,5 @@ inline void Tree<PCholVertex>::SetParentR(size_t v, size_t p, FLOAT r) {
 
 void PartialCholesky(Tree<PCholVertex>& tree,
                      EdgeListR& off_tree_es,
-                     CholeskyFactor& factor);
+                     CholeskyFactor& factor,
+                     std::vector<size_t>& eorder);

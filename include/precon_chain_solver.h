@@ -8,7 +8,12 @@
 class PreconChainSolver {
 public:
   PreconChainSolver(const EdgeListR& tree_es, const EdgeListR& off_tree_es) {
-    AugTreeChain(tree_es, off_tree_es, chain, base_solver);
+    AugTreeChain(tree_es,
+                 off_tree_es,
+                 chain,
+                 new_id,
+                 original_id,
+                 base_solver);
   }
 
   void Solve(const std::vector<double>& b,
@@ -16,18 +21,21 @@ public:
     SolveChain(0, b, x);
   }
 
+  void SolveChain(size_t lvl,
+                  const std::vector<double>& b,
+                  std::vector<double>& x);
+
+
   const PreconLevel& GetLevel(size_t lvl) {
     return chain[lvl];
   }
 
+  std::vector<size_t> new_id;
+  std::vector<size_t> original_id;
 private:
   std::vector<PreconLevel> chain;
   CholmodSolver base_solver;
 
-  void SolveChain(size_t lvl,
-                  const std::vector<double>& b,
-                  std::vector<double>& x,
-                  double tol = 1e-3);
 
   inline void PreconSolve(size_t lvl,
                           const std::vector<double>& b,

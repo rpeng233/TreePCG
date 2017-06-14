@@ -6,26 +6,15 @@ inline void PreconChainSolver::PreconSolve(size_t lvl,
                                            std::vector<double>& x) {
   CholeskySolver& pchol = chain[lvl].pchol;
   std::vector<double>& y = chain[lvl].y;
-  std::vector<double>& x_small = chain[lvl].x_small;
-  std::vector<double>& b_small = chain[lvl].b_small;
-  std::vector<size_t>& id = chain[lvl].id;
 
   pchol.ForwardSubstitution(b, y);
-  for (size_t j = 0; j < id.size(); j++) {
-    b_small[j] = y[id[j]];
-  }
-  SolveChain(lvl + 1, b_small, x_small);
-  for (size_t j = 0; j < id.size(); j++) {
-    x[id[j]] = x_small[j];
-  }
+  SolveChain(lvl + 1, y, x);
   pchol.BackSubstitution(y, x);
 }
 
 void PreconChainSolver::SolveChain(size_t lvl,
                                    const std::vector<double>& b,
-                                   std::vector<double>& x,
-                                   double tol) {
-
+                                   std::vector<double>& x) {
   if (lvl >= chain.size()) {
     base_solver.Solve(b, x);
     return;
@@ -42,43 +31,48 @@ void PreconChainSolver::SolveChain(size_t lvl,
   double delta_new;
   double alpha;
 
-  for (size_t j = 0; j < 0; j++) {
-    mv(-1, es, x, 1, b, r);
-    for (size_t i = 0; i < chain[lvl].invD.size(); i++) {
-      r[i] *= chain[lvl].invD[i];
-    }
-    axpy(1, x, r, x);
+  size_t n = chain[lvl].n;
+
+  for (size_t i = 0; i < n; i++) {
+    x[i] = 0;
   }
+
+  // for (size_t j = 0; j < 0; j++) {
+  //   mv(-1, es, x, 1, b, r);
+  //   for (size_t i = 0; i < chain[lvl].invD.size(); i++) {
+  //     r[i] *= chain[lvl].invD[i];
+  //   }
+  //   axpy(1, x, r, x, n);
+  // }
 
   mv(-1, es, x, 1, b, r);
   PreconSolve(lvl, r, d);
   delta_new = r * d;
   for (size_t i = 0; i < chain[lvl].iter - 1; i++) {
     mv(1, es, d, 0, r, s);
-    alpha = delta_new / (d * s);
-    axpy(alpha, d, x, x);
+    alpha = delta_new / dot(d, s, n);
+    axpy(alpha, d, x, x, n);
     // mv(-1, es, x, 1, b, r);
-    axpy(-alpha, s, r, r);
+    axpy(-alpha, s, r, r, n);
     PreconSolve(lvl, r, s);
     delta_old = delta_new;
-    delta_new = r * s;
-    axpy(delta_new / delta_old, d, s, d);
+    delta_new = dot(r, s, n);
+    axpy(delta_new / delta_old, d, s, d, n);
   }
 
   // for (size_t i = 0; i < chain[lvl].iter; i++) {
   //   mv(-1, es, x, 1, b, r);
   //   PreconSolve(lvl, r, s);
-  //   axpy(1, s, x, x);
+  //   axpy(1, s, x, x, n);
   // }
 
-
-  for (size_t j = 0; j < 2; j++) {
-    mv(-1, es, x, 1, b, r);
-    for (size_t i = 0; i < chain[lvl].invD.size(); i++) {
-      r[i] *= chain[lvl].invD[i];
-    }
-    axpy(1, x, r, x);
-  }
+  // for (size_t j = 0; j < 0; j++) {
+  //   mv(-1, es, x, 1, b, r);
+  //   for (size_t i = 0; i < chain[lvl].invD.size(); i++) {
+  //     r[i] *= chain[lvl].invD[i];
+  //   }
+  //   axpy(1, x, r, x, n);
+  // }
 
   // mv(-1, es, x, 1, b, r);
   // std::cout << lvl << ' ' << chain[lvl].iter << ' ' << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;

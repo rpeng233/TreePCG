@@ -21,6 +21,22 @@ inline FLOAT operator *(
   return result;
 }
 
+inline FLOAT dot(
+    const std::vector<FLOAT>& a,
+    const std::vector<FLOAT>& b,
+    size_t n
+) {
+  assert(n <= a.size());
+  assert(n <= b.size());
+  FLOAT result = 0;
+
+  for (size_t i = 0; i < n; i++) {
+    result += a[i] * b[i];
+  }
+
+  return result;
+}
+
 inline void axpy(
     FLOAT a,
     const std::vector<FLOAT>& x,
@@ -31,6 +47,22 @@ inline void axpy(
   assert(x.size() == result.size());
 
   for (size_t i = 0; i < x.size(); i++) {
+    result[i] = a * x[i] + y[i];
+  }
+}
+
+inline void axpy(
+    FLOAT a,
+    const std::vector<FLOAT>& x,
+    const std::vector<FLOAT>& y,
+    std::vector<FLOAT>& result,
+    size_t n
+) {
+  assert(n <= x.size());
+  assert(n <= y.size());
+  assert(n <= result.size());
+
+  for (size_t i = 0; i < n; i++) {
     result[i] = a * x[i] + y[i];
   }
 }
@@ -134,9 +166,9 @@ inline void mv(
     std::vector<FLOAT>& result
 ) {
   size_t n = es.n;
-  assert(n == x.size());
-  assert(n == y.size());
-  assert(n == result.size());
+  assert(n <= x.size());
+  assert(n <= y.size());
+  assert(n <= result.size());
 
   for (size_t i = 0; i < n; i++) {
     result[i] = 0;

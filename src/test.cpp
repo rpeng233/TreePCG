@@ -491,7 +491,8 @@ void partial_cholesky(EdgeListR& es, const vector<FLOAT>& b) {
   std::vector<FLOAT> r(es.n);
 
   CholeskySolver s;
-  PartialCholesky(tree, off_tree_es, s.cholesky_factor);
+  std::vector<size_t> eorder;
+  PartialCholesky(tree, off_tree_es, s.cholesky_factor, eorder);
 
   std::vector<double> y(es.n);
   s.ForwardSubstitution(b, y);
@@ -606,14 +607,38 @@ void aug_tree_chain_precon(const EdgeListR& es, const EdgeListR& tree_es, const 
     off_tree_es.AddEdge(e);
   }
 
+  timer.tic("constructing chain...");
   PreconChainSolver precon(tree_es, off_tree_es);
+  timer.toc();
+
   EdgeListC es2(es);
+  std::vector<FLOAT> b2(es.n);
+  for (size_t i = 0; i < es2.Size(); i++) {
+    EdgeC& e = es2[i];
+    e.u = precon.new_id[e.u];
+    e.v = precon.new_id[e.v];
+  }
+
+  for (size_t i = 0; i < precon.new_id.size(); i++) {
+    b2[precon.new_id[i]] = b[i];
+  }
+
   PCGSolver<EdgeListC, PreconChainSolver> s(&es2, &precon);
-  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> x2(es.n);
 
   timer.tic("pcg with preconditioner chain... ");
-  s.Solve(b, x, 1e-3);
+  s.Solve(b2, x2, 1e-3);
   timer.toc();
+
+  std::vector<FLOAT> x(es.n);
+  std::vector<FLOAT> r(es.n);
+
+  for (size_t i = 0; i < precon.original_id.size(); i++) {
+    x[precon.original_id[i]] = x2[i];
+  }
+
+  mv(-1, es, x, 1, b, r);
+  std::cout << MYSQRT(r * r) / MYSQRT(b * b) << std::endl;
 }
 
 void spine_heavy_precon(const EdgeListR& es, const EdgeListR& tree_es, const vector<FLOAT>& b) {

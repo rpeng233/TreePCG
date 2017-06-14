@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS += -I./include
 CXXFLAGS += -Wall -pedantic
-CXXFLAGS += -O2
+CXXFLAGS += -O3
 # CXXFLAGS += -g
 # CXXFLAGS += -ffast-math
 LDFLAGS += -lcholmod -lamd -lcolamd -lcamd -lccolamd -lmetis

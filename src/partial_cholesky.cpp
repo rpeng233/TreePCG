@@ -2,7 +2,8 @@
 
 void PartialCholesky(Tree<PCholVertex>& tree,
                      EdgeListR& off_tree_es,
-                     CholeskyFactor& factor) {
+                     CholeskyFactor& factor,
+                     std::vector<size_t>& eorder) {
   size_t n = tree.n;
   factor.n = n;
   std::vector<EliminatedVertex>& elims = factor.elims;
@@ -37,7 +38,7 @@ void PartialCholesky(Tree<PCholVertex>& tree,
 
         tree[j].eliminated = true;
         tree[p].ref_count--;
-
+        eorder.push_back(j);
 
         j = p;
       } while (tree[j].ref_count == 0 && tree[j].parent != j);
@@ -76,7 +77,7 @@ void PartialCholesky(Tree<PCholVertex>& tree,
       tree[j].eliminated = true;
       tree[i].parent = k;
       tree[i].parent_resistance += tree[j].ParentResistance();
-
+      eorder.push_back(j);
     }
 
     count += tpath;
@@ -132,6 +133,7 @@ void PartialCholesky(Tree<PCholVertex>& tree,
         elim_arcs.push_back(ArcC(e.v, 1 / e.resistance));
 
         tree[e.u].eliminated = true;
+        eorder.push_back(e.u);
         e.resistance += tree[e.u].ParentResistance();
 
         if (tree[e.v].parent == p) {
@@ -167,6 +169,7 @@ void PartialCholesky(Tree<PCholVertex>& tree,
         elim_arcs.push_back(ArcC(e.u, 1 / e.resistance));
 
         tree[e.v].eliminated = true;
+        eorder.push_back(e.v);
         e.resistance += tree[e.v].ParentResistance();
 
         if (tree[e.u].parent == p) {
