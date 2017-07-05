@@ -9,8 +9,8 @@
 int main(int argc, char *argv[]) {
     string dir = argv[1];
     if (dir[dir.length()-1] != '/') dir+="/";
-    Mat A = IO::readMMA(dir+"graph.mtx");
-    Mat tree = IO::readMML(dir+"tree.mtx");
+    Mat A = IO::readMMA(dir+"mat.mtx");
+//    Mat tree = IO::readMML(dir+"tree.mtx");
     
     // Vec x(A.n);
     // rep(i,0,A.n-1) x[i]=(double(rand())/double(RAND_MAX)-0.5)*10;
