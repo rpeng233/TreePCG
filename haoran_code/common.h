@@ -9,7 +9,7 @@
 //remember to add -Wall -ansi -pedantic -lmpfr to compile options
 //overrides USE_FLOAT128
 //#define USE_MPFR
-#define MPFR_PRECISION 1024	//bit precision of MPFR
+//#define MPFR_PRECISION 1024	//bit precision of MPFR
 
 #include <cstdlib>
 #include <cstdio>

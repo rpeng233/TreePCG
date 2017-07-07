@@ -1,0 +1,11 @@
+(THIS IS A HACK, BUT THERE ARE TOO MANY DEPENDENCIES
+AND THE CODE IS TOO SHORT TO JUSTIFY A REWRITE :-( )
+
+To change precision, see instructions at the start
+of the file
+
+../haoran_code/common.h
+
+specifically flags such as
+#define USE_FLOAT128 (which uses built-in floats, not too useful)
+#define MPFR_PRECISION 1024 (to change the # of digits in MPFR)

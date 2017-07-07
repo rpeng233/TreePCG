@@ -1,3 +1,1 @@
-#!/bin/bash
-rm cg_solver
-g++ cg_solver.cpp -o cg_solver -O3 --std=c++11 -lnsl -lz -lm -lmpfr -lquadmath
+g++ cg_solver.cpp -o cg_solver -O3 --std=c++11 -lm
