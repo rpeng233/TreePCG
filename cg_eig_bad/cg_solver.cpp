@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     
     int flag; FLOAT relres; int iter; vector<FLOAT> resvec;
     clock_t t_start = clock();
-    tie(x, flag, relres, iter, resvec) = S.solve(b, 1e-6, 4);
+    tie(x, flag, relres, iter, resvec) = S.solve(b, 1e-6);
     clock_t t_end = clock();
     double tcost = static_cast<double>(t_end - t_start) /
         static_cast<double>(CLOCKS_PER_SEC);
