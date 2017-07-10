@@ -1,1 +1,1 @@
-g++ cg_solver.cpp -o cg_solver -O3 --std=c++11 -lm
+g++ cg_solver.cpp -o cg_solver -O3 --std=c++11 -lm -lmpfr

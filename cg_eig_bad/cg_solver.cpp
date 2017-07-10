@@ -2,7 +2,7 @@
 
 #include "../haoran_code/io.h"
 #include "../haoran_code/graph.h"
-#include "../haoran_code/cg.h"
+#include "cg.h"
 #include "../haoran_code/jacobiprecon.h"
 
 
@@ -18,11 +18,11 @@ int main(int argc, char *argv[]) {
     Vec x = IO::readMMVec(dir+"x.vec");
     Vec b = L*x;
     
-    AbstractSolver S = PCG(L);
+    AbstractSolver S = PCG(L,x);
     
     int flag; FLOAT relres; int iter; vector<FLOAT> resvec;
     clock_t t_start = clock();
-    tie(x, flag, relres, iter, resvec) = S.solve(b, 1e-6);
+    tie(x, flag, relres, iter, resvec) = S.solve(b, 1e-20, 100);
     clock_t t_end = clock();
     double tcost = static_cast<double>(t_end - t_start) /
         static_cast<double>(CLOCKS_PER_SEC);
